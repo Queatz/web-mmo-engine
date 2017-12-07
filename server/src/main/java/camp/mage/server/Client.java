@@ -10,7 +10,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import camp.mage.server.game.Player;
+import camp.mage.server.game.models.Player;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
@@ -47,7 +47,7 @@ public class Client {
 
     @OnMessage
     public void onMessage(String message) throws IOException {
-        server.broadcast(this, message);
+        server.got(this, message);
     }
 
     @OnMessage

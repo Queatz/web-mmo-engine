@@ -1,11 +1,9 @@
 package camp.mage.server;
 
 import com.arangodb.ArangoCollection;
-import com.arangodb.ArangoCursor;
 import com.arangodb.ArangoDB;
 import com.arangodb.ArangoDBException;
 import com.arangodb.ArangoDatabase;
-import com.google.gson.JsonObject;
 
 /**
  * Created by jacob on 12/6/17.
@@ -21,21 +19,6 @@ public class Persistence {
 
     public static boolean isEmpty() {
         return getCollection().count().getCount() == 0;
-    }
-
-    public static void loadAll() {
-        ArangoCursor<Fossil> cursor = getDb().query("for x in " + DB_COLLECTION + " return x", null, null, Fossil.class);
-
-        while (cursor.hasNext()) {
-            GameObject gameObject =
-                    (GameObject) Fossilize.defossilize(Json.from(cursor.next().getFossil(), JsonObject.class));
-
-            Game.world.add(gameObject);
-        }
-    }
-
-    public static void saveAll() {
-        Game.world.save();
     }
 
     private static ArangoCollection getCollection() {

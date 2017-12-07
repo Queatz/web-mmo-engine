@@ -8,25 +8,35 @@ import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 
-import camp.mage.server.game.Game;
-
 /**
  * Created by jacob on 12/6/17.
  */
 
 public class GameServer extends ServerEndpointConfig.Configurator {
 
-    private final Game game = new Game();
+    private final Manager manager;
     private final Set<Client> sessions = new HashSet<>();
 
-    public void broadcast(Client chat, String message) {
+    public GameServer() {
+        this.manager = new Manager(this);
+    }
+
+    public void send(Client client, String message) {
+        try {
+            client.getSession().getBasicRemote().sendText(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void broadcast(Client client, String message) {
         synchronized (sessions) {
             for (Client other : sessions) {
                 if (!other.getSession().isOpen()) {
                     continue;
                 }
 
-                if (chat.getSession().getId().equals(other.getSession().getId())) {
+                if (client != null && client.getSession().getId().equals(other.getSession().getId())) {
                     continue;
                 }
 
@@ -39,8 +49,12 @@ public class GameServer extends ServerEndpointConfig.Configurator {
         }
     }
 
+    public void got(Client client, String message) {
+        manager.onPlayerMessage(client, message);
+    }
+
     public void join(Client client) {
-        game.onPlayerJoin(client.getPlayer());
+        manager.onPlayerJoin(client);
 
         synchronized (sessions) {
             sessions.add(client);
@@ -48,7 +62,7 @@ public class GameServer extends ServerEndpointConfig.Configurator {
     }
 
     public void leave(Client client) {
-        game.onPlayerLeave(client.getPlayer());
+        manager.onPlayerLeave(client);
 
         synchronized (sessions) {
             sessions.remove(client);

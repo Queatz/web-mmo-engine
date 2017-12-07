@@ -21,7 +21,7 @@ start_game
 
 set_pick {
 	pick: 0
-}
+pl}
 
 
 
