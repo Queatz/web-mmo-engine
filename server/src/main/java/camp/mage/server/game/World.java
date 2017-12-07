@@ -8,6 +8,7 @@ import java.util.Random;
 
 import camp.mage.server.Event;
 import camp.mage.server.Manager;
+import camp.mage.server.game.events.PlayerInfo;
 import camp.mage.server.game.events.PlayerJoinEvent;
 import camp.mage.server.game.events.PlayerLeaveEvent;
 import camp.mage.server.game.events.WelcomeEvent;
@@ -34,11 +35,12 @@ public class World {
     }
 
     public void join(Player player) {
+        manager.send(player, new WelcomeEvent(new ArrayList<>(players.values()), new ArrayList<>(games.values()), hallOfFame));
+
         player.setId(String.valueOf(new Random().nextInt()));
         players.put(player.getId(), player);
 
         manager.broadcast(new PlayerJoinEvent(player), player);
-        manager.send(player, new WelcomeEvent(new ArrayList<>(games.values()), hallOfFame));
     }
 
     public void leave(Player player) {
@@ -46,15 +48,22 @@ public class World {
         manager.broadcast(new PlayerLeaveEvent(player), player);
     }
 
-    public void broadcast(Event message, Player from) {
-        manager.broadcast(message, from);
+    public void broadcast(Event event, Player from) {
+        manager.broadcast(event, from);
     }
 
-    public void send(Player player, Event message) {
-        manager.send(player, message);
+    public void send(Player player, Event event) {
+        manager.send(player, event);
     }
 
-    public void got(Player player, Event message) {
-//        player.got();
+    public void got(Player player, Event event) {
+        if (event instanceof PlayerInfo) {
+            // Update player name
+            player.setName(((PlayerInfo) event).getPlayer().getName());
+
+            // Send player info to all others after adding id
+            ((PlayerInfo) event).getPlayer().setId(player.getId());
+            manager.broadcast(event, player);
+        }
     }
 }

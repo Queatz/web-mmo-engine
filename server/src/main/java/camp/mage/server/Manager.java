@@ -51,6 +51,6 @@ public class Manager implements MultiplayerServer {
 
     @Override
     public void onPlayerMessage(Client client, String message) {
-        world.got(client.getPlayer(), gson.fromJson(message, Event.class));
+        world.got(client.getPlayer(), Events.translate(gson, gson.fromJson(message, EventJson.class)));
     }
 }
