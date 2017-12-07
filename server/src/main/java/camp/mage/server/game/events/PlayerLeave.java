@@ -7,16 +7,16 @@ import camp.mage.server.game.models.Player;
  * Created by jacob on 12/7/17.
  */
 
-public class PlayerJoinEvent implements Event {
+public class PlayerLeave implements Event {
 
     @Override
     public String event() {
-        return "player_join";
+        return "player_leave";
     }
 
     private Player player;
 
-    public PlayerJoinEvent(Player player) {
+    public PlayerLeave(Player player) {
         this.player = player;
     }
 }

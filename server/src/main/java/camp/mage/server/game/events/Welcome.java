@@ -11,28 +11,39 @@ import camp.mage.server.game.models.Player;
  * Created by jacob on 12/7/17.
  */
 
-public class WelcomeEvent implements Event {
+public class Welcome implements Event {
 
     @Override
     public String event() {
         return "welcome";
     }
 
+    private String me;
     private List<Player> players;
     private List<Game> games;
     private List<HallOfFameEntry> hallOfFame;
 
-    public WelcomeEvent(List<Player> players, List<Game> games, List<HallOfFameEntry> hallOfFame) {
+    public Welcome(String me, List<Player> players, List<Game> games, List<HallOfFameEntry> hallOfFame) {
+        this.me = me;
         this.players = players;
         this.games = games;
         this.hallOfFame = hallOfFame;
+    }
+
+    public String getMe() {
+        return me;
+    }
+
+    public Welcome setMe(String me) {
+        this.me = me;
+        return this;
     }
 
     public List<Player> getPlayers() {
         return players;
     }
 
-    public WelcomeEvent setPlayers(List<Player> players) {
+    public Welcome setPlayers(List<Player> players) {
         this.players = players;
         return this;
     }
@@ -41,7 +52,7 @@ public class WelcomeEvent implements Event {
         return games;
     }
 
-    public WelcomeEvent setGames(List<Game> games) {
+    public Welcome setGames(List<Game> games) {
         this.games = games;
         return this;
     }
@@ -50,7 +61,7 @@ public class WelcomeEvent implements Event {
         return hallOfFame;
     }
 
-    public WelcomeEvent setHallOfFame(List<HallOfFameEntry> hallOfFame) {
+    public Welcome setHallOfFame(List<HallOfFameEntry> hallOfFame) {
         this.hallOfFame = hallOfFame;
         return this;
     }
