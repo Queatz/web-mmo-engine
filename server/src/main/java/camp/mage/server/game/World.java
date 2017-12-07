@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import camp.mage.server.Event;
 import camp.mage.server.Manager;
@@ -35,11 +36,10 @@ public class World {
     }
 
     public void join(Player player) {
-        manager.send(player, new WelcomeEvent(new ArrayList<>(players.values()), new ArrayList<>(games.values()), hallOfFame));
-
         player.setId(String.valueOf(new Random().nextInt()));
         players.put(player.getId(), player);
 
+        manager.send(player, new WelcomeEvent(players.values().stream().filter(p -> p != player).collect(Collectors.toList()), new ArrayList<>(games.values()), hallOfFame));
         manager.broadcast(new PlayerJoinEvent(player), player);
     }
 

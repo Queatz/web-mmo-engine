@@ -23,7 +23,7 @@ public class Client {
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-        session.setMaxIdleTimeout(MINUTES.toMillis(2));
+        session.setMaxIdleTimeout(MINUTES.toMillis(10));
 
         this.session = session;
         this.player = new Player();
