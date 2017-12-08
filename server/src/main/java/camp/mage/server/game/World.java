@@ -1,6 +1,7 @@
 package camp.mage.server.game;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import camp.mage.server.game.events.BasicError;
 import camp.mage.server.game.events.GameState;
 import camp.mage.server.game.events.JoinPlayer;
 import camp.mage.server.game.events.LeavePlayer;
+import camp.mage.server.game.events.NewHof;
 import camp.mage.server.game.events.PlayerInfo;
 import camp.mage.server.game.events.PlayerJoin;
 import camp.mage.server.game.events.PlayerLeave;
@@ -129,21 +131,16 @@ public class World {
 
             Game game = gamesByHost.get(host);
 
-            if (game.getHost().equals(player.getId())) {
-                manager.send(player, new BasicError("can't leave own game"));
-                return;
-            }
-
             if (game.getPlayers().indexOf(player) == -1) {
                 manager.send(player, new BasicError("not in game"));
                 return;
             }
 
-            game.getPlayers().remove(player);
+            // Game is ended.  If we want to continue the game, uncomment this
+            // game.getPlayers().remove(player);
 
             if (game.isStarted()) {
-                game.setEnded(true);
-                // XXX TODO conclude game and finalize, highscore etc
+                endGame(game);
             }
 
             // Send to all so that they know left
@@ -166,6 +163,20 @@ public class World {
             // Send to all so that they know it has been started
             manager.broadcast(new GameState(game), null);
         }
+    }
+
+    private void endGame(Game game) {
+        game.setEnded(true);
+
+        HallOfFameEntry hof = new HallOfFameEntry(
+                game.getPlayers().stream().map(Player::getName).collect(Collectors.toList()),
+                game.getScore()
+        );
+
+        hallOfFame.add(hof);
+        hallOfFame.sort(Comparator.comparingInt(HallOfFameEntry::getScore));
+
+        manager.broadcast(new NewHof(hallOfFame), null);
     }
 
     private String rndId() {
