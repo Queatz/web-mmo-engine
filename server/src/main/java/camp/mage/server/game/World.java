@@ -12,6 +12,7 @@ import camp.mage.server.Manager;
 import camp.mage.server.game.events.BasicError;
 import camp.mage.server.game.events.GameState;
 import camp.mage.server.game.events.JoinPlayer;
+import camp.mage.server.game.events.LeavePlayer;
 import camp.mage.server.game.events.PlayerInfo;
 import camp.mage.server.game.events.PlayerJoin;
 import camp.mage.server.game.events.PlayerLeave;
@@ -118,6 +119,36 @@ public class World {
             game.getPlayers().add(player);
 
             manager.broadcast(new GameState(game), null);
+        } else if (event instanceof LeavePlayer) {
+            String host = ((LeavePlayer) event).getPlayerId();
+
+            if (!gamesByHost.containsKey(host)) {
+                manager.send(player, new BasicError("game doesn't exist"));
+                return;
+            }
+
+            Game game = gamesByHost.get(host);
+
+            if (game.getHost().equals(player.getId())) {
+                manager.send(player, new BasicError("can't leave own game"));
+                return;
+            }
+
+            if (game.getPlayers().indexOf(player) == -1) {
+                manager.send(player, new BasicError("not in game"));
+                return;
+            }
+
+            game.getPlayers().remove(player);
+
+            if (game.isStarted()) {
+                game.setEnded(true);
+                // XXX TODO conclude game and finalize, highscore etc
+            }
+
+            // Send to all so that they know left
+            manager.broadcast(new GameState(game), null);
+
         } else if (event instanceof StartGame) {
             // YAY !!!  GO~!!!!!
 

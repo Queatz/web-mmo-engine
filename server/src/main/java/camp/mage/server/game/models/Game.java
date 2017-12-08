@@ -14,6 +14,7 @@ public class Game {
     private int score;
     private Turn turn;
     private boolean started;
+    private boolean ended;
 
     public String getId() {
         return id;
@@ -66,6 +67,15 @@ public class Game {
 
     public Game setStarted(boolean started) {
         this.started = started;
+        return this;
+    }
+
+    public boolean isEnded() {
+        return ended;
+    }
+
+    public Game setEnded(boolean ended) {
+        this.ended = ended;
         return this;
     }
 }
