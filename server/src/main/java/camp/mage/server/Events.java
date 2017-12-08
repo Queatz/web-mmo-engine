@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import camp.mage.server.game.events.JoinPlayer;
 import camp.mage.server.game.events.LeavePlayer;
 import camp.mage.server.game.events.PlayerInfo;
+import camp.mage.server.game.events.SetPick;
 import camp.mage.server.game.events.StartGame;
 
 /**
@@ -13,17 +14,17 @@ import camp.mage.server.game.events.StartGame;
 
 public class Events {
     public static Event translate(Gson gson, EventJson eventJson) {
+        Class<? extends Event> clazz;
+
         switch (eventJson.getEvent()) {
-            case "player_info":
-                return gson.fromJson(gson.toJson(eventJson.getData()), PlayerInfo.class);
-            case "join_player":
-                return gson.fromJson(gson.toJson(eventJson.getData()), JoinPlayer.class);
-            case "leave_player":
-                return gson.fromJson(gson.toJson(eventJson.getData()), LeavePlayer.class);
-            case "start_game":
-                return gson.fromJson(gson.toJson(eventJson.getData()), StartGame.class);
-            default:
-                return null;
+            case "player_info": clazz = PlayerInfo.class; break;
+            case "join_player": clazz = JoinPlayer.class; break;
+            case "leave_player": clazz = LeavePlayer.class; break;
+            case "start_game": clazz = StartGame.class; break;
+            case "set_pick": clazz = SetPick.class; break;
+            default: return null;
         }
+
+        return gson.fromJson(gson.toJson(eventJson.getData()), clazz);
     }
 }

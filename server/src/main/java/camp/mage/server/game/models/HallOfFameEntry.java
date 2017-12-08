@@ -10,11 +10,6 @@ public class HallOfFameEntry {
     private List<String> team;
     private int score;
 
-    public HallOfFameEntry(List<String> team, int score) {
-        this.team = team;
-        this.score = score;
-    }
-
     public List<String> getTeam() {
         return team;
     }
