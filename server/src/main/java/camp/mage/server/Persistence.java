@@ -17,29 +17,23 @@ public class Persistence {
 
     private static ArangoDatabase __arangoDatabase;
 
-    public static boolean isEmpty() {
-        return getCollection().count().getCount() == 0;
-    }
-
     private static ArangoCollection getCollection() {
         return getDb().collection(DB_COLLECTION);
     }
 
     private static ArangoDatabase getDb() {
-        if (__arangoDatabase != null) {
-            return __arangoDatabase;
-        }
+        if (__arangoDatabase == null) {
+            __arangoDatabase = new ArangoDB.Builder()
+                    .user(DB_USER)
+                    .password(DB_PASS)
+                    .build()
+                    .db();
 
-        __arangoDatabase = new ArangoDB.Builder()
-                .user(DB_USER)
-                .password(DB_PASS)
-                .build()
-                .db();
-
-        try {
-            __arangoDatabase.createCollection(DB_COLLECTION);
-        } catch (ArangoDBException ignored) {
-            // Whatever
+            try {
+                __arangoDatabase.createCollection(DB_COLLECTION);
+            } catch (ArangoDBException ignored) {
+                // Whatever
+            }
         }
 
         return __arangoDatabase;
