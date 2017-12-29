@@ -1,0 +1,5 @@
+<div class="status" [ngSwitch]="status()">
+  <span class="status-connecting" *ngSwitchCase="'connecting'">Connecting...</span>
+  <span class="status-connected" *ngSwitchCase="'connected'">Connected</span>
+  <span class="status-disconnected" *ngSwitchCase="'disconnected'">Disconnected</span>
+</div>

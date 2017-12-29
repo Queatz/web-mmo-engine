@@ -1,0 +1,94 @@
+.game {
+  display: flex;
+  justify-content: space-around;
+  flex: 1;
+  min-height: 100%;
+}
+
+.game>aside {
+  flex: 1;
+  padding: 1rem;
+  background: #fff;
+
+  margin-left: 1rem;
+  margin-right: 1rem;
+  min-height: 100%;
+}
+
+.team {
+  padding: 1rem;
+  color: #0af;
+  font-weight: bold;
+}
+
+.game-board {
+  display: flex;
+}
+
+.game-card {
+  display: flex;
+  flex: 1;
+  margin: 1rem;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, .125);
+  border-radius: 1rem;
+  justify-content: center;
+  align-items: center;
+  height: 12rem;
+  font-size: 4rem;
+  cursor: pointer;
+}
+
+.game-card.game-card-inactive,
+.game-card.game-card-inactive:hover {
+  background: #e2e2e2;
+}
+
+.game-card:hover {
+  background: #aef;
+}
+
+.game-card:active {
+  background: #9de;
+}
+
+.prompt {
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
+  padding: 2rem;
+}
+
+.player {
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.player:hover {
+  background: rgba(0, 0, 0, .125);
+}
+
+@media only screen and (max-width: 960px) {
+  .game {
+    flex-direction: column;
+    min-height: initial;
+    min-width: 100%;
+  }
+
+  .game>aside {
+    margin-left: 0rem;
+    margin-right: 0rem;
+
+    min-height: initial;
+    min-width: 100%;
+
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .game-board {
+    flex-direction: column;
+  }
+}

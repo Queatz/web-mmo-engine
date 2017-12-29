@@ -1,0 +1,14 @@
+.status {
+}
+
+.status-connected {
+  color: green;
+}
+
+.status-connecting {
+  color: orange;
+}
+
+.status-disconnected {
+  color: red;
+}
