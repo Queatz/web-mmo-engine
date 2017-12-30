@@ -12,23 +12,48 @@ export class Editor {
     ];
     
     private dialog: GUI.Rectangle;
+    private toolbar: GUI.Rectangle;
     private selectTileIcon: GUI.Image;
+    private selectObjectIcon: GUI.Image;
     private tilesImage: GUI.Image;
+    private dialogVisible = false;
     private enabled = true;
     private imageXTileCount = 8;
     private currentTileIndex = 0;
     private currentTileSet = this.tileSets[0];
 
     constructor(private game: Game) {
+        this.toolbar = new GUI.Rectangle();
+        this.toolbar.width = '500px';
+        this.toolbar.height = '64px';
+        this.toolbar.cornerRadius = 5;
+        this.toolbar.thickness = 2;
+        this.toolbar.background = new BABYLON.Color4(0, 0, 0, .5).toHexString();
+        this.toolbar.color = new BABYLON.Color4(1, .5, .25, .5).toHexString();
+        this.toolbar.shadowColor = 'black';
+        this.toolbar.shadowBlur = 20;
+
         this.selectTileIcon = new GUI.Image('editorSelectTileIcon', '/assets/grassy_tiles.png');
         this.selectTileIcon.width = '64px';
         this.selectTileIcon.height = '64px';
-        this.selectTileIcon.shadowColor = 'black';
-        this.selectTileIcon.shadowBlur = 20;
         this.selectTileIcon.onPointerDownObservable.add(() => {
             this.showDialog();
             this.game.preventInteraction();
         });
+
+        this.toolbar.addControl(this.selectTileIcon);
+
+        this.selectObjectIcon = new GUI.Image('editorSelectTileIcon', '/assets/slime.png');
+        this.selectObjectIcon.width = '64px';
+        this.selectObjectIcon.height = '64px';
+        this.selectObjectIcon.left = '64px';
+        this.selectObjectIcon.onPointerDownObservable.add(() => {
+            this.showDialog();
+            this.game.preventInteraction();
+        });
+
+        this.toolbar.addControl(this.selectTileIcon);
+        this.toolbar.addControl(this.selectObjectIcon);
 
         this.setEnabled(true);
     }
@@ -37,15 +62,15 @@ export class Editor {
         this.enabled = enabled;
 
         if (enabled) {
-            this.game.ui.addControl(this.selectTileIcon);
+            this.game.ui.addControl(this.toolbar);
         } else {
-            this.game.ui.removeControl(this.selectTileIcon);
+            this.game.ui.removeControl(this.toolbar);
         }
     }
 
     public update() {
-        this.selectTileIcon.top = (this.game.ui.getSize().height / 2) - (this.selectTileIcon.heightInPixels / 2);
-        this.selectTileIcon.left = 0;
+        this.toolbar.top = (this.game.ui.getSize().height / 2) - (this.selectTileIcon.heightInPixels / 2);
+        this.toolbar.left = 0;
     }
 
     public draw(x: number, y: number) {
@@ -69,7 +94,10 @@ export class Editor {
             this.dialog.background = '#aaa';
             this.dialog.shadowColor = 'black';
             this.dialog.shadowBlur = 20;
+            this.dialog.thickness = 2;
             this.dialog.cornerRadius = 5;
+            this.dialog.background = new BABYLON.Color4(1, .75, .5, 1).toHexString();
+            this.dialog.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
 
             this.setTileSet(this.currentTileSet);
 
@@ -79,6 +107,10 @@ export class Editor {
             tileSetSwitcher.cornerRadius = 5;
             tileSetSwitcher.height = '30px';
             tileSetSwitcher.width = '200px';
+            tileSetSwitcher.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
+            tileSetSwitcher.background = '#fff';
+            tileSetSwitcher.thickness = 2;
+            tileSetSwitcher.fontFamily = 'sans';
             tileSetSwitcher.onPointerDownObservable.add(() => {
                 this.setTileSetIndex(this.tileSets.indexOf(this.currentTileSet) + 1);
                 this.game.preventInteraction();
@@ -87,9 +119,11 @@ export class Editor {
             this.dialog.addControl(tileSetSwitcher);
         }
 
-        if (show) {
+        if (show && !this.dialogVisible) {
+            this.dialogVisible = true;
             this.game.ui.addControl(this.dialog);
         } else {
+            this.dialogVisible = false;
             this.game.ui.removeControl(this.dialog);
         }
     }
