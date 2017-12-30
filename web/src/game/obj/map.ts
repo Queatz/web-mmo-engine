@@ -1,17 +1,20 @@
 import * as BABYLON from 'babylonjs';
 import { Game } from '../game';
+import { MapTile } from './maptile';
 
 export class MapObject {
 
     private tileSize = .5;
     private mapSize = 10;
     private imageXTileCount = 8;
-    private defaultTile = 20;
+    private defaultTile = new MapTile('/assets/grassy_tiles.png', 20);
 
     private ground: BABYLON.Mesh;
     private meshes: Map<string, BABYLON.Mesh> = new Map();
     private multimat: BABYLON.MultiMaterial;
-    private tiles: Map<string, number> = new Map();
+    private tiles: Map<string, MapTile> = new Map();
+
+    private materialIndexes = [];
 
     constructor(private game: Game) {
         this.ground = BABYLON.MeshBuilder.CreateGround('ground', {width: 100, height: 100, subdivisions: 1}, this.game.scene);
@@ -22,26 +25,20 @@ export class MapObject {
         this.multimat = new BABYLON.MultiMaterial('multi', this.game.scene);
 
         // Map texture
-        let mapTilesTexture = new BABYLON.Texture('/assets/grassy_tiles.png', this.game.scene, false, true, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        mapTilesTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
-        mapTilesTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
-
-        // Map material
-        let material = new BABYLON.StandardMaterial('map texture', this.game.scene);
-        material.ambientColor = new BABYLON.Color3(1, 1, 1);
-        material.ambientTexture = mapTilesTexture;
-        this.multimat.subMaterials.push(material);
+        this.addMaterial('/assets/grassy_tiles.png');
     }
 
-    public draw(pointerX: number, pointerY: number, index: number) {
+    public draw(pointerX: number, pointerY: number, tileSet: string, index: number) {
         let pick = this.tileXY(pointerX, pointerY);
 
         this.game.text.text = pick.x + ', ' + pick.y;
 
+        this.tiles.set(this.tileKey(pick.x, pick.y), new MapTile(tileSet, index));        
+        this.updateTileSet(pick.x, pick.y, tileSet);
         this.updateTileUVs(pick.x, pick.y, index);
     }
 
-    public pickTile(pointerX: number, pointerY: number): number {
+    public pickTile(pointerX: number, pointerY: number): MapTile {
         let pick = this.tileXY(pointerX, pointerY);
 
         let vec = this.tileKey(pick.x, pick.y);
@@ -74,11 +71,52 @@ export class MapObject {
         return this.game.scene.pick(pointerX, pointerY, m => m === this.ground, true, this.game.camera);        
     }
 
+    private updateTileSet(x: number, y: number, image: string) {
+        let mesh = this.getMeshFor(x, y);
+
+        // Offset to current mesh
+        x = x - this.mapSize * Math.floor(x / this.mapSize);
+        y = y - this.mapSize * Math.floor(y / this.mapSize);
+
+        // Something has gone wrong
+        if (x < 0 || y < 0 || x >= this.mapSize || y >= this.mapSize) {
+            console.log('Tile index out of bounds');
+            return;
+        }
+
+        let meshesPerTile = 2;
+        let offset = mesh.subMeshes[(y * this.mapSize + x) * meshesPerTile];
+        offset.materialIndex = this.getMaterialIndex(image);    
+    }
+
+    private getMaterialIndex(image: string): number {
+        let i = this.materialIndexes.indexOf(image);
+
+        if (i >= 0) {
+            return i;
+        }
+
+        return this.addMaterial(image);
+    }
+
+    private addMaterial(image: string): number {
+        let mapTilesTexture = new BABYLON.Texture(image, this.game.scene, false, true, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        mapTilesTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
+        mapTilesTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
+
+        let material = new BABYLON.StandardMaterial('map texture', this.game.scene);
+        material.ambientColor = new BABYLON.Color3(1, 1, 1);
+        material.ambientTexture = mapTilesTexture;
+        this.multimat.subMaterials.push(material);
+
+        this.materialIndexes.push(image);
+
+        return this.materialIndexes.length - 1;
+    }
+
     private updateTileUVs(x: number, y: number, index: number) {
         let mesh = this.getMeshFor(x, y);
         let uvs = mesh.getVerticesData(BABYLON.VertexBuffer.UVKind);
-
-        this.tiles.set(this.tileKey(x, y), index);
 
         // Offset to current mesh
         x = x - this.mapSize * Math.floor(x / this.mapSize);
@@ -155,11 +193,12 @@ export class MapObject {
         map.subMeshes = [];
         let base = 0;
         let uvs = [];
-        let grassTileUvs = this.getTileUVs(this.defaultTile);
+        let grassTileUvs = this.getTileUVs(this.defaultTile.index);
+        let mat = this.getMaterialIndex(this.defaultTile.image);
         
         for (let row = 0; row < subdivisions.h; row++) {
             for (let col = 0; col < subdivisions.w; col++) {
-                let submesh = new BABYLON.SubMesh(0, 0, verticesCount, base, tileIndicesLength, map);
+                let submesh = new BABYLON.SubMesh(mat, 0, verticesCount, base, tileIndicesLength, map);
 
                 grassTileUvs.forEach(uv => uvs.push(uv));
                 
