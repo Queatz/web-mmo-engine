@@ -23,6 +23,7 @@ export class Game {
     public editor: Editor;
     public ui: GUI.AdvancedDynamicTexture;
     public sprites: BABYLON.SpriteManager;
+    public sprites2: BABYLON.SpriteManager;
 
     private pointerDown: boolean;
     private _keysDown: Set<string> = new Set();
@@ -34,7 +35,6 @@ export class Game {
     }
 
     createScene() : void {
-        // create a basic BJS Scene object
         this.scene = new BABYLON.Scene(this._engine);
         this.scene.ambientColor = new BABYLON.Color3(1, 1, 1);
  
@@ -42,7 +42,8 @@ export class Game {
         this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
-        this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 10, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 1, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.sprites2 = new BABYLON.SpriteManager('spriteManager', '/assets/butterfly.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
         this.map = new MapObject(this);
         this.player = new PlayerObject(this);

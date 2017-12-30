@@ -11,8 +11,4 @@ export class BaseObject {
     public update() {
 
     }
-
-    public render() {
-        
-    }
 }

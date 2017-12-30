@@ -13,5 +13,6 @@ export class PlayerObject extends BaseObject {
     }
 
     public update() {
+        
     }
 }

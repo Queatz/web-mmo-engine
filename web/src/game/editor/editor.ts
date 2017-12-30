@@ -3,6 +3,9 @@ import * as GUI from 'babylonjs-gui';
 
 import { Game } from '../game';
 import { MapTile } from '../obj/maptile';
+import { ButterflyObject } from '../obj/butterfly';
+import { BaseObject } from '../obj/baseobject';
+import { PlayerObject } from '../obj/player';
 
 export class Editor {
 
@@ -21,6 +24,8 @@ export class Editor {
     private imageXTileCount = 8;
     private currentTileIndex = 0;
     private currentTileSet = this.tileSets[0];
+    private editorPenMode = 'tile';
+    private currentObjClass: any;
 
     constructor(private game: Game) {
         this.toolbar = new GUI.Rectangle();
@@ -38,6 +43,7 @@ export class Editor {
         this.selectTileIcon.height = '64px';
         this.selectTileIcon.onPointerDownObservable.add(() => {
             this.showDialog();
+            this.setDialogContent('tile');            
             this.game.preventInteraction();
         });
 
@@ -49,6 +55,7 @@ export class Editor {
         this.selectObjectIcon.left = '64px';
         this.selectObjectIcon.onPointerDownObservable.add(() => {
             this.showDialog();
+            this.setDialogContent('obj');
             this.game.preventInteraction();
         });
 
@@ -74,7 +81,18 @@ export class Editor {
     }
 
     public draw(x: number, y: number) {
-        this.game.map.draw(x, y, this.currentTileSet, this.currentTileIndex);
+        switch (this.editorPenMode) {
+            case 'tile':
+                this.game.map.draw(x, y, this.currentTileSet, this.currentTileIndex);
+                break;
+            case 'obj':
+                let obj = new this.currentObjClass(this.game);
+                let pos = this.game.map.getXY(x, y);
+                (obj as BaseObject).sprite.position.x = pos.x;
+                (obj as BaseObject).sprite.position.z = pos.y;
+                this.game.map.add(obj);
+                break;
+        }
     }
 
     public use(tile: MapTile) {
@@ -82,6 +100,7 @@ export class Editor {
             return;
         }
 
+        this.editorPenMode = 'tile';
         this.currentTileSet = tile.image;
         this.currentTileIndex = tile.index;
     }
@@ -98,25 +117,6 @@ export class Editor {
             this.dialog.cornerRadius = 5;
             this.dialog.background = new BABYLON.Color4(1, .75, .5, 1).toHexString();
             this.dialog.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
-
-            this.setTileSet(this.currentTileSet);
-
-            let tileSetSwitcher = GUI.Button.CreateSimpleButton('tileSetSwitcher', 'Next Tile Set');
-            tileSetSwitcher.top = '250px';
-            tileSetSwitcher.background = '#f0f0f0';
-            tileSetSwitcher.cornerRadius = 5;
-            tileSetSwitcher.height = '30px';
-            tileSetSwitcher.width = '200px';
-            tileSetSwitcher.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
-            tileSetSwitcher.background = '#fff';
-            tileSetSwitcher.thickness = 2;
-            tileSetSwitcher.fontFamily = 'sans';
-            tileSetSwitcher.onPointerDownObservable.add(() => {
-                this.setTileSetIndex(this.tileSets.indexOf(this.currentTileSet) + 1);
-                this.game.preventInteraction();
-            });
-
-            this.dialog.addControl(tileSetSwitcher);
         }
 
         if (show && !this.dialogVisible) {
@@ -125,6 +125,65 @@ export class Editor {
         } else {
             this.dialogVisible = false;
             this.game.ui.removeControl(this.dialog);
+        }
+    }
+
+    private setDialogContent(content: string) {
+        this.dialog.children.length = 0;
+
+        switch (content) {
+            case 'tile':
+                this.setTileSet(this.currentTileSet);
+                
+                let tileSetSwitcher = GUI.Button.CreateSimpleButton('tileSetSwitcher', 'Next Tile Set');
+                tileSetSwitcher.top = '250px';
+                tileSetSwitcher.background = '#f0f0f0';
+                tileSetSwitcher.cornerRadius = 5;
+                tileSetSwitcher.height = '30px';
+                tileSetSwitcher.width = '200px';
+                tileSetSwitcher.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
+                tileSetSwitcher.background = '#fff';
+                tileSetSwitcher.thickness = 2;
+                tileSetSwitcher.fontFamily = 'sans';
+                tileSetSwitcher.onPointerDownObservable.add(() => {
+                    this.setTileSetIndex(this.tileSets.indexOf(this.currentTileSet) + 1);
+                    this.game.preventInteraction();
+                });
+        
+                this.dialog.addControl(tileSetSwitcher);
+
+                break;
+            case 'obj':
+
+                let butterfly = new GUI.Image('objIcon', '/assets/butterfly_idle.png');
+                butterfly.width = '64px';
+                butterfly.height = '64px';
+                butterfly.top = (-250 + 64) + 'px';
+
+                butterfly.onPointerDownObservable.add(() => {
+                    this.editorPenMode = 'obj';
+                    this.currentObjClass = ButterflyObject;
+                    this.showDialog(false);
+                    this.game.preventInteraction();
+                });
+
+                this.dialog.addControl(butterfly);
+
+                let slime = new GUI.Image('objIcon', '/assets/slime.png');
+                slime.width = '64px';
+                slime.height = '64px';
+                slime.top = (-250 + 64 * 2) + 'px';
+
+                slime.onPointerDownObservable.add(() => {
+                    this.editorPenMode = 'obj';
+                    this.currentObjClass = PlayerObject;
+                    this.showDialog(false);
+                    this.game.preventInteraction();
+                });
+
+                this.dialog.addControl(slime);
+
+                break;
         }
     }
 
@@ -143,6 +202,7 @@ export class Editor {
         
         this.tilesImage.onPointerDownObservable.add(evt => {
             this.currentTileIndex = this.getTileIndex(this.tilesImage.getLocalCoordinates(evt));
+            this.editorPenMode = 'tile';
             this.showDialog(false);
             this.game.preventInteraction();
         });

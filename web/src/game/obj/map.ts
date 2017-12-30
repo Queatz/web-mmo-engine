@@ -61,6 +61,19 @@ export class MapObject {
         return this.defaultTile;
     }
 
+    public getXY(pointerX: number, pointerY: number): BABYLON.Vector2 {
+        let pick = this.pickXY(pointerX, pointerY);
+        
+        if (!pick || !pick.pickedPoint) {
+            return BABYLON.Vector2.Zero();
+        }
+
+        return new BABYLON.Vector2(
+            pick.pickedPoint.x,
+            pick.pickedPoint.z
+        );
+    }
+
     private tileKey(x: number, y: number): string {
         return x + ':' + y;
     }
