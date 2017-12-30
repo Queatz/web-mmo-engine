@@ -1,6 +1,7 @@
 import * as BABYLON from 'babylonjs';
 import { Game } from '../game';
 import { MapTile } from './maptile';
+import { BaseObject } from './baseobject';
 
 export class MapObject {
 
@@ -14,6 +15,8 @@ export class MapObject {
     private multimat: BABYLON.MultiMaterial;
     private tiles: Map<string, MapTile> = new Map();
 
+    private objs = new Set<BaseObject>();
+
     private materialIndexes = [];
 
     constructor(private game: Game) {
@@ -26,6 +29,14 @@ export class MapObject {
 
         // Map texture
         this.addMaterial('/assets/grassy_tiles.png');
+    }
+
+    public add(obj: BaseObject) {
+        this.objs.add(obj);
+    }
+
+    public update() {
+        this.objs.forEach(obj => obj.update());
     }
 
     public draw(pointerX: number, pointerY: number, tileSet: string, index: number) {

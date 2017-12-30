@@ -2,6 +2,7 @@ import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
 
 import { MapObject } from './obj/map';
+import { PlayerObject } from './obj/player';
 import { Editor } from './editor/editor';
 
 export class Game {
@@ -14,12 +15,14 @@ export class Game {
 
     // Should be World.getCurrentMap();
     public map: MapObject;
+    public player: PlayerObject;
     
     public camera: BABYLON.FreeCamera;
     public scene: BABYLON.Scene;
     public text: GUI.TextBlock;
     public editor: Editor;
     public ui: GUI.AdvancedDynamicTexture;
+    public sprites: BABYLON.SpriteManager;
 
     private pointerDown: boolean;
     private _keysDown: Set<string> = new Set();
@@ -35,11 +38,15 @@ export class Game {
         this.scene = new BABYLON.Scene(this._engine);
         this.scene.ambientColor = new BABYLON.Color3(1, 1, 1);
  
-        this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, -5, 0), this.scene);
+        this.camera = new BABYLON.FreeCamera('camera', new BABYLON.Vector3(0, 10, 0), this.scene);
         this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
+        this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 10, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        
         this.map = new MapObject(this);
+        this.player = new PlayerObject(this);
+        this.map.add(this.player);
         
         // UI + Text
         
@@ -97,7 +104,11 @@ export class Game {
     }
 
     update() {
+        this.camera.position.x = this.player.sprite.position.x;
+        this.camera.position.z = this.player.sprite.position.z;
+
         this.editor.update();
+        this.map.update();
     }
 
     public preventInteraction() {
@@ -107,16 +118,16 @@ export class Game {
     key(key: string) {
         switch (key) {
             case 'ArrowDown':
-                this.camera.position.z -= .25;
+                this.player.sprite.position.z -= .125;
                 break;
             case 'ArrowUp':
-                this.camera.position.z += .25;
+                this.player.sprite.position.z += .125;
                 break;
             case 'ArrowLeft':
-                this.camera.position.x -= .25;
+                this.player.sprite.position.x -= .125;
                 break;
             case 'ArrowRight':
-                this.camera.position.x += .25;
+                this.player.sprite.position.x += .125;
                 break;
         }
     }
@@ -125,13 +136,13 @@ export class Game {
         let aspect = this._engine.getAspectRatio(this.camera, true);
 
         if (aspect > 1) {
-            this.camera.orthoTop = -this.zoom / aspect;
-            this.camera.orthoBottom = this.zoom / aspect;
+            this.camera.orthoTop = this.zoom / aspect;
+            this.camera.orthoBottom = -this.zoom / aspect;
             this.camera.orthoLeft = -this.zoom;
             this.camera.orthoRight = this.zoom;
         } else {
-            this.camera.orthoTop = -this.zoom;
-            this.camera.orthoBottom = this.zoom;
+            this.camera.orthoTop = this.zoom;
+            this.camera.orthoBottom = -this.zoom;
             this.camera.orthoLeft = -this.zoom * aspect;
             this.camera.orthoRight = this.zoom * aspect;
         }
@@ -143,8 +154,8 @@ export class Game {
         // run the render loop
         this._engine.runRenderLoop(() => {
             this.interactionPrevented = false;
-            this.update();
             this._keysDown.forEach(key => this.key(key));
+            this.update();
             this.scene.render();
         });
 
