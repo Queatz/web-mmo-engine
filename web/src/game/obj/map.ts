@@ -1,5 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import { Game } from '../game';
+import Config from '../config';
 import { MapTile } from './maptile';
 import { BaseObject } from './baseobject';
 
@@ -10,6 +11,8 @@ export class MapObject {
     private imageXTileCount = 8;
     private defaultTile = new MapTile('/assets/grassy_tiles.png', 20);
 
+    private tileSetsNoCollision: Map<string, Set<number>> = new Map();
+    
     private ground: BABYLON.Mesh;
     private meshes: Map<string, BABYLON.Mesh> = new Map();
     private multimat: BABYLON.MultiMaterial;
@@ -20,6 +23,11 @@ export class MapObject {
     private materialIndexes = [];
 
     constructor(private game: Game) {
+
+        this.tileSetsNoCollision.set(Config.tileSets[0], new Set<number>([
+            20, 24, 25, 26, 27, 33, 35, 36, 40, 41, 42, 43, 44, 46, 48, 49, 50, 51, 56, 57, 58, 59
+        ]));
+
         this.ground = BABYLON.MeshBuilder.CreateGround('ground', {width: 100, height: 100, subdivisions: 1}, this.game.scene);
         this.ground.isPickable = true;
         this.ground.isVisible = false;
@@ -36,7 +44,52 @@ export class MapObject {
     }
 
     public update() {
-        this.objs.forEach(obj => obj.update());
+        this.objs.forEach(obj => {
+            obj.previousPos.copyFrom(obj.sprite.position);
+            obj.update();
+            this.collide(obj);
+        });
+    }
+    
+    public collide(obj: BaseObject) {
+        let tile = this.getTileAt(this.posToTile(new BABYLON.Vector2(
+            obj.sprite.position.x,
+            obj.sprite.position.z
+        )));
+        
+        if (!this.isCollideTile(tile)) {
+            return;
+        }
+
+        // Check x
+        
+        tile = this.getTileAt(this.posToTile(new BABYLON.Vector2(
+            obj.sprite.position.x,
+            obj.previousPos.z
+        )));
+
+        if (!this.isCollideTile(tile)) {
+            obj.sprite.position.z = obj.previousPos.z;
+            return;
+        }
+
+        // Check y
+        
+        tile = this.getTileAt(this.posToTile(new BABYLON.Vector2(
+            obj.previousPos.x,
+            obj.sprite.position.z
+        )));
+
+        if (!this.isCollideTile(tile)) {
+            obj.sprite.position.x = obj.previousPos.x;
+            return;
+        }
+
+        obj.sprite.position.copyFrom(obj.previousPos);
+    }
+
+    public isCollideTile(tile: MapTile): boolean {
+        return this.tileSetsNoCollision.has(tile.image) && !this.tileSetsNoCollision.get(tile.image).has(tile.index);
     }
 
     public draw(pointerX: number, pointerY: number, tileSet: string, index: number) {
@@ -52,7 +105,11 @@ export class MapObject {
     public pickTile(pointerX: number, pointerY: number): MapTile {
         let pick = this.tileXY(pointerX, pointerY);
 
-        let vec = this.tileKey(pick.x, pick.y);
+        return this.getTileAt(pick);
+    }
+
+    public getTileAt(pos: BABYLON.Vector2): MapTile {
+        let vec = this.tileKey(pos.x, pos.y);
         
         if (this.tiles.has(vec)) {
             return this.tiles.get(vec);
@@ -85,9 +142,16 @@ export class MapObject {
             return BABYLON.Vector2.Zero();
         }
 
+        return this.posToTile(new BABYLON.Vector2(
+            pick.pickedPoint.x,
+            pick.pickedPoint.z
+        ));
+    }
+
+    private posToTile(pos: BABYLON.Vector2): BABYLON.Vector2 {
         return new BABYLON.Vector2(
-            Math.floor(pick.pickedPoint.x / this.tileSize) + 5,
-            Math.floor(pick.pickedPoint.z / this.tileSize) + 5
+            Math.floor(pos.x / this.tileSize) + 5,
+            Math.floor(pos.y / this.tileSize) + 5
         );
     }
 

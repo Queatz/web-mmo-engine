@@ -6,13 +6,9 @@ import { MapTile } from '../obj/maptile';
 import { ButterflyObject } from '../obj/butterfly';
 import { BaseObject } from '../obj/baseobject';
 import { PlayerObject } from '../obj/player';
+import Config from '../config';
 
 export class Editor {
-
-    private tileSets = [
-        '/assets/grassy_tiles.png',
-        '/assets/underground_tiles.png'
-    ];
     
     private dialog: GUI.Rectangle;
     private toolbar: GUI.Rectangle;
@@ -23,7 +19,7 @@ export class Editor {
     private enabled = true;
     private imageXTileCount = 8;
     private currentTileIndex = 0;
-    private currentTileSet = this.tileSets[0];
+    private currentTileSet = Config.tileSets[0];
     private editorPenMode = 'tile';
     private currentObjClass: any;
 
@@ -146,7 +142,7 @@ export class Editor {
                 tileSetSwitcher.thickness = 2;
                 tileSetSwitcher.fontFamily = 'sans';
                 tileSetSwitcher.onPointerDownObservable.add(() => {
-                    this.setTileSetIndex(this.tileSets.indexOf(this.currentTileSet) + 1);
+                    this.setTileSetIndex(Config.tileSets.indexOf(this.currentTileSet) + 1);
                     this.game.preventInteraction();
                 });
         
@@ -209,7 +205,7 @@ export class Editor {
     }
 
     private setTileSetIndex(index: number) {
-        this.setTileSet(this.tileSets[index % this.tileSets.length]);
+        this.setTileSet(Config.tileSets[index % Config.tileSets.length]);
     }
 
     private getTileIndex(pos: BABYLON.Vector2): number {

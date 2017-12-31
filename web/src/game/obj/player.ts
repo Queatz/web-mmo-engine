@@ -13,6 +13,20 @@ export class PlayerObject extends BaseObject {
     }
 
     public update() {
-        
+        if (this.game.key('ArrowDown')) {
+            this.sprite.position.z -= .125;
+        }
+
+        if (this.game.key('ArrowUp')) {
+            this.sprite.position.z += .125;
+        }
+
+        if (this.game.key('ArrowLeft')) {
+            this.sprite.position.x -= .125;
+        }
+
+        if (this.game.key('ArrowRight')) {
+            this.sprite.position.x += .125;
+        }
     }
 }

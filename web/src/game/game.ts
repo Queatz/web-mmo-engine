@@ -105,32 +105,18 @@ export class Game {
     }
 
     update() {
-        this.camera.position.x = this.player.sprite.position.x;
-        this.camera.position.z = this.player.sprite.position.z;
-
         this.editor.update();
         this.map.update();
+        this.camera.position.x = this.player.sprite.position.x;
+        this.camera.position.z = this.player.sprite.position.z;
     }
 
     public preventInteraction() {
         this.interactionPrevented = true;
     }
 
-    key(key: string) {
-        switch (key) {
-            case 'ArrowDown':
-                this.player.sprite.position.z -= .125;
-                break;
-            case 'ArrowUp':
-                this.player.sprite.position.z += .125;
-                break;
-            case 'ArrowLeft':
-                this.player.sprite.position.x -= .125;
-                break;
-            case 'ArrowRight':
-                this.player.sprite.position.x += .125;
-                break;
-        }
+    public key(key: string) {
+        return this._keysDown.has(key);
     }
 
     resize(): void {
@@ -155,7 +141,6 @@ export class Game {
         // run the render loop
         this._engine.runRenderLoop(() => {
             this.interactionPrevented = false;
-            this._keysDown.forEach(key => this.key(key));
             this.update();
             this.scene.render();
         });
