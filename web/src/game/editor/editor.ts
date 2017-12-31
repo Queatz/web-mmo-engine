@@ -93,14 +93,14 @@ export class Editor {
 
         switch (this.editorPenMode) {
             case 'tile':
-                this.game.map.draw(x, y, this.currentTileSet, this.currentTileIndex);
+                this.game.world.getMap().draw(x, y, this.currentTileSet, this.currentTileIndex);
                 break;
             case 'obj':
-                let obj = new this.currentObjClass(this.game);
-                let pos = this.game.map.getXY(x, y);
+                let obj = new this.currentObjClass(this.game.world);
+                let pos = this.game.world.getMap().getXY(x, y);
                 (obj as BaseObject).sprite.position.x = pos.x;
                 (obj as BaseObject).sprite.position.z = pos.y;
-                this.game.map.add(obj);
+                this.game.world.getMap().add(obj);
                 break;
         }
 
@@ -171,33 +171,26 @@ export class Editor {
                 break;
             case 'obj':
 
-                let butterfly = new GUI.Image('objIcon', '/assets/butterfly_idle.png');
-                butterfly.width = '64px';
-                butterfly.height = '64px';
-                butterfly.top = (-250 + 64) + 'px';
+                let imgAndTypes: any[] = [
+                    ['/assets/butterfly_idle.png', ButterflyObject],
+                    ['/assets/slime.png', PlayerObject]
+                ];
 
-                butterfly.onPointerDownObservable.add(() => {
-                    this.editorPenMode = 'obj';
-                    this.currentObjClass = ButterflyObject;
-                    this.showDialog(false);
-                    this.game.preventInteraction();
-                });
+                for (let i = 0; i < imgAndTypes.length; i++) {
+                    let obj = new GUI.Image('objIcon', imgAndTypes[i][0]);
+                    obj.width = '64px';
+                    obj.height = '64px';
+                    obj.top = (-250 + 64 * (i + 1)) + 'px';
 
-                this.dialog.addControl(butterfly);
+                    obj.onPointerDownObservable.add(() => {
+                        this.editorPenMode = 'obj';
+                        this.currentObjClass = imgAndTypes[i][1];
+                        this.showDialog(false);
+                        this.game.preventInteraction();
+                    });
 
-                let slime = new GUI.Image('objIcon', '/assets/slime.png');
-                slime.width = '64px';
-                slime.height = '64px';
-                slime.top = (-250 + 64 * 2) + 'px';
-
-                slime.onPointerDownObservable.add(() => {
-                    this.editorPenMode = 'obj';
-                    this.currentObjClass = PlayerObject;
-                    this.showDialog(false);
-                    this.game.preventInteraction();
-                });
-
-                this.dialog.addControl(slime);
+                    this.dialog.addControl(obj);
+                }
 
                 break;
         }

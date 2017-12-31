@@ -4,6 +4,7 @@ import * as GUI from 'babylonjs-gui';
 import { MapObject } from './obj/map';
 import { PlayerObject } from './obj/player';
 import { Editor } from './editor/editor';
+import { World } from './world/world';
 
 export class Game {
 
@@ -13,9 +14,7 @@ export class Game {
 
     private zoom = 4;
 
-    // Should be World.getCurrentMap();
-    public map: MapObject;
-    public player: PlayerObject;
+    public world: World;
     
     public camera: BABYLON.FreeCamera;
     public scene: BABYLON.Scene;
@@ -46,10 +45,6 @@ export class Game {
         this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 1, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.sprites2 = new BABYLON.SpriteManager('spriteManager', '/assets/butterfly.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
-        this.map = new MapObject(this);
-        this.player = new PlayerObject(this);
-        this.map.add(this.player);
-        
         // UI + Text
         
         this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
@@ -61,6 +56,8 @@ export class Game {
         this.text.fontSize = 48;
         this.text.top = 300;
         this.ui.addControl(this.text);
+
+        this.world = new World(this);
 
         this.editor = new Editor(this);
 
@@ -84,7 +81,7 @@ export class Game {
             this.pointerDown = true;
             
             if (this._keysDown.has('ControlLeft') || this._keysDown.has('ControlRight')) {
-                this.editor.use(this.map.pickTile(evt.clientX, evt.clientY));
+                this.editor.use(this.world.getMap().pickTile(evt.clientX, evt.clientY));
             } else {
                 this.editor.draw(evt.clientX, evt.clientY);
             }
@@ -107,14 +104,6 @@ export class Game {
         });
     }
 
-    update() {
-        this.editor.update();
-        this.map.update();
-        this.camera.position.x = this.player.sprite.position.x;
-        this.camera.position.z = this.player.sprite.position.z;
-        this._keysPressed.clear();
-    }
-
     public preventInteraction() {
         this.interactionPrevented = true;
     }
@@ -126,8 +115,16 @@ export class Game {
     public keyPressed(key: string) {
         return this._keysPressed.has(key);
     }
+    
+    private update() {
+        this.editor.update();
+        this.world.update();
+        this.camera.position.x = this.world.getPlayer().sprite.position.x;
+        this.camera.position.z = this.world.getPlayer().sprite.position.z;
+        this._keysPressed.clear();
+    }
 
-    resize(): void {
+    private resize(): void {
         let aspect = this._engine.getAspectRatio(this.camera, true);
 
         if (aspect > 1) {
@@ -143,7 +140,7 @@ export class Game {
         }
     }
 
-    doRender() : void {
+    public doRender() : void {
         this.resize();
 
         // run the render loop

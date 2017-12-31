@@ -1,34 +1,38 @@
 import * as BABYLON from 'babylonjs';
-import { Game } from '../game';
 import { BaseObject } from './baseobject';
+import { World } from '../world/world';
 
 export class PlayerObject extends BaseObject {
 
     private speed: number = 0.05;
     
-    constructor(game: Game) {
-        super(game);
+    constructor(world: World) {
+        super(world);
 
-        this.sprite = new BABYLON.Sprite('playerSprite', this.game.sprites);
+        this.sprite = new BABYLON.Sprite('playerSprite', this.world.game.sprites);
         this.sprite.size = .5;
         this.sprite.position = new BABYLON.Vector3(0, 1, 0);
     }
 
     public update() {
-        if (this.game.key('ArrowDown')) {
+        if (this.world.game.key('ArrowDown')) {
             this.sprite.position.z -= this.speed;
         }
 
-        if (this.game.key('ArrowUp')) {
+        if (this.world.game.key('ArrowUp')) {
             this.sprite.position.z += this.speed;
         }
 
-        if (this.game.key('ArrowLeft')) {
+        if (this.world.game.key('ArrowLeft')) {
             this.sprite.position.x -= this.speed;
         }
 
-        if (this.game.key('ArrowRight')) {
+        if (this.world.game.key('ArrowRight')) {
             this.sprite.position.x += this.speed;
         }
+    }
+
+    public eventFromClient(event: any) {
+
     }
 }

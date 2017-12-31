@@ -1,8 +1,8 @@
 import * as BABYLON from 'babylonjs';
-import { Game } from '../game';
 import Config from '../config';
 import { MapTile } from './maptile';
 import { BaseObject } from './baseobject';
+import { World } from '../world/world';
 
 export class MapObject {
 
@@ -22,7 +22,7 @@ export class MapObject {
 
     private materialIndexes = [];
 
-    constructor(private game: Game) {
+    constructor(private world: World) {
 
         this.tileSetsNoCollision.set(Config.tileSets[0], new Set<number>([
             20, 24, 25, 26, 27, 33, 35, 36, 40, 41, 42, 43, 44, 46, 48, 49, 50, 51, 56, 57, 58, 59
@@ -32,12 +32,12 @@ export class MapObject {
             
         ]));
 
-        this.ground = BABYLON.MeshBuilder.CreateGround('ground', {width: 100, height: 100, subdivisions: 1}, this.game.scene);
+        this.ground = BABYLON.MeshBuilder.CreateGround('ground', {width: 100, height: 100, subdivisions: 1}, this.world.game.scene);
         this.ground.isPickable = true;
         this.ground.isVisible = false;
 
         // Map multimat
-        this.multimat = new BABYLON.MultiMaterial('multi', this.game.scene);
+        this.multimat = new BABYLON.MultiMaterial('multi', this.world.game.scene);
 
         // Map texture
         this.addMaterial('/assets/grassy_tiles.png');
@@ -99,7 +99,7 @@ export class MapObject {
     public draw(pointerX: number, pointerY: number, tileSet: string, index: number) {
         let pick = this.tileXY(pointerX, pointerY);
 
-        this.game.text.text = pick.x + ', ' + pick.y;
+        this.world.game.text.text = pick.x + ', ' + pick.y;
 
         this.tiles.set(this.tileKey(pick.x, pick.y), new MapTile(tileSet, index));        
         this.updateTileSet(pick.x, pick.y, tileSet);
@@ -160,7 +160,7 @@ export class MapObject {
     }
 
     private pickXY(pointerX: number, pointerY: number) {
-        return this.game.scene.pick(pointerX, pointerY, m => m === this.ground, true, this.game.camera);        
+        return this.world.game.scene.pick(pointerX, pointerY, m => m === this.ground, true, this.world.game.camera);        
     }
 
     private updateTileSet(x: number, y: number, image: string) {
@@ -192,11 +192,11 @@ export class MapObject {
     }
 
     private addMaterial(image: string): number {
-        let mapTilesTexture = new BABYLON.Texture(image, this.game.scene, false, true, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        let mapTilesTexture = new BABYLON.Texture(image, this.world.game.scene, false, true, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         mapTilesTexture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
         mapTilesTexture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
 
-        let material = new BABYLON.StandardMaterial('map texture', this.game.scene);
+        let material = new BABYLON.StandardMaterial('map texture', this.world.game.scene);
         material.ambientColor = new BABYLON.Color3(1, 1, 1);
         material.ambientTexture = mapTilesTexture;
         this.multimat.subMaterials.push(material);
@@ -274,7 +274,7 @@ export class MapObject {
         };
 
         // Map mesh
-        let map = BABYLON.Mesh.CreateTiledGround('map', xmin, zmin, xmax, zmax, subdivisions, precision, this.game.scene, true);
+        let map = BABYLON.Mesh.CreateTiledGround('map', xmin, zmin, xmax, zmax, subdivisions, precision, this.world.game.scene, true);
         map.material = this.multimat;
 
         // Needed letiables to set subMeshes

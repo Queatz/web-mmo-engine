@@ -40,14 +40,6 @@ export class AppComponent implements OnInit {
     return game && game && !!game.players.find(p => p.id === this.world.myId);
   }
 
-  pick(i: number) {
-    if (!this.isCardActive(i)) {
-      return;
-    }
-
-    this.api.pick(this.world.currentGame().id, i);
-  }
-
   join(player: any) {
     this.api.join(player.id);
   }
@@ -64,63 +56,5 @@ export class AppComponent implements OnInit {
   setName() {
     localStorage.setItem('name', this.name);
     this.api.myName(this.name);
-  }
-
-  getPromptText() {
-    let g = this.game();
-
-    if (!g) {
-      return 'Waiting...';
-    }
-
-    if (g.turn.picker === this.world.myId) {
-      if (g.turn.pick === undefined) {
-        return 'Pick a card!';
-      }
-
-      return 'Waiting on others...';
-    }
-
-    if (g.turn.pick === undefined) {
-      return 'Waiting for ' + this.pickerName(g) + ' to pick';
-    }
-
-    if (g.turn.guessers.indexOf(this.world.myId) === -1) {
-      return 'Guess what ' + this.pickerName(g) + ' picked!';
-    }
-
-    return 'Waiting on others...';
-  }
-
-  pickerName(g: any) {
-    return g.players.find(p => p.id === g.turn.picker).name;
-  }
-
-  isCardActive(i: number) {
-    let g = this.game();
-
-    if (!g) {
-      return false;
-    }
-
-    if (g.turn.picker === this.world.myId) {
-      if (g.turn.pick !== undefined) {
-        return false;
-      }
-    } else {
-      if (g.turn.pick === undefined) {
-        return false;
-      }
-
-      if (g.turn.guessers.indexOf(this.world.myId) !== -1) {
-        return false;
-      }
-
-      if (g.turn.guesses.indexOf(i) !== -1) {
-        return false;
-      }
-    }
-
-    return true;
   }
 }
