@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 
 import { Game } from '../../game/game';
+import { WorldService } from '../world.service';
 
 @Component({
   selector: 'game',
@@ -9,16 +10,20 @@ import { Game } from '../../game/game';
 })
 export class GameComponent implements OnInit {
 
-  constructor(private elementRef: ElementRef) { }
+  private game: Game;
+
+  constructor(private elementRef: ElementRef, private worldService: WorldService) { }
 
   ngOnInit() {
-    let game = new Game(this.elementRef.nativeElement.querySelector('#renderCanvas'));
+    this.game = new Game(this.elementRef.nativeElement.querySelector('#renderCanvas'), this.worldService);
   
     // Create the scene
-    game.createScene();
+    this.game.createScene();
   
     // start animation
-    game.doRender();
+    this.game.doRender();
+
+    this.worldService.game = this.game;
   }
 
 }

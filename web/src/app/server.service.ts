@@ -11,7 +11,8 @@ export class ServerService {
   private pending: any[] = [];
 
   constructor(private world: WorldService) {
-     this.reconnect();
+    world.server = this;
+    this.reconnect();
   }
 
   public reconnect() {

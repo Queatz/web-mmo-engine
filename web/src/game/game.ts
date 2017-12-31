@@ -5,6 +5,7 @@ import { MapObject } from './obj/map';
 import { PlayerObject } from './obj/player';
 import { Editor } from './editor/editor';
 import { World } from './world/world';
+import { WorldService } from '../app/world.service';
 
 /**
  * The base game.
@@ -61,7 +62,7 @@ export class Game {
     private _keysPressed: Set<string> = new Set();
     private interactionPrevented: boolean;
     
-    constructor(canvasElement : HTMLCanvasElement) {
+    constructor(canvasElement : HTMLCanvasElement, private worldService: WorldService) {
         this._canvas = canvasElement;
         this._engine = new BABYLON.Engine(this._canvas, true);
     }

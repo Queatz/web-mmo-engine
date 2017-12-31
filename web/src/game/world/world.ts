@@ -1,6 +1,7 @@
 import { MapObject } from "../obj/map";
 import { PlayerObject } from "../obj/player";
 import { Game } from "../game";
+import { WorldService } from "../../app/world.service";
 
 /**
  * The world object.
@@ -35,10 +36,10 @@ export class World {
     }
 
     public send(evt: any) {
-
+        this.game.worldService.send(evt);
     }
 
-    public got(evt: any) {
+    public event(evt: any) {
 
     }
 }

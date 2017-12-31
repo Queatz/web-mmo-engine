@@ -20,6 +20,11 @@ export class MapObject {
     private mapSize = 10;
 
     /**
+     * The maximum size of a total map.
+     */
+    private maxMapSize = 100;
+
+    /**
      * The number of tiles in a tile set image horizontally.
      */
     private imageXTileCount = 8;
@@ -36,14 +41,19 @@ export class MapObject {
      */
     private tileSetsNoCollision: Map<string, Set<number>> = new Map();
     
+    /**
+     * Internal stuff.
+     */
     private ground: BABYLON.Mesh;
     private meshes: Map<string, BABYLON.Mesh> = new Map();
     private multimat: BABYLON.MultiMaterial;
     private tiles: Map<string, MapTile> = new Map();
-
-    private objs = new Set<BaseObject>();
-
     private materialIndexes = [];
+
+    /**
+     * The objects on this map.
+     */
+    private objs = new Set<BaseObject>();
 
     constructor(private world: World) {
 
@@ -55,7 +65,7 @@ export class MapObject {
             
         ]));
 
-        this.ground = BABYLON.MeshBuilder.CreateGround('ground', {width: 100, height: 100, subdivisions: 1}, this.world.game.scene);
+        this.ground = BABYLON.MeshBuilder.CreateGround('ground', {width: this.maxMapSize, height: this.maxMapSize, subdivisions: 1}, this.world.game.scene);
         this.ground.isPickable = true;
         this.ground.isVisible = false;
 
