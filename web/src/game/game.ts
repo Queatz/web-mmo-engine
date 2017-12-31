@@ -27,6 +27,7 @@ export class Game {
 
     private pointerDown: boolean;
     private _keysDown: Set<string> = new Set();
+    private _keysPressed: Set<string> = new Set();
     private interactionPrevented: boolean;
     
     constructor(canvasElement : HTMLCanvasElement) {
@@ -54,6 +55,7 @@ export class Game {
         this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
         
         this.text = new GUI.TextBlock();
+        this.text.isVisible = false;
         this.text.text = 'Hello World';
         this.text.color = 'cyan';
         this.text.fontSize = 48;
@@ -96,6 +98,7 @@ export class Game {
             switch (evt.type) {
                 case BABYLON.KeyboardEventTypes.KEYDOWN:
                     this._keysDown.add(evt.event.code);
+                    this._keysPressed.add(evt.event.code);
                     break;
                 case BABYLON.KeyboardEventTypes.KEYUP:
                     this._keysDown.delete(evt.event.code);
@@ -109,6 +112,7 @@ export class Game {
         this.map.update();
         this.camera.position.x = this.player.sprite.position.x;
         this.camera.position.z = this.player.sprite.position.z;
+        this._keysPressed.clear();
     }
 
     public preventInteraction() {
@@ -117,6 +121,10 @@ export class Game {
 
     public key(key: string) {
         return this._keysDown.has(key);
+    }
+
+    public keyPressed(key: string) {
+        return this._keysPressed.has(key);
     }
 
     resize(): void {

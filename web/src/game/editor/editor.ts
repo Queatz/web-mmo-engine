@@ -16,7 +16,7 @@ export class Editor {
     private selectObjectIcon: GUI.Image;
     private tilesImage: GUI.Image;
     private dialogVisible = false;
-    private enabled = true;
+    private enabled = false;
     private imageXTileCount = 8;
     private currentTileIndex = 0;
     private currentTileSet = Config.tileSets[0];
@@ -57,8 +57,6 @@ export class Editor {
 
         this.toolbar.addControl(this.selectTileIcon);
         this.toolbar.addControl(this.selectObjectIcon);
-
-        this.setEnabled(true);
     }
 
     public setEnabled(enabled: boolean) {
@@ -68,15 +66,31 @@ export class Editor {
             this.game.ui.addControl(this.toolbar);
         } else {
             this.game.ui.removeControl(this.toolbar);
+
+            if (this.dialogVisible) {
+                this.game.ui.removeControl(this.dialog);
+            }
         }
     }
 
     public update() {
+        if (this.game.keyPressed('KeyE')) {
+            this.setEnabled(!this.enabled);
+        }
+
+        if (!this.enabled) {
+            return;
+        }
+
         this.toolbar.top = (this.game.ui.getSize().height / 2) - (this.selectTileIcon.heightInPixels / 2);
         this.toolbar.left = 0;
     }
 
-    public draw(x: number, y: number) {
+    public draw(x: number, y: number): boolean {
+        if (!this.enabled) {
+            return false;
+        }
+
         switch (this.editorPenMode) {
             case 'tile':
                 this.game.map.draw(x, y, this.currentTileSet, this.currentTileIndex);
@@ -89,9 +103,15 @@ export class Editor {
                 this.game.map.add(obj);
                 break;
         }
+
+        return true;
     }
 
     public use(tile: MapTile) {
+        if (!this.enabled) {
+            return;
+        }
+
         if (tile.index < 0) {
             return;
         }
