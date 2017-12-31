@@ -2,6 +2,9 @@ import * as BABYLON from 'babylonjs';
 import { BaseObject } from './baseobject';
 import { World } from '../world/world';
 
+/**
+ * The main player object.
+ */
 export class PlayerObject extends BaseObject {
 
     private speed: number = 0.05;

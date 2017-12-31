@@ -2,6 +2,9 @@ import * as BABYLON from 'babylonjs';
 import { BaseObject } from './baseobject';
 import { World } from '../world/world';
 
+/**
+ * Butterfly object.
+ */
 export class ButterflyObject extends BaseObject {
 
     private velocity: BABYLON.Vector3;

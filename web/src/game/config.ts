@@ -1,3 +1,7 @@
+
+/**
+ * Game static definitions.
+ */
 export default class Config {
     public static tileSets = [
         '/assets/grassy_tiles.png',

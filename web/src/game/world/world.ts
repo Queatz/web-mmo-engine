@@ -2,6 +2,15 @@ import { MapObject } from "../obj/map";
 import { PlayerObject } from "../obj/player";
 import { Game } from "../game";
 
+/**
+ * The world object.
+ * 
+ * Holds references to the current player and map.
+ * 
+ * Proxies server messages to the right objects.
+ * 
+ * Sends messages from the player to the server.
+ */
 export class World {
 
     private _map: MapObject;
@@ -23,5 +32,13 @@ export class World {
     
     public getPlayer(): PlayerObject {
         return this._player;
+    }
+
+    public send(evt: any) {
+
+    }
+
+    public got(evt: any) {
+
     }
 }

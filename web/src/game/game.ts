@@ -6,24 +6,56 @@ import { PlayerObject } from './obj/player';
 import { Editor } from './editor/editor';
 import { World } from './world/world';
 
+/**
+ * The base game.
+ * 
+ * Class structure is like:
+ * Game -> World -> Map -> Object
+ */
 export class Game {
 
+    /**
+     * Internal types
+     */
     private _canvas: HTMLCanvasElement;
     private _engine: BABYLON.Engine;
-    private _light: BABYLON.Light;
 
+    /**
+     * The default global game zoom level.
+     */
     private zoom = 4;
 
+    /**
+     * The game world.
+     */
     public world: World;
     
+    /**
+     * Main game singletons.
+     */
     public camera: BABYLON.FreeCamera;
     public scene: BABYLON.Scene;
     public text: GUI.TextBlock;
+
+    /**
+     * The game editor.
+     */
     public editor: Editor;
+
+    /**
+     * The main UI layer.
+     */
     public ui: GUI.AdvancedDynamicTexture;
+
+    /**
+     * Sprite textures.
+     */
     public sprites: BABYLON.SpriteManager;
     public sprites2: BABYLON.SpriteManager;
 
+    /**
+     * Event handing.
+     */
     private pointerDown: boolean;
     private _keysDown: Set<string> = new Set();
     private _keysPressed: Set<string> = new Set();
@@ -34,6 +66,9 @@ export class Game {
         this._engine = new BABYLON.Engine(this._canvas, true);
     }
 
+    /**
+     * Called on init.
+     */
     createScene() : void {
         this.scene = new BABYLON.Scene(this._engine);
         this.scene.ambientColor = new BABYLON.Color3(1, 1, 1);
@@ -103,43 +138,10 @@ export class Game {
             }
         });
     }
-
-    public preventInteraction() {
-        this.interactionPrevented = true;
-    }
-
-    public key(key: string) {
-        return this._keysDown.has(key);
-    }
-
-    public keyPressed(key: string) {
-        return this._keysPressed.has(key);
-    }
     
-    private update() {
-        this.editor.update();
-        this.world.update();
-        this.camera.position.x = this.world.getPlayer().sprite.position.x;
-        this.camera.position.z = this.world.getPlayer().sprite.position.z;
-        this._keysPressed.clear();
-    }
-
-    private resize(): void {
-        let aspect = this._engine.getAspectRatio(this.camera, true);
-
-        if (aspect > 1) {
-            this.camera.orthoTop = this.zoom / aspect;
-            this.camera.orthoBottom = -this.zoom / aspect;
-            this.camera.orthoLeft = -this.zoom;
-            this.camera.orthoRight = this.zoom;
-        } else {
-            this.camera.orthoTop = this.zoom;
-            this.camera.orthoBottom = -this.zoom;
-            this.camera.orthoLeft = -this.zoom * aspect;
-            this.camera.orthoRight = this.zoom * aspect;
-        }
-    }
-
+    /**
+     * Called on init.
+     */
     public doRender() : void {
         this.resize();
 
@@ -155,5 +157,56 @@ export class Game {
             this._engine.resize();
             this.resize();
         });
+    }
+
+    /**
+     * Prevent the game from handing mouse input this frame.
+     */
+    public preventInteraction() {
+        this.interactionPrevented = true;
+    }
+
+    /**
+     * Check if a key is currently held down.
+     */
+    public key(key: string) {
+        return this._keysDown.has(key);
+    }
+
+    /**
+     * Check if a key was pressed this frame.
+     */
+    public keyPressed(key: string) {
+        return this._keysPressed.has(key);
+    }
+    
+    /**
+     * Update the game.  Called once per frame.
+     */
+    private update() {
+        this.editor.update();
+        this.world.update();
+        this.camera.position.x = this.world.getPlayer().sprite.position.x;
+        this.camera.position.z = this.world.getPlayer().sprite.position.z;
+        this._keysPressed.clear();
+    }
+
+    /**
+     * Called when the game viewport is externally resized.
+     */
+    private resize(): void {
+        let aspect = this._engine.getAspectRatio(this.camera, true);
+
+        if (aspect > 1) {
+            this.camera.orthoTop = this.zoom / aspect;
+            this.camera.orthoBottom = -this.zoom / aspect;
+            this.camera.orthoLeft = -this.zoom;
+            this.camera.orthoRight = this.zoom;
+        } else {
+            this.camera.orthoTop = this.zoom;
+            this.camera.orthoBottom = -this.zoom;
+            this.camera.orthoLeft = -this.zoom * aspect;
+            this.camera.orthoRight = this.zoom * aspect;
+        }
     }
 }

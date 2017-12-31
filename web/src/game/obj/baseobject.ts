@@ -1,6 +1,9 @@
 import * as BABYLON from 'babylonjs';
 import { World } from '../world/world';
 
+/**
+ * The base type for map objects.  Extend this class.
+ */
 export class BaseObject {
 
     public previousPos: BABYLON.Vector3;

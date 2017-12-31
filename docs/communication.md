@@ -1,4 +1,29 @@
 
+# Initial Connect Flow
+
+
+<ws connect>
+
+{
+    me: '<tok>'
+}
+
+{
+    you: 'id',
+    world: {
+        map: {
+            name,
+            tiles: {
+                '0:5': []
+            }
+            objects
+        }
+    }
+}
+
+<server sub to map>
+
+
 # Game
 
 List of events

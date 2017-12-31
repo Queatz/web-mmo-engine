@@ -8,6 +8,11 @@ import { BaseObject } from '../obj/baseobject';
 import { PlayerObject } from '../obj/player';
 import Config from '../config';
 
+/**
+ * Game Editor
+ * 
+ * Handles all level building activities.
+ */
 export class Editor {
     
     private dialog: GUI.Rectangle;
@@ -59,6 +64,9 @@ export class Editor {
         this.toolbar.addControl(this.selectObjectIcon);
     }
 
+    /**
+     * Enable the game editor.
+     */
     public setEnabled(enabled: boolean) {
         this.enabled = enabled;
 
@@ -73,6 +81,9 @@ export class Editor {
         }
     }
 
+    /**
+     * Run the editor updates. Call once per frame.
+     */
     public update() {
         if (this.game.keyPressed('KeyE')) {
             this.setEnabled(!this.enabled);
@@ -86,6 +97,9 @@ export class Editor {
         this.toolbar.left = 0;
     }
 
+    /**
+     * Handles mouse down events.
+     */
     public draw(x: number, y: number): boolean {
         if (!this.enabled) {
             return false;
@@ -107,6 +121,9 @@ export class Editor {
         return true;
     }
 
+    /**
+     * Set the tile to use from an external source.
+     */
     public use(tile: MapTile) {
         if (!this.enabled) {
             return;
@@ -121,6 +138,9 @@ export class Editor {
         this.currentTileIndex = tile.index;
     }
 
+    /**
+     * Shows the editor dialog. Also call setDialogContent() after this.
+     */
     private showDialog(show: boolean = true) {
         if (show && !this.dialog) {
             this.dialog = new GUI.Rectangle();
@@ -144,6 +164,13 @@ export class Editor {
         }
     }
 
+    /**
+     * Set the contents of the editor dialog.
+     * 
+     * Possible values:
+     *      'tile'
+     *      'obj'
+     */
     private setDialogContent(content: string) {
         this.dialog.children.length = 0;
 
@@ -196,6 +223,9 @@ export class Editor {
         }
     }
 
+    /**
+     * Set the tile set by image name.
+     */
     private setTileSet(image: string) {
         this.currentTileSet = image;
         
@@ -217,10 +247,16 @@ export class Editor {
         });
     }
 
+    /**
+     * Set the tile set by index. See Config.tileSets.
+     */
     private setTileSetIndex(index: number) {
         this.setTileSet(Config.tileSets[index % Config.tileSets.length]);
     }
 
+    /**
+     * Get the tile at under a map position.
+     */
     private getTileIndex(pos: BABYLON.Vector2): number {
         let x = Math.floor(pos.x / this.dialog.widthInPixels * this.imageXTileCount);
         let y = Math.floor((this.dialog.heightInPixels - pos.y) / this.dialog.heightInPixels * this.imageXTileCount);
