@@ -3,6 +3,8 @@ import { Game } from '../game';
 import { BaseObject } from './baseobject';
 
 export class PlayerObject extends BaseObject {
+
+    private speed: number = 0.05;
     
     constructor(game: Game) {
         super(game);
@@ -14,19 +16,19 @@ export class PlayerObject extends BaseObject {
 
     public update() {
         if (this.game.key('ArrowDown')) {
-            this.sprite.position.z -= .125;
+            this.sprite.position.z -= this.speed;
         }
 
         if (this.game.key('ArrowUp')) {
-            this.sprite.position.z += .125;
+            this.sprite.position.z += this.speed;
         }
 
         if (this.game.key('ArrowLeft')) {
-            this.sprite.position.x -= .125;
+            this.sprite.position.x -= this.speed;
         }
 
         if (this.game.key('ArrowRight')) {
-            this.sprite.position.x += .125;
+            this.sprite.position.x += this.speed;
         }
     }
 }

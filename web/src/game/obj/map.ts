@@ -28,6 +28,10 @@ export class MapObject {
             20, 24, 25, 26, 27, 33, 35, 36, 40, 41, 42, 43, 44, 46, 48, 49, 50, 51, 56, 57, 58, 59
         ]));
 
+        this.tileSetsNoCollision.set(Config.tileSets[1], new Set<number>([
+            
+        ]));
+
         this.ground = BABYLON.MeshBuilder.CreateGround('ground', {width: 100, height: 100, subdivisions: 1}, this.game.scene);
         this.ground.isPickable = true;
         this.ground.isVisible = false;
