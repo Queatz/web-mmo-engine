@@ -112,6 +112,7 @@ public class World {
 
     public void leave(Player player) {
         objs.remove(player.getId());
+        player.setMap(null);
     }
 
     public void send(Player player, Object event) {

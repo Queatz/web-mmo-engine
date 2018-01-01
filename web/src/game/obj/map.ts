@@ -146,9 +146,11 @@ export class MapObject {
      * Remove an object to the map.
      */
     public remove(id: string) {
-        if (id in this.objsById) {
-            this.objs.delete(this.objsById.get(id));
+        if (this.objsById.has(id)) {
+            let obj = this.objsById.get(id);
+            this.objs.delete(obj);
             this.objsById.delete(id);
+            obj.dispose();
         }
     }
 
@@ -182,6 +184,8 @@ export class MapObject {
         for (let k in this.meshes) {
             this.meshes.get(k).dispose();
         }
+
+        this.objs.forEach(obj => obj.dispose());
 
         this.multimat.dispose();
     }
