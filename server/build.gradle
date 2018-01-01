@@ -10,3 +10,12 @@ dependencies {
 
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
+
+task deploy(type: Exec) {
+    workingDir './'
+    commandLine './deploy.sh'
+}
+
+task buildAndDeploy(type: GradleBuild) {
+    tasks = [ ':server:war', ':server:deploy' ]
+}
