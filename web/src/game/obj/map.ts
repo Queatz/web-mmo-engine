@@ -126,8 +126,7 @@ export class MapObject {
         }
 
         if (event.pos) {
-            (obj as BaseObject).sprite.position.x = event.pos[0];
-            (obj as BaseObject).sprite.position.z = event.pos[1];
+            (obj as BaseObject).moveTo(event.pos[0], event.pos[1]);
         }
 
         if (event.custom) {
@@ -167,7 +166,10 @@ export class MapObject {
         this.objs.forEach(obj => {
             obj.previousPos.copyFrom(obj.sprite.position);
             obj.update();
+
+            if (obj.collides) {
             this.collide(obj);
+            }
         });
     }
     
@@ -321,8 +323,8 @@ export class MapObject {
      */
     private posToTile(pos: BABYLON.Vector2): BABYLON.Vector2 {
         return new BABYLON.Vector2(
-            Math.floor(pos.x / this.tileSize) + 5,
-            Math.floor(pos.y / this.tileSize) + 5
+            Math.floor(pos.x / this.tileSize),
+            Math.floor(pos.y / this.tileSize)
         );
     }
 
@@ -441,8 +443,8 @@ export class MapObject {
 
         let mesh = this.createMapSegment();
 
-        mesh.position.x = x * this.mapSize * this.tileSize;
-        mesh.position.z = y * this.mapSize * this.tileSize;
+        mesh.position.x = x * this.mapSize * this.tileSize + this.mapSize * this.tileSize / 2;
+        mesh.position.z = y * this.mapSize * this.tileSize + this.mapSize * this.tileSize / 2;
 
         this.meshes[k] = mesh;
 

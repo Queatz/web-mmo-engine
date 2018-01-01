@@ -3,6 +3,7 @@ package camp.mage.server.game;
 import java.util.Random;
 
 import camp.mage.server.Manager;
+import camp.mage.server.Objects;
 import camp.mage.server.game.events.client.ActionClientEvent;
 import camp.mage.server.game.events.client.ChatClientEvent;
 import camp.mage.server.game.events.client.EditClientEvent;
@@ -17,6 +18,7 @@ import camp.mage.server.game.map.MapPos;
 import camp.mage.server.game.map.MapTile;
 import camp.mage.server.game.map.ObjectMap;
 import camp.mage.server.game.map.TilePos;
+import camp.mage.server.game.objs.BaseObject;
 import camp.mage.server.game.objs.MapObject;
 import camp.mage.server.game.objs.Player;
 
@@ -75,7 +77,16 @@ public class World {
 
         this.manager.events.register("edit", (Player player, EditClientEvent event) -> {
             if (event.addObj != null) {
+                BaseObject obj = Objects.createFromType(this, event.addObj.type);
+                obj.setId(rndId());
+                obj.getPos().x = event.addObj.pos.get(0);
+                obj.getPos().y = event.addObj.pos.get(1);
 
+                // Add to map
+                obj.setMap(player.getMap());
+
+                // Add to world
+                objs.add(obj);
             }
 
             if (event.removeObj != null) {
@@ -107,6 +118,10 @@ public class World {
         manager.send(player, event);
     }
 
+    public void update() {
+        this.objs.all().forEach(o -> o.update());
+    }
+
     private void welcome(Player player) {
         if (player.getId() == null) {
             player.setId(rndId());
@@ -122,6 +137,6 @@ public class World {
     }
 
     private String rndId() {
-        return String.valueOf(new Random().nextInt());
+        return Long.toHexString(new Random().nextLong());
     }
 }

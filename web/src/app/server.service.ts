@@ -29,6 +29,11 @@ export class ServerService {
     if (this.ws.readyState !== WebSocket.OPEN) {
       console.log('pending', events);
       this.pending.push(events);
+
+      if (this.ws.readyState === WebSocket.CLOSED) {
+        this.reconnect();
+      }
+
       return;
     }
 

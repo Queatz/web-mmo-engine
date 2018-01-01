@@ -23,6 +23,7 @@ public class Manager implements MultiplayerServer {
     private World world;
     public final Events events;
     private Gson gson;
+    private GameLoop loop;
 
     private Map<Player, Client> clientFromPlayer = new HashMap<>();
 
@@ -31,6 +32,8 @@ public class Manager implements MultiplayerServer {
         this.events = new Events();
         this.world = new World(this);
         this.gson = new Gson();
+        this.loop = new GameLoop(this.world);
+        this.loop.start();
     }
 
     public World getWorld() {

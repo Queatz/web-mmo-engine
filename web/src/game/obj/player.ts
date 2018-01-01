@@ -21,9 +21,12 @@ export class PlayerObject extends BaseObject {
     }
 
     public update() {
+        super.update();
         if (this.id !== this.world.getPlayer().id) {
             return;
         }
+
+        this.collides = true;
 
         if (this.world.game.key('ArrowDown')) {
             this.sprite.position.z -= this.speed;

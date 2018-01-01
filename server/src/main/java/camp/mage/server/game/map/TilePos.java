@@ -18,6 +18,11 @@ public class TilePos {
         this.y = pos.get(1);
     }
 
+    public TilePos(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     @Override
     public int hashCode() {
         return Integer.hashCode(x) +
@@ -26,9 +31,9 @@ public class TilePos {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof camp.mage.server.game.map.MapPos &&
-                ((camp.mage.server.game.map.MapPos) o).x == x &&
-                ((camp.mage.server.game.map.MapPos) o).y == y;
+        return o instanceof TilePos &&
+                ((TilePos) o).x == x &&
+                ((TilePos) o).y == y;
     }
 
     public List<Integer> asList() {

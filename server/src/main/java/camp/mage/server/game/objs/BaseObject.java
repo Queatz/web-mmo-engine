@@ -1,5 +1,7 @@
 package camp.mage.server.game.objs;
 
+import java.util.Date;
+
 import camp.mage.server.game.World;
 import camp.mage.server.game.map.MapPos;
 
@@ -13,10 +15,18 @@ public class BaseObject {
     protected World world;
     protected MapObject map;
     protected MapPos pos;
+    protected MapPos prevPos;
+    protected boolean collides;
+
+    protected MapPos lastSendPos;
+    protected Date lastSendPosTime;
 
     public BaseObject(World world) {
         this.world = world;
         pos = new MapPos();
+        prevPos = new MapPos();
+        lastSendPos = new MapPos();
+        lastSendPosTime = new Date();
     }
 
     public String getId() {
@@ -30,6 +40,10 @@ public class BaseObject {
 
     public String getType() {
         return getClass().getSimpleName();
+    }
+
+    public void update() {
+        prevPos.set(pos);
     }
 
     public World getWorld() {

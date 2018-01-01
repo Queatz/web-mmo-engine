@@ -17,15 +17,26 @@ export class ButterflyObject extends BaseObject {
         this.sprite = new BABYLON.Sprite('butterflySprite', this.world.game.sprites2);
         this.sprite.size = .5;
         this.sprite.position = new BABYLON.Vector3(0, 1, 0);
-        this.sprite.playAnimation(0, 1, true, 250, null);        
+        this.sprite.playAnimation(0, 1, true, 250, null);
+
+        if (!'client side move') {
+            this.collides = true;
+        }
+
+        this.targetMoveSpeed.x = .005;
+        this.targetMoveSpeed.z = .005;
     }
 
     public update() {
-        if (Math.random() < 0.025) {
-            this.velocity.x = .1 * (Math.random() - .5);
-            this.velocity.z = .1 * (Math.random() - .5);
-        }
+        super.update();
 
-        this.sprite.position.addInPlace(this.velocity);
+        if (!'client side move') {
+            if (Math.random() < 0.025) {
+                this.velocity.x = .1 * (Math.random() - .5);
+                this.velocity.z = .1 * (Math.random() - .5);
+            }
+
+            this.sprite.position.addInPlace(this.velocity);
+        }
     }
 }

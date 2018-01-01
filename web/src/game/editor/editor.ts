@@ -117,11 +117,14 @@ export class Editor {
 
                 break;
             case 'obj':
-                let obj = new this.currentObjClass(this.game.world);
                 let pos = this.game.world.getMap().getXY(x, y);
-                (obj as BaseObject).sprite.position.x = pos.x;
-                (obj as BaseObject).sprite.position.z = pos.y;
-                this.game.world.getMap().add(obj);
+
+                if (!'add objects locally') {
+                    let obj = new this.currentObjClass(this.game.world);
+                    (obj as BaseObject).sprite.position.x = pos.x;
+                    (obj as BaseObject).sprite.position.z = pos.y;
+                    this.game.world.getMap().add(obj);
+                }
 
                 let evt = new EditClientEvent();
                 let objDef = new ObjDef();
@@ -273,8 +276,8 @@ export class Editor {
      * Get the tile at under a map position.
      */
     private getTileIndex(pos: BABYLON.Vector2): number {
-        let x = Math.floor(pos.x / this.dialog.widthInPixels * this.imageXTileCount);
-        let y = Math.floor((this.dialog.heightInPixels - pos.y) / this.dialog.heightInPixels * this.imageXTileCount);
+        let x = Math.floor(pos.x / this.tilesImage.widthInPixels * this.imageXTileCount);
+        let y = Math.floor((this.tilesImage.heightInPixels - pos.y) / this.tilesImage.heightInPixels * this.imageXTileCount);
 
         return y * this.imageXTileCount + x;
     }

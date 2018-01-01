@@ -78,7 +78,7 @@ public class Events {
         JsonElement eventData = eventJson.get(1);
 
         if (!clientEvents.containsKey(eventAction)) {
-            return;
+            throw new RuntimeException("Cannot handle event action: " + eventAction);
         }
 
         if (!clientEventTypes.containsKey(eventAction)) {

@@ -3,6 +3,8 @@ package camp.mage.server.game.map;
 import java.util.ArrayList;
 import java.util.List;
 
+import camp.mage.server.game.objs.MapObject;
+
 /**
  * Created by jacob on 12/31/17.
  */
@@ -13,6 +15,11 @@ public class MapPos {
     public float y;
 
     public MapPos() {}
+
+    public MapPos(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
 
     public MapPos(List<Float> pos) {
         this.x = pos.get(0);
@@ -44,5 +51,16 @@ public class MapPos {
     public void set(MapPos pos) {
         this.x = pos.x;
         this.y = pos.y;
+    }
+
+    public MapPos add(MapPos other) {
+        return new MapPos(x + other.x, y + other.y);
+    }
+
+    public TilePos toTilePos() {
+        return new TilePos(
+                (int) Math.floor(x / MapObject.TILE_SIZE),
+                (int) Math.floor(y / MapObject.TILE_SIZE)
+        );
     }
 }
