@@ -6,12 +6,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import camp.mage.server.game.World;
-import camp.mage.server.game.objs.Player;
 
 /**
  * Created by jacob on 12/6/17.
@@ -24,8 +21,6 @@ public class Manager implements MultiplayerServer {
     public final Events events;
     private Gson gson;
     private GameLoop loop;
-
-    private Map<Player, Client> clientFromPlayer = new HashMap<>();
 
     public Manager(GameServer server) {
         this.server = server;
@@ -40,39 +35,33 @@ public class Manager implements MultiplayerServer {
         return world;
     }
 
-    public void broadcast(Object event, Player fromPlayer) {
+    public void broadcast(Object event, Client fromClient) {
         // XXX TODO Accumulate all events per frame and send to clients
         List<Object> allEvents = new ArrayList<>();
         allEvents.add(events.translateServerEvent(gson, event));
 
         server.broadcast(
-                fromPlayer != null ? clientFromPlayer.get(fromPlayer) : null,
+                fromClient != null ? fromClient : null,
                 gson.toJson(allEvents)
         );
     }
 
-    public void send(Player player, Object event) {
-        if (!clientFromPlayer.containsKey(player)) {
-            return;
-        }
-
+    public void send(Client client, Object event) {
         // XXX TODO Accumulate all events per frame and send to clients
         List<Object> allEvents = new ArrayList<>();
         allEvents.add(events.translateServerEvent(gson, event));
 
-        server.send(clientFromPlayer.get(player), gson.toJson(allEvents));
+        server.send(client, gson.toJson(allEvents));
     }
 
     @Override
     public void onPlayerJoin(Client client) {
-        clientFromPlayer.put(client.getPlayer(), client);
-        world.join(client.getPlayer());
+        world.connect(client);
     }
 
     @Override
     public void onPlayerLeave(Client client) {
-        world.leave(client.getPlayer());
-        clientFromPlayer.remove(client.getPlayer());
+        world.disconnect(client);
     }
 
     @Override
@@ -81,7 +70,7 @@ public class Manager implements MultiplayerServer {
             JsonArray allEvents = gson.fromJson(message, JsonArray.class);
 
             for (JsonElement event : allEvents) {
-                events.translateClientEvent(gson, client.getPlayer(), event.getAsJsonArray());
+                events.translateClientEvent(gson, client, event.getAsJsonArray());
             }
         } catch (JsonSyntaxException e) {
             e.printStackTrace();

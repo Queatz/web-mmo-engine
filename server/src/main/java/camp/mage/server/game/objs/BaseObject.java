@@ -61,7 +61,9 @@ public class BaseObject {
 
         this.map = map;
 
-        this.map.add(this);
+        if (this.map != null) {
+            this.map.add(this);
+        }
 
         return this;
     }

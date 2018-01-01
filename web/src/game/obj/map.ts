@@ -181,9 +181,7 @@ export class MapObject {
     public dispose() {
         this.ground.dispose();
 
-        for (let k in this.meshes) {
-            this.meshes.get(k).dispose();
-        }
+        this.meshes.forEach(mesh => mesh.dispose());
 
         this.objs.forEach(obj => obj.dispose());
 

@@ -1,5 +1,6 @@
 package camp.mage.server.game.objs;
 
+import camp.mage.server.Client;
 import camp.mage.server.game.World;
 
 /**
@@ -9,6 +10,7 @@ import camp.mage.server.game.World;
 public class Player extends BaseObject {
 
     private String name;
+    private Client client;
 
     public Player(World world) {
         super(world);
@@ -25,6 +27,15 @@ public class Player extends BaseObject {
 
     public Player setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public Player setClient(Client client) {
+        this.client = client;
         return this;
     }
 }

@@ -82,13 +82,17 @@ export class Game {
         this._engine = new BABYLON.Engine(this._canvas, true);
         this.events = new Events();
 
+        this.identify();
+    }
+
+    public identify() {
         let token: string = localStorage.getItem('token');
 
         if (!token) {
             token = this.rndStr();
             localStorage.setItem('token', token);
         }
-
+        
         let evt = new IdentifyClientEvent();
         evt.token = token;
         this.send(evt);
@@ -251,7 +255,15 @@ export class Game {
 
         // Send any events to server
         if (this._eventsQueue.length > 0) {
-            this.worldService.send(this._eventsQueue);
+            let success = this.worldService.send(this._eventsQueue);
+
+            if (!success) {
+                if (this.worldService.server.closed()) {
+                    this.worldService.server.reconnect();
+                    this.identify();
+                }
+            }
+
             this._eventsQueue = [];
         }
 

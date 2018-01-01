@@ -25,20 +25,22 @@ export class ServerService {
     this.state = 'connecting';
   }
 
-  public send(events: any) {
+  public send(events: any): boolean {
     if (this.ws.readyState !== WebSocket.OPEN) {
       console.log('pending', events);
       this.pending.push(events);
 
-      if (this.ws.readyState === WebSocket.CLOSED) {
-        this.reconnect();
-      }
-
-      return;
+      return false;
     }
 
     this.ws.send(JSON.stringify(events));
     console.log('send', events);
+    
+    return true;
+  }
+
+  public closed() {
+    return this.ws.readyState === WebSocket.CLOSED;
   }
 
   private onClose() {

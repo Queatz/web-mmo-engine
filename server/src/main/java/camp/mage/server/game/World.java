@@ -1,9 +1,13 @@
 package camp.mage.server.game;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
+import camp.mage.server.Client;
 import camp.mage.server.Manager;
 import camp.mage.server.Objects;
+import camp.mage.server.game.accounts.Accounts;
 import camp.mage.server.game.events.client.ActionClientEvent;
 import camp.mage.server.game.events.client.ChatClientEvent;
 import camp.mage.server.game.events.client.EditClientEvent;
@@ -31,51 +35,98 @@ public class World {
     private final Manager manager;
     private final ObjectMap objs;
     private final MapObject startingMap;
+    private final Accounts accounts;
+
+    private final Map<Client, Player> clients = new HashMap<>();
 
     public World(Manager manager) {
         this.manager = manager;
         objs = new ObjectMap();
+        accounts = new Accounts(this);
         startingMap = new MapObject(this);
 
-        this.manager.events.register("identify", (Player player, IdentifyClientEvent event) -> {
+        this.manager.events.register("identify", (Client client, IdentifyClientEvent event) -> {
             if (event.token != null) {
+                Player player = accounts.getPlayerFromToken(event.token);
+
+                if (player == null) {
+                    player = new Player(this);
+                    player.setId(rndId());
+
+                    accounts.setPlayerForToken(event.token, player);
+                } else {
+                    // Close other connections to this player
+                    if (player.getClient() != null) {
+                        player.getClient().close();
+                    }
+                }
+
+                // TODO Remember which map...
+                player.setMap(startingMap);
+                player.setClient(client);
+                clients.put(client, player);
+
                 welcome(player);
                 return;
             }
 
             if (event.username == null || event.password == null) {
-                welcome(player);
+                Player player = accounts.getPlayerFromLogin(event.username, event.password);
+
+                // TODO Remember which map...
+                player.setMap(startingMap);
+
+                player.setClient(client);
+
+                if (player != null) {
+                    welcome(player);
+                } else {
+                    manager.send(client, new BasicErrorServerEvent("Account not found"));
+                }
+
                 return;
             }
 
-            this.send(player, new BasicErrorServerEvent("Missing token, or username / password"));
+            this.manager.send(client, new BasicErrorServerEvent("Missing token, or username / password"));
         });
 
-        this.manager.events.register("register", (Player player, RegisterClientEvent event) -> {
+        this.manager.events.register("register", (Client client, RegisterClientEvent event) -> {
             // Set username/pass
         });
 
-        this.manager.events.register("editor", (Player player, EditorClientEvent event) -> {
+        this.manager.events.register("editor", (Client client, EditorClientEvent event) -> {
             // Send invisible objects
         });
 
-        this.manager.events.register("chat", (Player player, ChatClientEvent event) -> {
+        this.manager.events.register("chat", (Client client, ChatClientEvent event) -> {
             // Send chat to map or world
         });
 
-        this.manager.events.register("move", (Player player, MoveClientEvent event) -> {
+        this.manager.events.register("move", (Client client, MoveClientEvent event) -> {
+            Player player = clients.getOrDefault(client, null);
+
+            if (player == null) {
+                return;
+            }
+
             player.getMap().move(player, new MapPos(event.pos));
         });
 
-        this.manager.events.register("action", (Player player, ActionClientEvent event) -> {
+        this.manager.events.register("action", (Client client, ActionClientEvent event) -> {
 
         });
 
-        this.manager.events.register("inventory", (Player player, InventoryClientEvent event) -> {
+        this.manager.events.register("inventory", (Client client, InventoryClientEvent event) -> {
 
         });
 
-        this.manager.events.register("edit", (Player player, EditClientEvent event) -> {
+        this.manager.events.register("edit", (Client client, EditClientEvent event) -> {
+            Player player = clients.getOrDefault(client, null);
+
+            if (player == null) {
+                return;
+            }
+
             if (event.addObj != null) {
                 BaseObject obj = Objects.createFromType(this, event.addObj.type);
                 obj.setId(rndId());
@@ -106,33 +157,41 @@ public class World {
         });
     }
 
-    public void join(Player player) {
-        objs.add(player);
+    public void join(BaseObject obj) {
+        objs.add(obj);
     }
 
-    public void leave(Player player) {
-        objs.remove(player.getId());
-        player.setMap(null);
+    public void leave(BaseObject obj) {
+        objs.remove(obj.getId());
+        obj.setMap(null);
     }
 
     public void send(Player player, Object event) {
-        manager.send(player, event);
+        manager.send(player.getClient(), event);
     }
 
     public void update() {
         this.objs.all().forEach(o -> o.update());
     }
 
+    public void connect(Client client) {
+        // See "identify" event
+    }
+
+    public void disconnect(Client client) {
+        Player player = clients.getOrDefault(client, null);
+
+        if (player != null) {
+            leave(player);
+            player.setClient(null);
+            clients.remove(client);
+        }
+    }
+
     private void welcome(Player player) {
-        if (player.getId() == null) {
-            player.setId(rndId());
-        }
+        join(player);
 
-        if (player.getMap() == null) {
-            player.setMap(startingMap);
-        }
-
-        manager.send(player, new StateServerEvent()
+        manager.send(player.getClient(), new StateServerEvent()
                 .map(player.getMap())
                 .you(player));
     }

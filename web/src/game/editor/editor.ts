@@ -108,6 +108,12 @@ export class Editor {
 
         switch (this.editorPenMode) {
             case 'tile':
+                let tile = this.game.world.getMap().getTileAt(this.game.world.getMap().tileXY(x, y));
+
+                if (tile && tile.image === this.currentTileSet && tile.index === this.currentTileIndex) {
+                    break;
+                }
+
                 this.game.world.getMap().draw(x, y, this.currentTileSet, this.currentTileIndex);
 
                 let editEvent = new EditClientEvent();

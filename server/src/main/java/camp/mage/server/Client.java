@@ -10,8 +10,6 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import camp.mage.server.game.objs.Player;
-
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 @ServerEndpoint(value = "/ws", configurator = GameServer.class)
@@ -19,7 +17,6 @@ public class Client {
 
     private Session session;
     private GameServer server;
-    private Player player;
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig endpointConfig) {
@@ -29,7 +26,6 @@ public class Client {
 
         server = (GameServer) endpointConfig.getUserProperties().get("server");
 
-        player = new Player(server.getManager().getWorld());
         server.join(this);
     }
 
@@ -68,7 +64,11 @@ public class Client {
         return session;
     }
 
-    public Player getPlayer() {
-        return player;
+    public void close() {
+        try {
+            session.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

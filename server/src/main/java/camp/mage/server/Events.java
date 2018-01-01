@@ -23,7 +23,6 @@ import camp.mage.server.game.events.server.InventoryServerEvent;
 import camp.mage.server.game.events.server.MapServerEvent;
 import camp.mage.server.game.events.server.ObjServerEvent;
 import camp.mage.server.game.events.server.StateServerEvent;
-import camp.mage.server.game.objs.Player;
 
 /**
  * Created by jacob on 12/7/17.
@@ -69,7 +68,7 @@ public class Events {
         clientEvents.remove(action);
     }
 
-    public void translateClientEvent(Gson gson, Player player, JsonArray eventJson) {
+    public void translateClientEvent(Gson gson, Client client, JsonArray eventJson) {
         if (eventJson.size() < 2) {
             return;
         }
@@ -86,7 +85,7 @@ public class Events {
         }
 
         clientEvents.get(eventAction).event(
-                player,
+                client,
                 gson.fromJson(eventData, TypeToken.get(clientEventTypes.get(eventAction)).getType())
         );
     }
