@@ -25,15 +25,15 @@ export class ServerService {
     this.state = 'connecting';
   }
 
-  public send(message: any) {
+  public send(events: any) {
     if (this.ws.readyState !== WebSocket.OPEN) {
-      console.log('pending', message);
-      this.pending.push(message);
+      console.log('pending', events);
+      this.pending.push(events);
       return;
     }
 
-    this.ws.send(JSON.stringify(message));
-    console.log('send', message);
+    this.ws.send(JSON.stringify(events));
+    console.log('send', events);
   }
 
   private onClose() {
@@ -50,9 +50,9 @@ export class ServerService {
     }
   }
 
-  private onMessage(message: string) {
-    this.world.event(JSON.parse(message));
-    console.log('got', JSON.parse(message));
+  private onMessage(eventsStr: string) {
+    this.world.event(JSON.parse(eventsStr));
+    console.log('got', JSON.parse(eventsStr));
   }
 
 }

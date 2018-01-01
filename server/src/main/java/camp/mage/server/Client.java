@@ -10,7 +10,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import camp.mage.server.game.models.Player;
+import camp.mage.server.game.objs.Player;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
@@ -26,9 +26,10 @@ public class Client {
         session.setMaxIdleTimeout(MINUTES.toMillis(10));
 
         this.session = session;
-        this.player = new Player();
 
         server = (GameServer) endpointConfig.getUserProperties().get("server");
+
+        player = new Player(server.getManager().getWorld());
         server.join(this);
     }
 
@@ -57,6 +58,10 @@ public class Client {
     @OnError
     public void onError(Throwable t) throws Throwable {
         t.printStackTrace();
+    }
+
+    public GameServer getServer() {
+        return server;
     }
 
     public Session getSession() {

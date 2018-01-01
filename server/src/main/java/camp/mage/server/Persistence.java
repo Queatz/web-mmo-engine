@@ -11,9 +11,9 @@ import com.arangodb.ArangoDatabase;
 
 public class Persistence {
 
-    private static final String DB_USER = "webgame";
-    private static final String DB_PASS = "webgame";
-    private static final String DB_COLLECTION = "webgame";
+    private static final String DB_USER = "slime";
+    private static final String DB_PASS = "slime";
+    private static final String DB_COLLECTION = "slime";
 
     private static ArangoDatabase __arangoDatabase;
 

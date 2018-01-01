@@ -6,6 +6,7 @@ import { World } from '../world/world';
  */
 export class BaseObject {
 
+    public id: string;
     public previousPos: BABYLON.Vector3;
     public sprite: BABYLON.Sprite;
 
@@ -13,7 +14,26 @@ export class BaseObject {
         this.previousPos = new BABYLON.Vector3(0, 1, 0);
     }
 
+    /**
+     * Override to provide object update behavior.
+     */
     public update() {
         
+    }
+
+    /**
+     * Override to provide custom event handling.
+     */
+    public event(event: any) {
+
+    }
+
+    /**
+     * Remove the object.
+     */
+    public dispose() {
+        if (this.sprite) {
+            this.sprite.dispose();
+        }
     }
 }

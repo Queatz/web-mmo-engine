@@ -7,6 +7,7 @@ import { ButterflyObject } from '../obj/butterfly';
 import { BaseObject } from '../obj/baseobject';
 import { PlayerObject } from '../obj/player';
 import Config from '../config';
+import { MapEvent, ObjDef, EditClientEvent } from '../events/events';
 
 /**
  * Game Editor
@@ -108,6 +109,12 @@ export class Editor {
         switch (this.editorPenMode) {
             case 'tile':
                 this.game.world.getMap().draw(x, y, this.currentTileSet, this.currentTileIndex);
+
+                let editEvent = new EditClientEvent();
+                let xy = this.game.world.getMap().tileXY(x, y);
+                editEvent.tile = [xy.x, xy.y, Config.tileSets.indexOf(this.currentTileSet), this.currentTileIndex];
+                this.game.send(editEvent);
+
                 break;
             case 'obj':
                 let obj = new this.currentObjClass(this.game.world);
@@ -115,6 +122,14 @@ export class Editor {
                 (obj as BaseObject).sprite.position.x = pos.x;
                 (obj as BaseObject).sprite.position.z = pos.y;
                 this.game.world.getMap().add(obj);
+
+                let evt = new EditClientEvent();
+                let objDef = new ObjDef();
+                objDef.pos = [pos.x, pos.y];
+                objDef.type = Config.objTypesInverse.get(this.currentObjClass);
+                evt.addObj = objDef;
+                this.game.send(evt);
+                
                 break;
         }
 

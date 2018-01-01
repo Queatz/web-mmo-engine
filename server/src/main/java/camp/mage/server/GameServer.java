@@ -76,4 +76,7 @@ public class GameServer extends ServerEndpointConfig.Configurator {
         conf.getUserProperties().put("server", this);
     }
 
+    public Manager getManager() {
+        return manager;
+    }
 }

@@ -4,8 +4,11 @@ import * as GUI from 'babylonjs-gui';
 import { MapObject } from './obj/map';
 import { PlayerObject } from './obj/player';
 import { Editor } from './editor/editor';
+import { Events } from './events';
 import { World } from './world/world';
 import { WorldService } from '../app/world.service';
+import Config from './config';
+import { IdentifyClientEvent } from './events/events';
 
 /**
  * The base game.
@@ -30,6 +33,16 @@ export class Game {
      * The game world.
      */
     public world: World;
+
+    /**
+     * Events to be sent this frame. Can be multiple.
+     */
+    private _eventsQueue = [];
+
+    /**
+     * Event handing.
+     */
+    public events: Events;
     
     /**
      * Main game singletons.
@@ -63,8 +76,28 @@ export class Game {
     private interactionPrevented: boolean;
     
     constructor(canvasElement : HTMLCanvasElement, private worldService: WorldService) {
+        Config.init();
+        
         this._canvas = canvasElement;
         this._engine = new BABYLON.Engine(this._canvas, true);
+        this.events = new Events();
+
+        let token: string = localStorage.getItem('token');
+
+        if (!token) {
+            token = this.rndStr();
+            localStorage.setItem('token', token);
+        }
+
+        let evt = new IdentifyClientEvent();
+        evt.token = token;
+        this.send(evt);
+    }
+
+    private rndStr() {
+        return Math.random().toString(36).substring(7) +
+            Math.random().toString(36).substring(7) + 
+            Math.random().toString(36).substring(7);
     }
 
     /**
@@ -78,12 +111,12 @@ export class Game {
         this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
-        this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 1, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.sprites2 = new BABYLON.SpriteManager('spriteManager', '/assets/butterfly.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
         // UI + Text
         
-        this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI');
+        this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, this.scene);
         
         this.text = new GUI.TextBlock();
         this.text.isVisible = false;
@@ -161,6 +194,33 @@ export class Game {
     }
 
     /**
+     * Handle game event.
+     */
+    public event(action: string, data: any) {
+        
+    }
+
+    /**
+     * Send an event to the server.
+     * 
+     * @param event The event to send
+     */
+    public send(event: any) {
+        this._eventsQueue.push([this.events.typeFromClass.get(event.constructor), event]);
+    }
+
+    /**
+     * Get events from the server.
+     * 
+     * @param events The events from the server
+     */
+    public handleEvents(events: any[]) {
+        events.forEach((event: any[]) => {
+            this.events.handleServerEvent(event[0], event[1]);
+        });
+    }
+
+    /**
      * Prevent the game from handing mouse input this frame.
      */
     public preventInteraction() {
@@ -185,10 +245,21 @@ export class Game {
      * Update the game.  Called once per frame.
      */
     private update() {
+        // Update world
         this.editor.update();
         this.world.update();
+
+        // Send any events to server
+        if (this._eventsQueue.length > 0) {
+            this.worldService.send(this._eventsQueue);
+            this._eventsQueue = [];
+        }
+
+        // Update camera position
         this.camera.position.x = this.world.getPlayer().sprite.position.x;
         this.camera.position.z = this.world.getPlayer().sprite.position.z;
+
+        // Post frame handling
         this._keysPressed.clear();
     }
 

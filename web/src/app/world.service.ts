@@ -15,10 +15,10 @@ export class WorldService {
   /**
    * Called on events from server.
    * 
-   * @param event 
+   * @param event The events from the server.
    */
-  public event(event: any) {
-    this.game.world.event(event);
+  public event(events: any[]) {
+    this.game.handleEvents(events);
   }
 
   /**
@@ -26,8 +26,8 @@ export class WorldService {
    * 
    * @param event The event to send.
    */
-  public send(event: any) {
-    this.server.send(event);
+  public send(events: any[]) {
+    this.server.send(events);
   }
 
 }

@@ -3,6 +3,7 @@ import Config from '../config';
 import { MapTile } from './maptile';
 import { BaseObject } from './baseobject';
 import { World } from '../world/world';
+import { MapEvent, ObjEvent } from '../events/events';
 
 /**
  * Map object.
@@ -54,6 +55,7 @@ export class MapObject {
      * The objects on this map.
      */
     private objs = new Set<BaseObject>();
+    private objsById = new Map<string, BaseObject>();
 
     constructor(private world: World) {
 
@@ -77,10 +79,85 @@ export class MapObject {
     }
 
     /**
+     * Handle event for map.
+     */
+    public mapEvent(event: MapEvent) {
+        if (event.add) {
+            event.add.forEach(o => {
+                if (!Config.objTypes.has(o.type)) {
+                    console.log('Unknown object type: ' + o.type);
+                    return;
+                }
+
+                let type = Config.objTypes.get(o.type);
+                let obj = new type(this.world);
+                (obj as BaseObject).id = o.id;
+                (obj as BaseObject).sprite.position.x = o.pos[0];
+                (obj as BaseObject).sprite.position.z = o.pos[1];
+
+                this.add(obj);
+            });
+        }
+
+        if (event.remove) {
+            event.remove.forEach(o => this.remove(o));
+        }
+
+        if (event.tiles) {
+            event.tiles.forEach(t => {
+                this.setTile(t[0], t[1], t[2], t[3]);
+            });
+        }
+
+        if (event.weather) {
+            alert('The weather is ' + event.weather);
+        }
+    }
+
+    /**
+     * Handle event for object.
+     */
+    public objEvent(event: ObjEvent) {
+        let obj = this.objsById.get(event.id);
+
+        if (!obj) {
+            console.log('Object not found on map: ' + event.id);
+            return;
+        }
+
+        if (event.pos) {
+            (obj as BaseObject).sprite.position.x = event.pos[0];
+            (obj as BaseObject).sprite.position.z = event.pos[1];
+        }
+
+        if (event.custom) {
+            obj.event(event.custom);
+        }
+    }
+
+    /**
      * Add an object to the map.
      */
     public add(obj: BaseObject) {
         this.objs.add(obj);
+        this.objsById.set(obj.id, obj);
+    }
+
+    /**
+     * Remove an object to the map.
+     */
+    public remove(id: string) {
+        if (id in this.objsById) {
+            this.objs.delete(this.objsById.get(id));
+            this.objsById.delete(id);
+        }
+    }
+
+    /**
+     * Get an object by id.
+     */
+    public getObjById(id: string) {
+        return this.objsById.get(id);
     }
 
     /**
@@ -94,6 +171,28 @@ export class MapObject {
         });
     }
     
+    /**
+     * Remove the map.
+     */
+    public dispose() {
+        this.ground.dispose();
+
+        for (let k in this.meshes) {
+            this.meshes.get(k).dispose();
+        }
+
+        this.multimat.dispose();
+    }
+
+    /**
+     * Set a tile.
+     */
+    public setTile(x: number, y: number, set: number, idx: number) {
+        this.tiles.set(this.tileKey(x, y), new MapTile(Config.tileSets[set], idx)); 
+        this.updateTileSet(x, y, Config.tileSets[set]);
+        this.updateTileUVs(x, y, idx);
+    }
+
     /**
      * Collide an object with map tiles.
      */
@@ -201,7 +300,10 @@ export class MapObject {
         return x + ':' + y;
     }
 
-    private tileXY(pointerX: number, pointerY: number): BABYLON.Vector2 {
+    /**
+     * Get map tile position from pointer position.
+     */
+    public tileXY(pointerX: number, pointerY: number): BABYLON.Vector2 {
         let pick = this.pickXY(pointerX, pointerY);
         
         if (!pick || !pick.pickedPoint) {
