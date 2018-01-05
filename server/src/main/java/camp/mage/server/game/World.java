@@ -141,7 +141,11 @@ public class World {
             }
 
             if (event.removeObj != null) {
+                BaseObject obj = objs.get(event.removeObj);
 
+                if (obj != null && obj.getMap() != null) {
+                    obj.getMap().remove(obj.getId());
+                }
             }
 
             if (event.moveObj != null) {

@@ -22,6 +22,7 @@ export class Editor {
     private selectTileIcon: GUI.Image;
     private selectObjectIcon: GUI.Image;
     private selectMoveObjectIcon: GUI.Image;
+    private selectDelObjectIcon: GUI.Image;
     private tilesImage: GUI.Image;
     private dialogVisible = false;
     private enabled = false;
@@ -73,9 +74,19 @@ export class Editor {
             this.game.preventInteraction();
         });
 
+        this.selectDelObjectIcon = new GUI.Image('editorSelectDelObjectIcon', '/assets/del_obj.png');
+        this.selectDelObjectIcon.width = '64px';
+        this.selectDelObjectIcon.height = '64px';
+        this.selectDelObjectIcon.left = '196px';
+        this.selectDelObjectIcon.onPointerDownObservable.add(() => {
+            this.editorPenMode = 'del';
+            this.game.preventInteraction();
+        });
+
         this.toolbar.addControl(this.selectTileIcon);
         this.toolbar.addControl(this.selectObjectIcon);
         this.toolbar.addControl(this.selectMoveObjectIcon);
+        this.toolbar.addControl(this.selectDelObjectIcon);
     }
 
     /**
@@ -172,6 +183,19 @@ export class Editor {
                 }
                 
                 break;
+            case 'del':
+                let delPos = this.game.world.getMap().getXY(x, y);
+
+                let obj = this.game.world.getMap().getFirstObjAtPos(delPos);
+
+                if (obj) {
+                    let evt = new EditClientEvent();
+                    evt.removeObj = obj.id;
+                    this.game.send(evt);
+                }
+
+                break;
+    
         }
 
         return true;
