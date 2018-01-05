@@ -1,5 +1,7 @@
 import { PlayerObject } from "./obj/player";
 import { ButterflyObject } from "./obj/butterfly";
+import { FlowerSpawnAreaObject } from "./obj/flowerSpawnArea";
+import { FlowerObject } from "./obj/flower";
 
 
 /**
@@ -17,7 +19,9 @@ export default class Config {
     static init() {
         [
             ['player', PlayerObject],
-            ['butterfly', ButterflyObject]
+            ['butterfly', ButterflyObject],
+            ['flower', FlowerObject],
+            ['flower-spawn-area', FlowerSpawnAreaObject]
         ]
         
         .forEach((t: any[]) => {

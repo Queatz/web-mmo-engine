@@ -6,6 +6,7 @@ import { MapTile } from '../obj/maptile';
 import { ButterflyObject } from '../obj/butterfly';
 import { BaseObject } from '../obj/baseobject';
 import { PlayerObject } from '../obj/player';
+import { FlowerSpawnAreaObject } from '../obj/flowerSpawnArea';
 import Config from '../config';
 import { MapEvent, ObjDef, EditClientEvent } from '../events/events';
 
@@ -20,6 +21,7 @@ export class Editor {
     private toolbar: GUI.Rectangle;
     private selectTileIcon: GUI.Image;
     private selectObjectIcon: GUI.Image;
+    private selectMoveObjectIcon: GUI.Image;
     private tilesImage: GUI.Image;
     private dialogVisible = false;
     private enabled = false;
@@ -27,7 +29,10 @@ export class Editor {
     private currentTileIndex = 0;
     private currentTileSet = Config.tileSets[0];
     private editorPenMode = 'tile';
+    private currentObjMove: BaseObject;
     private currentObjClass: any;
+
+    public onEditorEnabledObservable: BABYLON.Observable<boolean> = new BABYLON.Observable<boolean>();
 
     constructor(private game: Game) {
         this.toolbar = new GUI.Rectangle();
@@ -49,9 +54,7 @@ export class Editor {
             this.game.preventInteraction();
         });
 
-        this.toolbar.addControl(this.selectTileIcon);
-
-        this.selectObjectIcon = new GUI.Image('editorSelectTileIcon', '/assets/slime.png');
+        this.selectObjectIcon = new GUI.Image('editorSelectObjectIcon', '/assets/slime.png');
         this.selectObjectIcon.width = '64px';
         this.selectObjectIcon.height = '64px';
         this.selectObjectIcon.left = '64px';
@@ -61,8 +64,18 @@ export class Editor {
             this.game.preventInteraction();
         });
 
+        this.selectMoveObjectIcon = new GUI.Image('editorSelectMoveObjectIcon', '/assets/move_obj.png');
+        this.selectMoveObjectIcon.width = '64px';
+        this.selectMoveObjectIcon.height = '64px';
+        this.selectMoveObjectIcon.left = '128px';
+        this.selectMoveObjectIcon.onPointerDownObservable.add(() => {
+            this.editorPenMode = 'move';
+            this.game.preventInteraction();
+        });
+
         this.toolbar.addControl(this.selectTileIcon);
         this.toolbar.addControl(this.selectObjectIcon);
+        this.toolbar.addControl(this.selectMoveObjectIcon);
     }
 
     /**
@@ -70,6 +83,7 @@ export class Editor {
      */
     public setEnabled(enabled: boolean) {
         this.enabled = enabled;
+        this.onEditorEnabledObservable.notifyObservers(this.enabled);
 
         if (enabled) {
             this.game.ui.addControl(this.toolbar);
@@ -80,6 +94,13 @@ export class Editor {
                 this.game.ui.removeControl(this.dialog);
             }
         }
+    }
+
+    /**
+     * Determine if the editor is currently enabled.
+     */
+    public isEnabled() {
+        return this.enabled;
     }
 
     /**
@@ -125,19 +146,30 @@ export class Editor {
             case 'obj':
                 let pos = this.game.world.getMap().getXY(x, y);
 
-                if (!'add objects locally') {
-                    let obj = new this.currentObjClass(this.game.world);
-                    (obj as BaseObject).sprite.position.x = pos.x;
-                    (obj as BaseObject).sprite.position.z = pos.y;
-                    this.game.world.getMap().add(obj);
-                }
-
                 let evt = new EditClientEvent();
                 let objDef = new ObjDef();
                 objDef.pos = [pos.x, pos.y];
                 objDef.type = Config.objTypesInverse.get(this.currentObjClass);
                 evt.addObj = objDef;
                 this.game.send(evt);
+                
+                break;
+            case 'move':
+                let movePos = this.game.world.getMap().getXY(x, y);
+
+                this.currentObjMove = this.game.world.getMap().getFirstObjAtPos(movePos);
+
+                if (this.currentObjMove){
+                    this.currentObjMove.pos.x = movePos.x;
+                    this.currentObjMove.pos.z = movePos.y;
+
+                    let evt = new EditClientEvent();
+                    let objDef = new ObjDef();
+                    objDef.id = this.currentObjMove.id;
+                    objDef.pos = [movePos.x, movePos.y];
+                    evt.moveObj = objDef;
+                    this.game.send(evt);
+                }
                 
                 break;
         }
@@ -224,7 +256,8 @@ export class Editor {
 
                 let imgAndTypes: any[] = [
                     ['/assets/butterfly_idle.png', ButterflyObject],
-                    ['/assets/slime.png', PlayerObject]
+                    ['/assets/slime.png', PlayerObject],
+                    ['/assets/flower_spawn_area.png', FlowerSpawnAreaObject]
                 ];
 
                 for (let i = 0; i < imgAndTypes.length; i++) {

@@ -10,4 +10,9 @@ public class FlowerObject extends BaseObject {
     public FlowerObject(World world) {
         super(world);
     }
+
+    @Override
+    public String getType() {
+        return "flower";
+    }
 }

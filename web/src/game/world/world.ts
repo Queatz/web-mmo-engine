@@ -49,11 +49,10 @@ export class World {
                 }
 
                 let type = Config.objTypes.get(o.type);
-                let obj = new type(this);
-                (obj as BaseObject).id = o.id;
-                (obj as BaseObject).sprite.position.x = o.pos[0];
-                (obj as BaseObject).sprite.position.z = o.pos[1];
-
+                let obj: BaseObject = new type(this);
+                obj.id = o.id;
+                obj.pos.x = o.pos[0];
+                obj.pos.z = o.pos[1];
                 this._map.add(obj);
             });
 

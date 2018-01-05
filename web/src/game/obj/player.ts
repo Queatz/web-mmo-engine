@@ -14,10 +14,12 @@ export class PlayerObject extends BaseObject {
     
     constructor(world: World) {
         super(world);
+    }
 
+    public render() {
         this.sprite = new BABYLON.Sprite('playerSprite', this.world.game.sprites);
         this.sprite.size = .5;
-        this.sprite.position = new BABYLON.Vector3(0, 1, 0);
+        this.sprite.position = this.pos;
     }
 
     public update() {
@@ -29,26 +31,26 @@ export class PlayerObject extends BaseObject {
         this.collides = true;
 
         if (this.world.game.key('ArrowDown')) {
-            this.sprite.position.z -= this.speed;
+            this.pos.z -= this.speed;
         }
 
         if (this.world.game.key('ArrowUp')) {
-            this.sprite.position.z += this.speed;
+            this.pos.z += this.speed;
         }
 
         if (this.world.game.key('ArrowLeft')) {
-            this.sprite.position.x -= this.speed;
+            this.pos.x -= this.speed;
         }
 
         if (this.world.game.key('ArrowRight')) {
-            this.sprite.position.x += this.speed;
+            this.pos.x += this.speed;
         }
 
-        if (new Date().getTime() - this.lastPosSendTime.getTime() > 500 && !this.sprite.position.equals(this.lastPosSend)) {
-            this.lastPosSend.copyFrom(this.sprite.position);
+        if (new Date().getTime() - this.lastPosSendTime.getTime() > 500 && !this.pos.equals(this.lastPosSend)) {
+            this.lastPosSend.copyFrom(this.pos);
             this.lastPosSendTime.setTime(new Date().getTime());
             let evt = new MoveClientEvent();
-            evt.pos = [this.sprite.position.x, this.sprite.position.z];
+            evt.pos = [this.pos.x, this.pos.z];
             this.world.send(evt);
         }
     }

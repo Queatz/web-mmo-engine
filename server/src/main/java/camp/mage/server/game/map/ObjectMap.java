@@ -54,4 +54,8 @@ public class ObjectMap {
 
         return (Collection<T>) objsByType.get(clazz);
     }
+
+    public BaseObject get(String id) {
+        return objs.getOrDefault(id, null);
+    }
 }

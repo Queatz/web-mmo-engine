@@ -76,6 +76,18 @@ export class MapObject {
 
         // Map texture
         this.addMaterial('/assets/grassy_tiles.png');
+
+        this.world.game.editor.onEditorEnabledObservable.add(enabled => {
+            this.objs.forEach(obj => {
+                if (obj.editorOnly) {
+                    if (enabled) {
+                        obj.render();
+                    } else {
+                        obj.hide();
+                    }
+                }
+            });
+        });
     }
 
     /**
@@ -90,11 +102,10 @@ export class MapObject {
                 }
 
                 let type = Config.objTypes.get(o.type);
-                let obj = new type(this.world);
-                (obj as BaseObject).id = o.id;
-                (obj as BaseObject).sprite.position.x = o.pos[0];
-                (obj as BaseObject).sprite.position.z = o.pos[1];
-
+                let obj: BaseObject = new type(this.world);
+                obj.id = o.id;
+                obj.pos.x = o.pos[0];
+                obj.pos.z = o.pos[1];
                 this.add(obj);
             });
         }
@@ -140,6 +151,10 @@ export class MapObject {
     public add(obj: BaseObject) {
         this.objs.add(obj);
         this.objsById.set(obj.id, obj);
+
+        if (!obj.editorOnly || this.world.game.editor.isEnabled()) {
+            obj.render();
+        }
     }
 
     /**
@@ -166,11 +181,11 @@ export class MapObject {
      */
     public update() {
         this.objs.forEach(obj => {
-            obj.previousPos.copyFrom(obj.sprite.position);
+            obj.previousPos.copyFrom(obj.pos);
             obj.update();
 
-            if (obj.collides) {
-            this.collide(obj);
+            if (obj.collides && obj.sprite) {
+                this.collide(obj);
             }
         });
     }
@@ -202,8 +217,8 @@ export class MapObject {
      */
     public collide(obj: BaseObject) {
         let tile = this.getTileAt(this.posToTile(new BABYLON.Vector2(
-            obj.sprite.position.x,
-            obj.sprite.position.z
+            obj.pos.x,
+            obj.pos.z
         )));
         
         if (!this.isCollideTile(tile)) {
@@ -213,12 +228,12 @@ export class MapObject {
         // Check x
         
         tile = this.getTileAt(this.posToTile(new BABYLON.Vector2(
-            obj.sprite.position.x,
+            obj.pos.x,
             obj.previousPos.z
         )));
 
         if (!this.isCollideTile(tile)) {
-            obj.sprite.position.z = obj.previousPos.z;
+            obj.pos.z = obj.previousPos.z;
             return;
         }
 
@@ -226,15 +241,15 @@ export class MapObject {
         
         tile = this.getTileAt(this.posToTile(new BABYLON.Vector2(
             obj.previousPos.x,
-            obj.sprite.position.z
+            obj.pos.z
         )));
 
         if (!this.isCollideTile(tile)) {
-            obj.sprite.position.x = obj.previousPos.x;
+            obj.pos.x = obj.previousPos.x;
             return;
         }
 
-        obj.sprite.position.copyFrom(obj.previousPos);
+        obj.pos.copyFrom(obj.previousPos);
     }
 
     /**
@@ -266,6 +281,24 @@ export class MapObject {
         let pick = this.tileXY(pointerX, pointerY);
 
         return this.getTileAt(pick);
+    }
+
+    /**
+     * Get the first object at a map position.
+     */
+    public getFirstObjAtPos(pos: BABYLON.Vector2) {
+        var i = this.objs.values();
+
+        for(let r = i.next(); !r.done; r = i.next()) {
+            if (r.value.sprite) {
+                if (Math.abs(r.value.pos.x - pos.x) < r.value.sprite.size &&
+                    Math.abs(r.value.pos.z - pos.y) < r.value.sprite.size) {
+                        return r.value;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

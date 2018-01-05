@@ -11,12 +11,14 @@ export class ButterflyObject extends BaseObject {
     
     constructor(world: World) {
         super(world);
+    }
 
+    public render() {
         this.velocity = new BABYLON.Vector3(0, 0, 0);
-
-        this.sprite = new BABYLON.Sprite('butterflySprite', this.world.game.sprites2);
+        
+        this.sprite = new BABYLON.Sprite('butterflySprite', this.world.game.spritesNPCs);
         this.sprite.size = .5;
-        this.sprite.position = new BABYLON.Vector3(0, 1, 0);
+        this.sprite.position = this.pos;
         this.sprite.playAnimation(0, 1, true, 250, null);
 
         if (!'client side move') {
@@ -36,7 +38,7 @@ export class ButterflyObject extends BaseObject {
                 this.velocity.z = .1 * (Math.random() - .5);
             }
 
-            this.sprite.position.addInPlace(this.velocity);
+            this.pos.addInPlace(this.velocity);
         }
     }
 }

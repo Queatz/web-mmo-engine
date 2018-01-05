@@ -145,7 +145,11 @@ public class World {
             }
 
             if (event.moveObj != null) {
+                BaseObject obj = objs.get(event.moveObj.id);
 
+                if (obj != null) {
+                    obj.getPos().set(new MapPos(event.moveObj.pos.get(0), event.moveObj.pos.get(1)));
+                }
             }
 
             if (event.tile != null) {
@@ -167,6 +171,10 @@ public class World {
     }
 
     public void send(Player player, Object event) {
+        if (player.getClient() == null) {
+            return;
+        }
+
         manager.send(player.getClient(), event);
     }
 

@@ -65,7 +65,9 @@ export class Game {
      * Sprite textures.
      */
     public sprites: BABYLON.SpriteManager;
-    public sprites2: BABYLON.SpriteManager;
+    public spritesNPCs: BABYLON.SpriteManager;
+    public spritesItems: BABYLON.SpriteManager;
+    public spritesEditor: BABYLON.SpriteManager;
 
     /**
      * Event handing.
@@ -116,7 +118,9 @@ export class Game {
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
         this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.sprites2 = new BABYLON.SpriteManager('spriteManager', '/assets/butterfly.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesNPCs = new BABYLON.SpriteManager('spriteManager', '/assets/butterfly.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesItems = new BABYLON.SpriteManager('spriteManager', '/assets/items.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesEditor = new BABYLON.SpriteManager('spriteManager', '/assets/flower_spawn_area.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
         // UI + Text
         
@@ -130,9 +134,8 @@ export class Game {
         this.text.top = 300;
         this.ui.addControl(this.text);
 
-        this.world = new World(this);
-
         this.editor = new Editor(this);
+        this.world = new World(this);
 
         this.scene.onPointerMove = evt => {
             if (this.interactionPrevented) {
@@ -268,8 +271,8 @@ export class Game {
         }
 
         // Update camera position
-        this.camera.position.x = this.world.getPlayer().sprite.position.x;
-        this.camera.position.z = this.world.getPlayer().sprite.position.z;
+        this.camera.position.x = this.world.getPlayer().pos.x;
+        this.camera.position.z = this.world.getPlayer().pos.z;
 
         // Post frame handling
         this._keysPressed.clear();
@@ -279,6 +282,8 @@ export class Game {
      * Called when the game viewport is externally resized.
      */
     private resize(): void {
+        this.ui.getContext().imageSmoothingEnabled = false;
+
         let aspect = this._engine.getAspectRatio(this.camera, true);
 
         if (aspect > 1) {

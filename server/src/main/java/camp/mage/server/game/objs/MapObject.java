@@ -82,11 +82,13 @@ public class MapObject extends BaseObject {
     public void remove(String id) {
         BaseObject obj = objs.remove(id);
 
-        MapServerEvent mapEvent = new MapServerEvent().remove(obj);
+        if (obj != null) {
+            MapServerEvent mapEvent = new MapServerEvent().remove(obj);
 
-        objs.all(Player.class).forEach(
-                player -> world.send(player, mapEvent)
-        );
+            objs.all(Player.class).forEach(
+                    player -> world.send(player, mapEvent)
+            );
+        }
     }
 
     public ObjectMap getObjs() {
