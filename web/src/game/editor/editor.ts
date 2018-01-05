@@ -23,6 +23,7 @@ export class Editor {
     private selectObjectIcon: GUI.Image;
     private selectMoveObjectIcon: GUI.Image;
     private selectDelObjectIcon: GUI.Image;
+    private editorSelection: GUI.Image;
     private tilesImage: GUI.Image;
     private dialogVisible = false;
     private enabled = false;
@@ -71,6 +72,7 @@ export class Editor {
         this.selectMoveObjectIcon.left = '128px';
         this.selectMoveObjectIcon.onPointerDownObservable.add(() => {
             this.editorPenMode = 'move';
+            this.editorSelection.left = '128px';
             this.game.preventInteraction();
         });
 
@@ -80,6 +82,7 @@ export class Editor {
         this.selectDelObjectIcon.left = '196px';
         this.selectDelObjectIcon.onPointerDownObservable.add(() => {
             this.editorPenMode = 'del';
+            this.editorSelection.left = '196px';
             this.game.preventInteraction();
         });
 
@@ -87,6 +90,14 @@ export class Editor {
         this.toolbar.addControl(this.selectObjectIcon);
         this.toolbar.addControl(this.selectMoveObjectIcon);
         this.toolbar.addControl(this.selectDelObjectIcon);
+
+        this.editorSelection = new GUI.Image('editorSelectDelObjectIcon', '/assets/editor_selection.png');
+        this.editorSelection.width = '64px';
+        this.editorSelection.height = '64px';
+        this.editorSelection.left = '0px';
+        this.editorSelection.isHitTestVisible = false;
+
+        this.toolbar.addControl(this.editorSelection);
     }
 
     /**
@@ -292,6 +303,7 @@ export class Editor {
 
                     obj.onPointerDownObservable.add(() => {
                         this.editorPenMode = 'obj';
+                        this.editorSelection.left = '64px';
                         this.currentObjClass = imgAndTypes[i][1];
                         this.showDialog(false);
                         this.game.preventInteraction();
@@ -323,6 +335,7 @@ export class Editor {
         this.tilesImage.onPointerDownObservable.add(evt => {
             this.currentTileIndex = this.getTileIndex(this.tilesImage.getLocalCoordinates(evt));
             this.editorPenMode = 'tile';
+            this.editorSelection.left = '0px';
             this.showDialog(false);
             this.game.preventInteraction();
         });
