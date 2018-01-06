@@ -1,6 +1,9 @@
 package camp.mage.server.game;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -38,6 +41,7 @@ public class World {
     private final Accounts accounts;
 
     private final Map<Client, Player> clients = new HashMap<>();
+    private final List<Runnable> posts = new ArrayList<>();
 
     public World(Manager manager) {
         this.manager = manager;
@@ -183,7 +187,11 @@ public class World {
     }
 
     public void update() {
-        this.objs.all().forEach(o -> o.update());
+        this.objs.update();
+
+        while (!posts.isEmpty()) {
+            posts.remove(0).run();
+        }
     }
 
     public void connect(Client client) {
@@ -203,12 +211,23 @@ public class World {
     private void welcome(Player player) {
         join(player);
 
-        manager.send(player.getClient(), new StateServerEvent()
+        posts.add(() -> manager.send(player.getClient(), new StateServerEvent()
                 .map(player.getMap())
-                .you(player));
+                .you(player)));
     }
 
     private String rndId() {
         return Long.toHexString(new Random().nextLong());
+    }
+
+    public <T extends BaseObject> T create(Class<T> clazz) {
+        try {
+            T obj = clazz.getConstructor(World.class).newInstance(this);
+            obj.setId(rndId());
+            return obj;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

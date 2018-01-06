@@ -8,4 +8,7 @@
         <servlet-name>Server</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+    <listener>
+        <listener-class>camp.mage.server.ServletContext</listener-class>
+    </listener>
 </web-app>

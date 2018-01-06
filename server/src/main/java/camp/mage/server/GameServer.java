@@ -19,6 +19,7 @@ public class GameServer extends ServerEndpointConfig.Configurator {
 
     public GameServer() {
         this.manager = new Manager(this);
+        ServletContext.register(this);
     }
 
     public void send(Client client, String message) {
@@ -78,5 +79,9 @@ public class GameServer extends ServerEndpointConfig.Configurator {
 
     public Manager getManager() {
         return manager;
+    }
+
+    public void stop() {
+        manager.stop();
     }
 }

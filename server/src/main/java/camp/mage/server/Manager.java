@@ -8,8 +8,6 @@ import com.google.gson.JsonSyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import camp.mage.server.game.World;
-
 /**
  * Created by jacob on 12/6/17.
  */
@@ -17,7 +15,6 @@ import camp.mage.server.game.World;
 public class Manager implements MultiplayerServer {
 
     private GameServer server;
-    private World world;
     public final Events events;
     private Gson gson;
     private GameLoop loop;
@@ -25,14 +22,9 @@ public class Manager implements MultiplayerServer {
     public Manager(GameServer server) {
         this.server = server;
         this.events = new Events();
-        this.world = new World(this);
         this.gson = new Gson();
-        this.loop = new GameLoop(this.world);
+        this.loop = new GameLoop(this);
         this.loop.start();
-    }
-
-    public World getWorld() {
-        return world;
     }
 
     public void broadcast(Object event, Client fromClient) {
@@ -56,12 +48,12 @@ public class Manager implements MultiplayerServer {
 
     @Override
     public void onPlayerJoin(Client client) {
-        world.connect(client);
+        loop.connect(client);
     }
 
     @Override
     public void onPlayerLeave(Client client) {
-        world.disconnect(client);
+        loop.disconnect(client);
     }
 
     @Override
@@ -73,6 +65,16 @@ public class Manager implements MultiplayerServer {
                 events.translateClientEvent(gson, client, event.getAsJsonArray());
             }
         } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void stop() {
+        loop.die();
+
+        try {
+            loop.join();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

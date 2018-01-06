@@ -63,4 +63,8 @@ public class MapPos {
                 (int) Math.floor(y / MapObject.TILE_SIZE)
         );
     }
+
+    public float squareDistance(MapPos pos) {
+        return Math.abs(pos.x - x) + Math.abs(pos.y - y);
+    }
 }

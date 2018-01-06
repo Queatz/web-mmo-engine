@@ -15,4 +15,14 @@ public class FlowerObject extends BaseObject {
     public String getType() {
         return "flower";
     }
+
+    @Override
+    public void update() {
+        super.update();
+
+        for (Player player : map.getObjs().all(pos, Player.class, 0.25f)) {
+            world.leave(this);
+            break;
+        }
+    }
 }

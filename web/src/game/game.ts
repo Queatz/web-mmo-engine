@@ -271,9 +271,11 @@ export class Game {
         }
 
         // Update camera position
-        this.camera.position.x = this.world.getPlayer().pos.x;
-        this.camera.position.z = this.world.getPlayer().pos.z;
-
+        if (this.world.getPlayer()) {
+            this.camera.position.x = this.world.getPlayer().pos.x;
+            this.camera.position.z = this.world.getPlayer().pos.z;
+        }
+        
         // Post frame handling
         this._keysPressed.clear();
     }

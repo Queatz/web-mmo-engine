@@ -291,8 +291,8 @@ export class MapObject {
 
         for(let r = i.next(); !r.done; r = i.next()) {
             if (r.value.sprite) {
-                if (Math.abs(r.value.pos.x - pos.x) < r.value.sprite.size &&
-                    Math.abs(r.value.pos.z - pos.y) < r.value.sprite.size) {
+                if (Math.abs(r.value.pos.x - pos.x) < r.value.sprite.size / 2 &&
+                    Math.abs(r.value.pos.z - pos.y) < r.value.sprite.size / 2) {
                         return r.value;
                 }
             }

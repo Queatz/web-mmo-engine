@@ -1,6 +1,10 @@
 package camp.mage.server;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import camp.mage.server.game.World;
+
+import static camp.mage.server.Log.log;
 
 /**
  * Created by jacob on 1/1/18.
@@ -8,29 +12,44 @@ import camp.mage.server.game.World;
 
 public class GameLoop extends Thread {
 
-    private boolean dead;
+    private final AtomicBoolean dead = new AtomicBoolean(false);
+    private final Manager manager;
     private World world;
 
-    public GameLoop(World world) {
-        this.world = world;
+    public GameLoop(Manager manager) {
+        this.manager = manager;
     }
 
     @Override
     public void run() {
-        while (!dead) try {
-            this.world.update();
+        this.world = new World(manager);
 
-            try {
-                sleep(1000 / 15);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        log("Game loop start");
+        try {
+            while (!dead.get()) {
+                world.update();
+
+                try {
+                    sleep(1000 / 15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        log("Game loop end");
     }
 
     public void die() {
-        this.dead = true;
+        this.dead.set(true);
+    }
+
+    public void connect(Client client) {
+        world.connect(client);
+    }
+
+    public void disconnect(Client client) {
+        world.disconnect(client);
     }
 }
