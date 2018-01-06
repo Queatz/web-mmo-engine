@@ -8,7 +8,7 @@ import { MoveClientEvent } from '../events/events';
  */
 export class PlayerObject extends BaseObject {
 
-    private speed: number = 0.05;
+    private speed: number = 2;
     private lastPosSendTime: Date = new Date();
     private lastPosSend: BABYLON.Vector3 = new BABYLON.Vector3(0, 0, 0);
     
@@ -31,19 +31,19 @@ export class PlayerObject extends BaseObject {
         this.collides = true;
 
         if (this.world.game.key('ArrowDown')) {
-            this.pos.z -= this.speed;
+            this.pos.z -= this.speed * this.world.delta();
         }
 
         if (this.world.game.key('ArrowUp')) {
-            this.pos.z += this.speed;
+            this.pos.z += this.speed * this.world.delta();
         }
 
         if (this.world.game.key('ArrowLeft')) {
-            this.pos.x -= this.speed;
+            this.pos.x -= this.speed * this.world.delta();
         }
 
         if (this.world.game.key('ArrowRight')) {
-            this.pos.x += this.speed;
+            this.pos.x += this.speed * this.world.delta();
         }
 
         if (new Date().getTime() - this.lastPosSendTime.getTime() > 250 && !this.pos.equals(this.lastPosSend)) {
@@ -53,9 +53,5 @@ export class PlayerObject extends BaseObject {
             evt.pos = [this.pos.x, this.pos.z];
             this.world.send(evt);
         }
-    }
-
-    public eventFromClient(event: any) {
-
     }
 }

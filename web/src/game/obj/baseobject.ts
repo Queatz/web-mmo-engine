@@ -10,7 +10,7 @@ export class BaseObject {
     public pos: BABYLON.Vector3;
     public previousPos: BABYLON.Vector3;
     public targetPos: BABYLON.Vector3;
-    public targetMoveSpeed: BABYLON.Vector3 = new BABYLON.Vector3(0.05, 0, 0.05);
+    public targetMoveSpeed: BABYLON.Vector3 = new BABYLON.Vector3(2, 0, 2);
     public sprite: BABYLON.Sprite;
     public collides = false;
     public editorOnly = false;
@@ -47,12 +47,14 @@ export class BaseObject {
 
         if (this.targetPos) {
             let diff = this.targetPos.subtract(this.pos);
+
+            let pop = (this.targetMoveSpeed.x + this.targetMoveSpeed.y) * this.world.delta();
             
-            if (diff.length() < this.targetMoveSpeed.x + this.targetMoveSpeed.y) {
+            if (diff.length() < pop) {
                 this.pos.copyFrom(this.targetPos);
                 this.targetPos = null;
             } else {
-                let s = diff.length() > 1 ? 2 : 1;
+                let s = (diff.length() > 1 ? 2 : 1) * this.world.delta();
                 let vec = diff.normalize().multiply(this.targetMoveSpeed.multiplyByFloats(s, s, s));
                 this.pos.addInPlace(vec);
             }

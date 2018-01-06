@@ -22,8 +22,8 @@ export class ButterflyObject extends BaseObject {
         this.sprite.position = this.pos;
         this.sprite.playAnimation(0, 1, true, 250, null);
 
-        this.targetMoveSpeed.x = .05;
-        this.targetMoveSpeed.z = .05;
+        this.targetMoveSpeed.x = 3;
+        this.targetMoveSpeed.z = 3;
     }
 
     public update() {

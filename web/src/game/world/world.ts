@@ -19,6 +19,9 @@ export class World {
 
     private _map: MapObject;
     private _player: PlayerObject;
+    
+    private _delta: number;
+    private _lastFrameTime: number;
 
     constructor(public game: Game) {
 
@@ -80,7 +83,17 @@ export class World {
      * Update world.  Call once per frame.
      */
     public update() {
+        let t = new Date().getTime() / 1000;
+        this._delta = t - this._lastFrameTime;
+        this._lastFrameTime = t;
         this._map.update();
+    }
+
+    /**
+     * Get current delta since last update in sections.
+     */
+    public delta(): number {
+        return this._delta;
     }
     
     /**
