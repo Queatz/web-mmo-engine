@@ -30,8 +30,6 @@ import camp.mage.server.game.objs.BaseObject;
 import camp.mage.server.game.objs.MapObject;
 import camp.mage.server.game.objs.Player;
 
-import static camp.mage.server.Log.log;
-
 /**
  * Created by jacob on 12/6/17.
  */
@@ -56,7 +54,6 @@ public class World {
         objs.add(startingMap);
 
         this.manager.events.register("identify", (Client client, IdentifyClientEvent event) -> events.add(() -> {
-            log("identify");
             if (event.token != null) {
                 Player player = accounts.getPlayerFromToken(event.token);
 
@@ -84,16 +81,17 @@ public class World {
             if (event.username == null || event.password == null) {
                 Player player = accounts.getPlayerFromLogin(event.username, event.password);
 
+                if (player != null) {
+                    manager.send(client, new BasicErrorServerEvent("Account not found"));
+                    return;
+                }
+
                 // TODO Remember which map...
                 player.setMap(startingMap);
 
                 player.setClient(client);
 
-                if (player != null) {
-                    welcome(player);
-                } else {
-                    manager.send(client, new BasicErrorServerEvent("Account not found"));
-                }
+                welcome(player);
 
                 return;
             }
@@ -155,7 +153,7 @@ public class World {
                 BaseObject obj = objs.get(event.removeObj);
 
                 if (obj != null && obj.getMap() != null) {
-                    obj.getMap().remove(obj.getId());
+                    leave(obj);
                 }
             }
 

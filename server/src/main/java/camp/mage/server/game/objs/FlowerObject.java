@@ -20,7 +20,7 @@ public class FlowerObject extends BaseObject {
     public void update() {
         super.update();
 
-        for (Player player : map.getObjs().all(pos, Player.class, 0.25f)) {
+        for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
             world.leave(this);
             break;
         }

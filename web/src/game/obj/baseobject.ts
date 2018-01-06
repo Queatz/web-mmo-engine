@@ -52,7 +52,7 @@ export class BaseObject {
                 this.pos.copyFrom(this.targetPos);
                 this.targetPos = null;
             } else {
-                let s = diff.length() > 2 ? 4 : 1;
+                let s = diff.length() > 1 ? 2 : 1;
                 let vec = diff.normalize().multiply(this.targetMoveSpeed.multiplyByFloats(s, s, s));
                 this.pos.addInPlace(vec);
             }

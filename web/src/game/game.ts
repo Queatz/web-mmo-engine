@@ -60,6 +60,7 @@ export class Game {
      * The main UI layer.
      */
     public ui: GUI.AdvancedDynamicTexture;
+    public inventoryButton: GUI.Image;    
 
     /**
      * Sprite textures.
@@ -125,6 +126,14 @@ export class Game {
         // UI + Text
         
         this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, this.scene);
+
+        this.inventoryButton = new GUI.Image('inventoryButton', '/assets/inv_icon.png');
+        this.inventoryButton.width = '64px';
+        this.inventoryButton.height = '64px';
+        this.inventoryButton.onPointerDownObservable.add(() => {
+            this.preventInteraction();
+        });
+        this.ui.addControl(this.inventoryButton);
         
         this.text = new GUI.TextBlock();
         this.text.isVisible = false;
@@ -285,6 +294,9 @@ export class Game {
      */
     private resize(): void {
         this.ui.getContext().imageSmoothingEnabled = false;
+
+        this.inventoryButton.left = (this.ui.getSize().width / 2 - this.inventoryButton.widthInPixels / 1.5 + 'px';
+        this.inventoryButton.top = (this.ui.getSize().height / 2 - this.inventoryButton.heightInPixels / 1.5) + 'px';
 
         let aspect = this._engine.getAspectRatio(this.camera, true);
 

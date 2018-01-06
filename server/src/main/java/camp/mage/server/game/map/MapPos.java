@@ -67,4 +67,22 @@ public class MapPos {
     public float squareDistance(MapPos pos) {
         return Math.abs(pos.x - x) + Math.abs(pos.y - y);
     }
+
+    public MapPos nor() {
+        float s = Math.max(Math.abs(x), Math.abs(y));
+
+        if (s > 0) {
+            x /= s;
+            y /= s;
+        }
+
+        return this;
+    }
+
+    public MapPos mul(float s) {
+        x *= s;
+        y *= s;
+
+        return this;
+    }
 }

@@ -30,7 +30,7 @@ public class GameLoop extends Thread {
                 world.update();
 
                 try {
-                    sleep(1000 / 15);
+                    sleep(1000 / 60);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

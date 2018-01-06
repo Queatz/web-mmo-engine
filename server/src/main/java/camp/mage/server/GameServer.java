@@ -24,7 +24,9 @@ public class GameServer extends ServerEndpointConfig.Configurator {
 
     public void send(Client client, String message) {
         try {
-            client.getSession().getBasicRemote().sendText(message);
+            if (client.getSession().isOpen()) {
+                client.getSession().getBasicRemote().sendText(message);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

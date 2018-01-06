@@ -27,9 +27,32 @@ public class ButterflyObject extends BaseObject {
     public void update() {
         super.update();
 
-        if (Math.random() < 0.025) {
+        if (Math.random() < 0.005) {
             velocity.x = (float) (.1f * (Math.random() - .5f));
             velocity.y = (float) (.1f * (Math.random() - .5f));
+        }
+
+        for (Player player : map.getObjs().all(pos, Player.class, 3f)) {
+            if (player.pos.squareDistance(pos) < 1) {
+                world.leave(this);
+                return;
+            }
+
+            velocity.x = pos.x - player.pos.x;
+            velocity.y = pos.y - player.pos.y;
+            velocity.nor().mul(.1f);
+            break;
+        }
+
+        for (ButterflyObject butterfly : map.getObjs().all(pos, ButterflyObject.class, .5f)) {
+            if (butterfly == this) {
+                continue;
+            }
+
+            velocity.x = pos.x - butterfly.pos.x;
+            velocity.y = pos.y - butterfly.pos.y;
+            velocity.nor().mul(.1f);
+            break;
         }
 
         getMap().moveBy(this, velocity);

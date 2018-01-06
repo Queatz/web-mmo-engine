@@ -46,7 +46,7 @@ export class PlayerObject extends BaseObject {
             this.pos.x += this.speed;
         }
 
-        if (new Date().getTime() - this.lastPosSendTime.getTime() > 500 && !this.pos.equals(this.lastPosSend)) {
+        if (new Date().getTime() - this.lastPosSendTime.getTime() > 250 && !this.pos.equals(this.lastPosSend)) {
             this.lastPosSend.copyFrom(this.pos);
             this.lastPosSendTime.setTime(new Date().getTime());
             let evt = new MoveClientEvent();

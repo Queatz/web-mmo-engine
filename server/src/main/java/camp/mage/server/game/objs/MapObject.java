@@ -143,10 +143,10 @@ public class MapObject extends BaseObject {
             collide(obj);
         }
 
-        if (new Date().getTime() - obj.lastSendPosTime.getTime() > 500 && !obj.lastSendPos.equals(obj.pos)) {
+        if (new Date().getTime() - obj.lastSendPosTime.getTime() > 250 && !obj.lastSendPos.equals(obj.pos)) {
             obj.lastSendPosTime = new Date();
             obj.lastSendPos.set(obj.pos);
-            ObjServerEvent objServerEvent = new ObjServerEvent(obj.getId(), obj.getPos().asList());
+            ObjServerEvent objServerEvent = new ObjServerEvent(obj.getId(), obj.pos.asList());
 
             objs.all(Player.class).forEach(player -> {
                 if (player == obj) {
