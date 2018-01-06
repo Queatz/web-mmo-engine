@@ -32,10 +32,7 @@ public class Manager implements MultiplayerServer {
         List<Object> allEvents = new ArrayList<>();
         allEvents.add(events.translateServerEvent(gson, event));
 
-        server.broadcast(
-                fromClient != null ? fromClient : null,
-                gson.toJson(allEvents)
-        );
+        server.broadcast(fromClient, gson.toJson(allEvents));
     }
 
     public void send(Client client, Object event) {

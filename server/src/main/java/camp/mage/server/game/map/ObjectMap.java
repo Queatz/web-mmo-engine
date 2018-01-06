@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import camp.mage.server.game.objs.BaseObject;
 
+import static camp.mage.server.Log.log;
+
 
 /**
  * Created by jacob on 12/31/17.
@@ -28,6 +30,10 @@ public class ObjectMap {
 
     public void update() {
         all().forEach(o -> o.update());
+        flush();
+    }
+
+    public void flush() {
         added.forEach(this::addInternal);
         removed.forEach(this::removeInternal);
         added.clear();

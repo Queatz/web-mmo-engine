@@ -69,6 +69,14 @@ public class MapObject extends BaseObject {
         return "map";
     }
 
+    @Override
+    public void update() {
+        super.update();
+
+        // Handle add/remove but do not update objects.  World updates all objects.
+        objs.flush();
+    }
+
     public void add(BaseObject obj) {
         MapServerEvent mapEvent = new MapServerEvent().add(obj);
 

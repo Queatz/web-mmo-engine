@@ -2,6 +2,7 @@ package camp.mage.server.game;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ import camp.mage.server.game.objs.BaseObject;
 import camp.mage.server.game.objs.MapObject;
 import camp.mage.server.game.objs.Player;
 
+import static camp.mage.server.Log.log;
+
 /**
  * Created by jacob on 12/6/17.
  */
@@ -41,15 +44,19 @@ public class World {
     private final Accounts accounts;
 
     private final Map<Client, Player> clients = new HashMap<>();
-    private final List<Runnable> posts = new ArrayList<>();
+    private final List<Runnable> posts = Collections.synchronizedList(new ArrayList<>());
+    private final List<Runnable> events = Collections.synchronizedList(new ArrayList<>());
 
     public World(Manager manager) {
         this.manager = manager;
         objs = new ObjectMap();
         accounts = new Accounts(this);
-        startingMap = new MapObject(this);
 
-        this.manager.events.register("identify", (Client client, IdentifyClientEvent event) -> {
+        startingMap = new MapObject(this);
+        objs.add(startingMap);
+
+        this.manager.events.register("identify", (Client client, IdentifyClientEvent event) -> events.add(() -> {
+            log("identify");
             if (event.token != null) {
                 Player player = accounts.getPlayerFromToken(event.token);
 
@@ -92,7 +99,7 @@ public class World {
             }
 
             this.manager.send(client, new BasicErrorServerEvent("Missing token, or username / password"));
-        });
+        }));
 
         this.manager.events.register("register", (Client client, RegisterClientEvent event) -> {
             // Set username/pass
@@ -106,7 +113,7 @@ public class World {
             // Send chat to map or world
         });
 
-        this.manager.events.register("move", (Client client, MoveClientEvent event) -> {
+        this.manager.events.register("move", (Client client, MoveClientEvent event) -> events.add(() -> {
             Player player = clients.getOrDefault(client, null);
 
             if (player == null) {
@@ -114,7 +121,7 @@ public class World {
             }
 
             player.getMap().move(player, new MapPos(event.pos));
-        });
+        }));
 
         this.manager.events.register("action", (Client client, ActionClientEvent event) -> {
 
@@ -124,7 +131,7 @@ public class World {
 
         });
 
-        this.manager.events.register("edit", (Client client, EditClientEvent event) -> {
+        this.manager.events.register("edit", (Client client, EditClientEvent event) -> events.add(() -> {
             Player player = clients.getOrDefault(client, null);
 
             if (player == null) {
@@ -166,7 +173,7 @@ public class World {
                         new MapTile(event.tile.get(2), event.tile.get(3))
                 );
             }
-        });
+        }));
     }
 
     public void join(BaseObject obj) {
@@ -187,11 +194,13 @@ public class World {
     }
 
     public void update() {
-        this.objs.update();
+        events.forEach(Runnable::run);
+        events.clear();
 
-        while (!posts.isEmpty()) {
-            posts.remove(0).run();
-        }
+        objs.update();
+
+        posts.forEach(Runnable::run);
+        posts.clear();
     }
 
     public void connect(Client client) {
