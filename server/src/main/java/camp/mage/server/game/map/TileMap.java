@@ -44,4 +44,8 @@ public class TileMap {
 
         return result;
     }
+
+    public void loadFromList(List<List<Integer>> tiles) {
+        tiles.forEach(t -> setTileAt(new TilePos(t), new MapTile(t.get(2), t.get(3))));
+    }
 }

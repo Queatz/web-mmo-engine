@@ -1,5 +1,7 @@
 package camp.mage.server.game.objs;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import camp.mage.server.game.map.MapTile;
 import camp.mage.server.game.map.ObjectMap;
 import camp.mage.server.game.map.TileMap;
 import camp.mage.server.game.map.TilePos;
+import camp.mage.server.game.objs.data.FrozenMap;
 
 /**
  * Created by jacob on 12/31/17.
@@ -30,6 +33,7 @@ public class MapObject extends BaseObject {
     private String name;
 
     private Map<Integer, Set<Integer>> nonCollidingTiles;
+    public boolean isStartingMap;
 
     public MapObject(World world) {
         super(world);
@@ -186,5 +190,21 @@ public class MapObject extends BaseObject {
         obj.pos.set(obj.prevPos);
 
         return true;
+    }
+
+    @Override
+    public String freeze() {
+        return new Gson().toJson(new FrozenMap(isStartingMap, this.tiles.allAsList()));
+    }
+
+    @Override
+    public void thaw(String data) {
+        FrozenMap freeze = new Gson().fromJson(data, FrozenMap.class);
+
+        this.isStartingMap = freeze.isStartingMap;
+
+        this.tiles.loadFromList(
+                freeze.tiles
+        );
     }
 }

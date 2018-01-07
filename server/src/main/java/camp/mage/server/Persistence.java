@@ -13,21 +13,22 @@ public class Persistence {
 
     private static final String DB_USER = "slime";
     private static final String DB_PASS = "slime";
-    private static final String DB_COLLECTION = "slime";
+    private static final String DB_DATABASE = "slime";
+    public static final String DB_COLLECTION = "world";
 
     private static ArangoDatabase __arangoDatabase;
 
-    private static ArangoCollection getCollection() {
+    public static ArangoCollection getCollection() {
         return getDb().collection(DB_COLLECTION);
     }
 
-    private static ArangoDatabase getDb() {
+    public static ArangoDatabase getDb() {
         if (__arangoDatabase == null) {
             __arangoDatabase = new ArangoDB.Builder()
                     .user(DB_USER)
                     .password(DB_PASS)
                     .build()
-                    .db();
+                    .db(DB_DATABASE);
 
             try {
                 __arangoDatabase.createCollection(DB_COLLECTION);

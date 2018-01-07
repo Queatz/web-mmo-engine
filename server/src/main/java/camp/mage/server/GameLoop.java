@@ -25,6 +25,9 @@ public class GameLoop extends Thread {
         this.world = new World(manager);
 
         log("Game loop start");
+
+        world.thaw();
+
         try {
             while (!dead.get()) {
                 world.update();
@@ -38,6 +41,9 @@ public class GameLoop extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        world.freeze();
+
         log("Game loop end");
     }
 

@@ -295,7 +295,7 @@ export class Game {
     private resize(): void {
         this.ui.getContext().imageSmoothingEnabled = false;
 
-        this.inventoryButton.left = (this.ui.getSize().width / 2 - this.inventoryButton.widthInPixels / 1.5 + 'px';
+        this.inventoryButton.left = (this.ui.getSize().width / 2 - this.inventoryButton.widthInPixels / 1.5) + 'px';
         this.inventoryButton.top = (this.ui.getSize().height / 2 - this.inventoryButton.heightInPixels / 1.5) + 'px';
 
         let aspect = this._engine.getAspectRatio(this.camera, true);

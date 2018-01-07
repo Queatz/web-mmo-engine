@@ -21,6 +21,8 @@ public class BaseObject {
     protected MapPos lastSendPos;
     protected Date lastSendPosTime;
 
+    public boolean created;
+
     public BaseObject(World world) {
         this.world = world;
         pos = new MapPos();
@@ -70,5 +72,13 @@ public class BaseObject {
 
     public MapPos getPos() {
         return pos;
+    }
+
+    public String freeze() {
+        return null;
+    }
+
+    public void thaw(String data) {
+
     }
 }

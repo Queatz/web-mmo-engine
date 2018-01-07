@@ -1,5 +1,7 @@
 package camp.mage.server.game;
 
+import com.arangodb.ArangoCursor;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,10 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import camp.mage.server.Client;
 import camp.mage.server.Manager;
 import camp.mage.server.Objects;
+import camp.mage.server.Persistence;
+import camp.mage.server.StorageEngine;
 import camp.mage.server.game.accounts.Accounts;
 import camp.mage.server.game.events.client.ActionClientEvent;
 import camp.mage.server.game.events.client.ChatClientEvent;
@@ -30,6 +35,8 @@ import camp.mage.server.game.objs.BaseObject;
 import camp.mage.server.game.objs.MapObject;
 import camp.mage.server.game.objs.Player;
 
+import static camp.mage.server.Log.log;
+
 /**
  * Created by jacob on 12/6/17.
  */
@@ -38,20 +45,20 @@ public class World {
 
     private final Manager manager;
     private final ObjectMap objs;
-    private final MapObject startingMap;
     private final Accounts accounts;
+    private final StorageEngine db;
 
     private final Map<Client, Player> clients = new HashMap<>();
     private final List<Runnable> posts = Collections.synchronizedList(new ArrayList<>());
     private final List<Runnable> events = Collections.synchronizedList(new ArrayList<>());
 
+    private MapObject startingMap;
+
     public World(Manager manager) {
         this.manager = manager;
         objs = new ObjectMap();
         accounts = new Accounts(this);
-
-        startingMap = new MapObject(this);
-        objs.add(startingMap);
+        db = new StorageEngine();
 
         this.manager.events.register("identify", (Client client, IdentifyClientEvent event) -> events.add(() -> {
             if (event.token != null) {
@@ -137,8 +144,7 @@ public class World {
             }
 
             if (event.addObj != null) {
-                BaseObject obj = Objects.createFromType(this, event.addObj.type);
-                obj.setId(rndId());
+                BaseObject obj = create(event.addObj.type);
                 obj.getPos().x = event.addObj.pos.get(0);
                 obj.getPos().y = event.addObj.pos.get(1);
 
@@ -227,14 +233,82 @@ public class World {
         return Long.toHexString(new Random().nextLong());
     }
 
+    public BaseObject create(String type) {
+        BaseObject obj = Objects.createFromType(this, type);
+        obj.setId(rndId());
+        obj.created = true;
+        return obj;
+    }
+
     public <T extends BaseObject> T create(Class<T> clazz) {
         try {
             T obj = clazz.getConstructor(World.class).newInstance(this);
             obj.setId(rndId());
+            obj.created = true;
             return obj;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public void thaw() {
+        ArangoCursor<FrozenObject> frozenObjs = db.getDb().query(
+                "for obj in " + Persistence.DB_COLLECTION + " return obj",
+                null,
+                null,
+                FrozenObject.class
+        );
+
+        List<FrozenObject> reprocesss = new ArrayList<>();
+
+        while (frozenObjs.hasNext()) {
+            FrozenObject frozenObj = frozenObjs.next();
+            BaseObject obj = Objects.createFromType(this, frozenObj.type);
+            obj.getPos().set(frozenObj.pos);
+            obj.setId(frozenObj.id);
+            objs.addNow(obj);
+            reprocesss.add(frozenObj);
+        }
+
+        for (FrozenObject frozenObj : reprocesss) {
+            log("unfreeze: " + frozenObj.type + " id: " + frozenObj.id);
+
+            BaseObject obj = objs.get(frozenObj.id);
+            MapObject map = (MapObject) objs.get(frozenObj.map);
+
+            if (obj == null) {
+                log("Invalid unfreeze obj: " + frozenObj.id);
+                continue;
+            }
+
+            obj.setMap(map);
+            obj.thaw(frozenObj.data);
+
+            if (startingMap == null && obj instanceof MapObject && ((MapObject) obj).isStartingMap) {
+                startingMap = (MapObject) obj;
+            }
+        }
+
+        // Create an initial map
+        if (startingMap == null) {
+            startingMap = create(MapObject.class);
+            startingMap.isStartingMap = true;
+            objs.add(startingMap);
+        }
+
+        log("world thawed successfully");
+    }
+
+    public void freeze() {
+        db.getCollection().updateDocuments(
+                objs.all().stream().filter(o -> !o.created).map(FrozenObject::from).collect(Collectors.toList())
+        );
+
+        db.getCollection().insertDocuments(
+                objs.all().stream().filter(o -> o.created).map(FrozenObject::from).collect(Collectors.toList())
+        );
+
+        log("world frozen successfully");
     }
 }

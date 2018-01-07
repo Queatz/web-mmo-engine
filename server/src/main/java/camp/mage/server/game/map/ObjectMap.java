@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 import camp.mage.server.game.objs.BaseObject;
 
-import static camp.mage.server.Log.log;
-
 
 /**
  * Created by jacob on 12/31/17.
@@ -34,8 +32,8 @@ public class ObjectMap {
     }
 
     public void flush() {
-        added.forEach(this::addInternal);
-        removed.forEach(this::removeInternal);
+        added.forEach(this::addNow);
+        removed.forEach(this::removeNow);
         added.clear();
         removed.clear();
     }
@@ -87,7 +85,7 @@ public class ObjectMap {
                 .collect(Collectors.toSet());
     }
 
-    private void addInternal(BaseObject obj) {
+    public void addNow(BaseObject obj) {
         objs.put(obj.getId(), obj);
 
         if (!objsByType.containsKey(obj.getClass())) {
@@ -97,7 +95,7 @@ public class ObjectMap {
         objsByType.get(obj.getClass()).add(obj);
     }
 
-    private void removeInternal(BaseObject obj) {
+    public void removeNow(BaseObject obj) {
         objs.remove(obj.getId());
 
         if (objsByType.containsKey(obj.getClass())) {

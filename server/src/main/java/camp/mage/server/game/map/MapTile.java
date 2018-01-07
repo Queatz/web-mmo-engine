@@ -9,6 +9,8 @@ public class MapTile {
     public int set;
     public int index;
 
+    public MapTile() {}
+
     public MapTile(int set, int index) {
         this.set = set;
         this.index = index;
