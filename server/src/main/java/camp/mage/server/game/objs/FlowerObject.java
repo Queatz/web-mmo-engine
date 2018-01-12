@@ -21,6 +21,7 @@ public class FlowerObject extends BaseObject {
         super.update();
 
         for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
+            player.addHealth(0.2f);
             world.leave(this);
             break;
         }

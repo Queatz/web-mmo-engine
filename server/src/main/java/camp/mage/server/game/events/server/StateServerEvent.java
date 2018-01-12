@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import camp.mage.server.game.events.defs.MapDef;
 import camp.mage.server.game.events.defs.ObjDef;
 import camp.mage.server.game.objs.BaseObject;
+import camp.mage.server.game.objs.CharacterObject;
 import camp.mage.server.game.objs.MapObject;
 import camp.mage.server.game.objs.Player;
 
@@ -22,7 +23,17 @@ public class StateServerEvent {
                 map.getName(),
                 map.getTilesAsList(),
                 map.getObjs().all().stream()
-                        .map((BaseObject o) -> new ObjDef(o.getId(), o.getType(), o.getPos().asList()))
+                        .map((BaseObject o) -> {
+                            ObjDef def = new ObjDef(o.getId(), o.getType(), o.getPos().asList());
+
+                            if (o instanceof CharacterObject) {
+                                def.health = ((CharacterObject) o).getHealth();
+                                def.magic = ((CharacterObject) o).getMagic();
+                                def.hunger = ((CharacterObject) o).getHunger();
+                            }
+
+                            return def;
+                        })
                         .collect(Collectors.toList())
         );
 

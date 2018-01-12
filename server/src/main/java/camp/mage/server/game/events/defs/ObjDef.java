@@ -11,6 +11,9 @@ public class ObjDef {
     public String id;
     public String type;
     public List<Float> pos;
+    public Float health;
+    public Float magic;
+    public Float hunger;
 
     public ObjDef() {}
 

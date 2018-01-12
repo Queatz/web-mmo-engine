@@ -2,6 +2,9 @@ export class ObjDef {
     id: string;
     type: string;
     pos: number[];
+    health: number;
+    magic: number;
+    hunger: number;
     data: any;
 }
 
@@ -95,5 +98,8 @@ export class MapEvent {
 export class ObjEvent {
     id: string;
     pos: number[];
+    health: number;
+    magic: number;
+    hunger: number;
     custom: any;
 }

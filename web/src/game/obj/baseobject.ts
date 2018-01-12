@@ -15,6 +15,10 @@ export class BaseObject {
     public collides = false;
     public editorOnly = false;
 
+    public health: number;
+    public magic: number;
+    public hunger: number;
+
     constructor(protected world: World) {
         this.previousPos = new BABYLON.Vector3(0, 1, 0);
         this.pos = new BABYLON.Vector3(0, 1, 0);

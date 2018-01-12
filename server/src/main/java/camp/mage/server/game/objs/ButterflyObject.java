@@ -36,6 +36,8 @@ public class ButterflyObject extends BaseObject {
         if (running <= 0) {
             for (Player player : map.getObjs().all(pos, Player.class, 3f)) {
                 if (player.pos.squareDistance(pos) < .5f) {
+                    player.addHealth(-0.1f);
+                    player.addHunger(0.2f);
                     world.leave(this);
                     return;
                 }

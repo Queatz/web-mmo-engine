@@ -33,6 +33,7 @@ import camp.mage.server.game.map.MapTile;
 import camp.mage.server.game.map.ObjectMap;
 import camp.mage.server.game.map.TilePos;
 import camp.mage.server.game.objs.BaseObject;
+import camp.mage.server.game.objs.CharacterObject;
 import camp.mage.server.game.objs.MapObject;
 import camp.mage.server.game.objs.Player;
 
@@ -194,6 +195,12 @@ public class World {
         if (!obj.created) try {
             db.getCollection().deleteDocument(obj.getId());
         } catch (ArangoDBException ignored) {}
+    }
+
+    public void statsChanged(CharacterObject obj) {
+        if (obj.getMap() != null) {
+            obj.getMap().statsChanged(obj);
+        }
     }
 
     public void send(Player player, Object event) {

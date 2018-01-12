@@ -80,6 +80,9 @@ export class World {
                 obj.id = o.id;
                 obj.pos.x = o.pos[0];
                 obj.pos.z = o.pos[1];
+                obj.health = o.health;
+                obj.magic = o.magic;
+                obj.hunger = o.hunger;
                 this._map.add(obj);
             });
 
@@ -142,9 +145,9 @@ export class World {
         this._map.update();
         this.game.centerCameraOnPlayer();
 
-        this.healthBar.setHealth(this.getPlayer().pos.x / 4);
-        this.magicBar.setHealth(this.getPlayer().pos.z / 4);
-        this.hungerBar.setHealth(this.getPlayer().pos.x / 4 + this.getPlayer().pos.z / 4);
+        this.healthBar.setHealth(this.getPlayer().health);
+        this.magicBar.setHealth(this.getPlayer().magic);
+        this.hungerBar.setHealth(this.getPlayer().hunger);
         this.healthBar.update();
         this.healthBarBucket.update();
         this.magicBar.update();

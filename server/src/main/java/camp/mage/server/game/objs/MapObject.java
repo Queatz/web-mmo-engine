@@ -203,6 +203,15 @@ public class MapObject extends BaseObject {
         return objMapCollisions.contains(obj);
     }
 
+    public void statsChanged(CharacterObject obj) {
+        ObjServerEvent objServerEvent = new ObjServerEvent(obj.getId());
+        objServerEvent.setHealth(obj.getHealth());
+        objServerEvent.setMagic(obj.getMagic());
+        objServerEvent.setHunger(obj.getHunger());
+
+        objs.all(Player.class).forEach(player -> world.send(player, objServerEvent));
+    }
+
     @Override
     public String freeze() {
         return new Gson().toJson(new FrozenMap(isStartingMap, this.tiles.allAsList()));

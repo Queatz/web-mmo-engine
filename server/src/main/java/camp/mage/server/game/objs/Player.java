@@ -7,7 +7,7 @@ import camp.mage.server.game.World;
  * Created by jacob on 12/6/17.
  */
 
-public class Player extends BaseObject {
+public class Player extends CharacterObject {
 
     private String name;
     private Client client;

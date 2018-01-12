@@ -106,6 +106,9 @@ export class MapObject {
                 obj.id = o.id;
                 obj.pos.x = o.pos[0];
                 obj.pos.z = o.pos[1];
+                obj.health = o.health;
+                obj.magic = o.magic;
+                obj.hunger = o.hunger;
                 this.add(obj);
             });
         }
@@ -138,6 +141,18 @@ export class MapObject {
 
         if (event.pos) {
             (obj as BaseObject).moveTo(event.pos[0], event.pos[1]);
+        }
+
+        if (event.health) {
+            obj.health = event.health;
+        }
+
+        if (event.magic) {
+            obj.magic = event.magic;
+        }
+
+        if (event.hunger) {
+            obj.hunger = event.hunger;
         }
 
         if (event.custom) {
