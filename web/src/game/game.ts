@@ -256,6 +256,16 @@ export class Game {
     public keyPressed(key: string) {
         return this._keysPressed.has(key);
     }
+
+    /**
+     * Move camera to player.
+     */
+    public centerCameraOnPlayer() {
+        if (this.world.getPlayer()) {
+            this.camera.position.x = this.world.getPlayer().pos.x;
+            this.camera.position.z = this.world.getPlayer().pos.z;
+        }
+    }
     
     /**
      * Update the game.  Called once per frame.
@@ -279,12 +289,6 @@ export class Game {
             this._eventsQueue = [];
         }
 
-        // Update camera position
-        if (this.world.getPlayer()) {
-            this.camera.position.x = this.world.getPlayer().pos.x;
-            this.camera.position.z = this.world.getPlayer().pos.z;
-        }
-        
         // Post frame handling
         this._keysPressed.clear();
     }

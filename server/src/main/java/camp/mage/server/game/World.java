@@ -1,6 +1,7 @@
 package camp.mage.server.game;
 
 import com.arangodb.ArangoCursor;
+import com.arangodb.ArangoDBException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -53,6 +54,8 @@ public class World {
     private final List<Runnable> events = Collections.synchronizedList(new ArrayList<>());
 
     private MapObject startingMap;
+    private float delta;
+    private long lastFrameTile;
 
     public World(Manager manager) {
         this.manager = manager;
@@ -187,6 +190,10 @@ public class World {
     public void leave(BaseObject obj) {
         objs.remove(obj.getId());
         obj.setMap(null);
+
+        if (!obj.created) try {
+            db.getCollection().deleteDocument(obj.getId());
+        } catch (ArangoDBException ignored) {}
     }
 
     public void send(Player player, Object event) {
@@ -198,6 +205,10 @@ public class World {
     }
 
     public void update() {
+        long time = System.currentTimeMillis();
+        delta = (float) (time - lastFrameTile) / 1000f;
+        lastFrameTile = time;
+
         events.forEach(Runnable::run);
         events.clear();
 
@@ -205,6 +216,10 @@ public class World {
 
         posts.forEach(Runnable::run);
         posts.clear();
+    }
+
+    public float getDelta() {
+        return delta;
     }
 
     public void connect(Client client) {

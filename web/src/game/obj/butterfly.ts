@@ -6,8 +6,6 @@ import { World } from '../world/world';
  * Butterfly object.
  */
 export class ButterflyObject extends BaseObject {
-    1
-    1
     private velocity: BABYLON.Vector3;
     
     constructor(world: World) {

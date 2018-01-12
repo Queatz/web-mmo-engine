@@ -5,6 +5,7 @@ import { WorldService } from "../../app/world.service";
 import { StateEvent, ChatEvent, InventoryEvent, MapEvent, ObjEvent } from "../events/events";
 import Config from "../config";
 import { BaseObject } from "../obj/baseobject";
+import { StatBar } from "./statbar";
 
 /**
  * The world object.
@@ -23,12 +24,35 @@ export class World {
     private _delta: number;
     private _lastFrameTime: number;
 
+    private _music: BABYLON.Sound;
+
+    private healthBar: StatBar;
+    private healthBarBucket: StatBar;
+
+    private magicBar: StatBar;
+    private magicBarBucket: StatBar;
+
+    private hungerBar: StatBar;
+    private hungerBarBucket: StatBar;
+
     constructor(public game: Game) {
 
         // XXX TODO remove this - it comes from server now
         this._map = new MapObject(this);
         this._player = new PlayerObject(this);
         this._map.add(this._player);
+
+        this.healthBar = new StatBar(this, '/assets/health_bar.png');
+        this.healthBarBucket = new StatBar(this, '/assets/empty_bar.png', true);
+        this.magicBar = new StatBar(this, '/assets/magic_bar.png');
+        this.magicBarBucket = new StatBar(this, '/assets/empty_bar.png', true);
+        this.hungerBar = new StatBar(this, '/assets/hunger_bar.png');
+        this.hungerBarBucket = new StatBar(this, '/assets/empty_bar.png', true);
+
+        this.magicBar.setOffset(1);
+        this.hungerBar.setOffset(2);
+        this.magicBarBucket.setOffset(1);
+        this.hungerBarBucket.setOffset(2);
 
         this.game.events.register('state', (event: StateEvent) => {
             if (this._map) {
@@ -77,6 +101,35 @@ export class World {
         this.game.events.register('obj', (event: ObjEvent) => {
             this._map.objEvent(event);
         });
+
+        let rndMusic = [
+            'Theme1.ogg',
+            'Theme2.ogg',
+            'Theme3.ogg',
+            'Theme4.ogg',
+            'Theme5.ogg',
+            'Theme6.ogg',
+            'Theme7.ogg',
+            'Theme12.ogg',
+            'Theme13.ogg',
+            'Theme15.ogg',
+            'Theme16.ogg',
+            'Theme17.ogg',
+            'Theme21.ogg'
+        ];
+
+        this.setMusic('/assets/music/' + rndMusic[Math.floor(Math.random() * rndMusic.length)]);
+    }
+
+    /**
+     * Sets the game music.
+     */
+    public setMusic(music: string) {
+        if (this._music) {
+            this._music.dispose();
+        }
+        
+        this._music = new BABYLON.Sound('music', music, this.game.scene, null, { loop: true, autoplay: true });
     }
 
     /**
@@ -84,9 +137,20 @@ export class World {
      */
     public update() {
         let t = new Date().getTime() / 1000;
-        this._delta = t - this._lastFrameTime;
+        this._delta = Math.min(1 / 15, t - this._lastFrameTime);
         this._lastFrameTime = t;
         this._map.update();
+        this.game.centerCameraOnPlayer();
+
+        this.healthBar.setHealth(this.getPlayer().pos.x / 4);
+        this.magicBar.setHealth(this.getPlayer().pos.z / 4);
+        this.hungerBar.setHealth(this.getPlayer().pos.x / 4 + this.getPlayer().pos.z / 4);
+        this.healthBar.update();
+        this.healthBarBucket.update();
+        this.magicBar.update();
+        this.magicBarBucket.update();
+        this.hungerBar.update();
+        this.hungerBarBucket.update();
     }
 
     /**

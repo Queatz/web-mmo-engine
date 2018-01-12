@@ -33,12 +33,14 @@ public class MapObject extends BaseObject {
     private String name;
 
     private Map<Integer, Set<Integer>> nonCollidingTiles;
+    private Set<BaseObject> objMapCollisions;
     public boolean isStartingMap;
 
     public MapObject(World world) {
         super(world);
         objs = new ObjectMap();
         tiles = new TileMap();
+        objMapCollisions = new HashSet<>();
 
         nonCollidingTiles = new HashMap<>();
         Set<Integer> grassyTiles = new HashSet<>();
@@ -79,6 +81,7 @@ public class MapObject extends BaseObject {
 
         // Handle add/remove but do not update objects.  World updates all objects.
         objs.flush();
+        objMapCollisions.clear();
     }
 
     public void add(BaseObject obj) {
@@ -144,7 +147,11 @@ public class MapObject extends BaseObject {
         obj.getPos().set(pos);
 
         if (obj.collides) {
-            collide(obj);
+            boolean collision = collide(obj);
+
+            if (collision) {
+                objMapCollisions.add(obj);
+            }
         }
 
         if (new Date().getTime() - obj.lastSendPosTime.getTime() > 250 && !obj.lastSendPos.equals(obj.pos)) {
@@ -190,6 +197,10 @@ public class MapObject extends BaseObject {
         obj.pos.set(obj.prevPos);
 
         return true;
+    }
+
+    public boolean didCollide(BaseObject obj) {
+        return objMapCollisions.contains(obj);
     }
 
     @Override
