@@ -13,6 +13,8 @@ public class RunAroundBehavior implements Behavior {
     private BaseObject obj;
     private MapPos velocity;
     private float running;
+    private Class<? extends BaseObject> dropType;
+    private float dropChance;
 
     public RunAroundBehavior(BaseObject obj) {
         this.obj = obj;
@@ -29,9 +31,18 @@ public class RunAroundBehavior implements Behavior {
         if (running <= 0) {
             for (Player player : obj.getMap().getObjs().all(obj.getPos(), Player.class, 3f)) {
                 if (player.getPos().squareDistance(obj.getPos()) < .5f) {
+                    if (dropType != null && Math.random() < dropChance) {
+                        BaseObject drop = obj.getWorld().create(dropType);
+                        obj.getWorld().join(drop);
+                        drop.getPos().set(obj.getPos());
+                        drop.setMap(obj.getMap());
+                    }
+
                     player.addHealth(-0.1f);
                     player.addHunger(0.2f);
+
                     obj.getWorld().leave(obj);
+
                     return;
                 }
 
@@ -64,5 +75,23 @@ public class RunAroundBehavior implements Behavior {
         } else {
             running = 0;
         }
+    }
+
+    public Class<? extends BaseObject> getDropType() {
+        return dropType;
+    }
+
+    public RunAroundBehavior setDropType(Class<? extends BaseObject> dropType) {
+        this.dropType = dropType;
+        return this;
+    }
+
+    public float getDropChance() {
+        return dropChance;
+    }
+
+    public RunAroundBehavior setDropChance(float dropChance) {
+        this.dropChance = dropChance;
+        return this;
     }
 }

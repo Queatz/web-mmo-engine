@@ -16,7 +16,9 @@ public class BunnyObject extends CharacterObject {
         super(world);
 
         collides = true;
-        run = new RunAroundBehavior(this);
+        run = new RunAroundBehavior(this)
+                .setDropChance(.2f)
+                .setDropType(DropObject.class);
     }
 
     @Override
