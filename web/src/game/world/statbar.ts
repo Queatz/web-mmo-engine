@@ -9,6 +9,7 @@ export class StatBar {
     private mesh: BABYLON.Mesh;
     private material: BABYLON.Material;
     private health = 1;
+    private healthAnimated = 1;
     private offset = new BABYLON.Vector3(0, 0, 0);
 
     constructor(private world: World, image: string, isBehind: boolean = false) {
@@ -79,6 +80,17 @@ export class StatBar {
         this.mesh.position.x = (camera.position.x + camera.orthoLeft) + this.mesh.scaling.x + .1;
         this.mesh.position.z = (camera.position.z + camera.orthoTop) - this.mesh.scaling.z  - .1;
         this.mesh.position.addInPlace(this.offset);
+
+        let diff = Math.abs(this.healthAnimated - this.health);
+        if (diff) {
+            if (diff < 0.01) {
+                this.healthAnimated = this.health;
+            } else {
+                this.healthAnimated = this.healthAnimated * 0.9 + 0.1 * this.health;
+            }
+
+            this.updateMeshObject();
+        }
     }
 
     public setOffset(numberOfBarWidths: number) {
@@ -87,14 +99,16 @@ export class StatBar {
 
     public setHealth(health: number) {
         this.health = health;
+    }
 
+    public updateMeshObject() {
         let s = 2 / 16;
 
-        if (health < s) {
+        if (this.healthAnimated < s) {
             s /= 4;
         }
         
-        let h = Math.min(1, Math.max(s, health)) * 2;
+        let h = Math.min(1, Math.max(s, this.healthAnimated)) * 2;
         
         let positions = [
             -1, 0, -1, // 0
