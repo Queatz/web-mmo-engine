@@ -62,6 +62,8 @@ export class Game {
      */
     public ui: GUI.AdvancedDynamicTexture;
     public inventoryButton: GUI.Image;    
+    public musicOnButton: GUI.Image;    
+    public musicOffButton: GUI.Image;    
 
     /**
      * Sprite textures.
@@ -137,16 +139,9 @@ export class Game {
         
         this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, this.scene);
 
-        this.inventoryButton = new GUI.Image('inventoryButton', '/assets/inv_icon.png');
-        this.inventoryButton.width = '64px';
-        this.inventoryButton.height = '64px';
-        this.inventoryButton.onPointerDownObservable.add(() => {
-            this.preventInteraction();
-        });
-        this.ui.addControl(this.inventoryButton);
-        
         this.text = new GUI.TextBlock();
         this.text.isVisible = false;
+        this.text.isHitTestVisible = false;
         this.text.text = 'Hello World';
         this.text.color = 'white';
         this.text.fontFamily = 'Ubuntu, sans';
@@ -161,35 +156,37 @@ export class Game {
         this.editor = new Editor(this);
         this.world = new World(this);
 
-        this.scene.onPointerMove = evt => {
-            if (this.interactionPrevented) {
-                return;
+        this.scene.onPointerObservable.add(info => {
+            switch (info.type) {
+                case BABYLON.PointerEventTypes.POINTERDOWN:
+                    if (this.interactionPrevented) {
+                        return;
+                    }
+        
+                    this.pointerDown = true;
+                    
+                    if (this._keysDown.has('ControlLeft') || this._keysDown.has('ControlRight')) {
+                        this.editor.use(this.world.getMap().pickTile(info.event.clientX, info.event.clientY));
+                    } else {
+                        this.editor.draw(info.event.clientX, info.event.clientY);
+                    }
+                    break;
+                case BABYLON.PointerEventTypes.POINTERUP:
+                    this.pointerDown = false;
+                    break;
+                case BABYLON.PointerEventTypes.POINTERMOVE:
+                    if (this.interactionPrevented) {
+                        return;
+                    }
+        
+                    if (!this.pointerDown) {
+                        return;
+                    }
+        
+                    this.editor.draw(info.event.clientX, info.event.clientY);
+                    break;
             }
-
-            if (!this.pointerDown) {
-                return;
-            }
-
-            this.editor.draw(evt.clientX, evt.clientY);
-        };
-
-        this.scene.onPointerDown = evt => {
-            if (this.interactionPrevented) {
-                return;
-            }
-
-            this.pointerDown = true;
-            
-            if (this._keysDown.has('ControlLeft') || this._keysDown.has('ControlRight')) {
-                this.editor.use(this.world.getMap().pickTile(evt.clientX, evt.clientY));
-            } else {
-                this.editor.draw(evt.clientX, evt.clientY);
-            }
-        }
-
-        this.scene.onPointerUp = () => {
-            this.pointerDown = false;
-        };
+        });
 
         this.scene.onKeyboardObservable.add(evt => {
             switch (evt.type) {
@@ -229,6 +226,7 @@ export class Game {
                 if (this.textTimer <= 0) {
                     this.textTimer = 0;
                     this.text.isVisible = false;
+                    this.setUpActionBar();
                 } else {
                     this.text.alpha = Math.min(1, this.textTimer);
                 }
@@ -327,13 +325,68 @@ export class Game {
     }
 
     /**
+     * Setup and / or resize game UI.
+     */
+    private setUpActionBar() {
+        if(!this.inventoryButton) {
+            this.inventoryButton = new GUI.Image('inventoryButton', '/assets/ui/inv_icon.png');
+            this.inventoryButton.width = '64px';
+            this.inventoryButton.height = '64px';
+            this.inventoryButton.onPointerDownObservable.add(evt => {
+                this.editor.setEnabled(!this.editor.isEnabled());
+                this.preventInteraction();
+            });
+            this.ui.addControl(this.inventoryButton);
+        }
+
+        if (!this.musicOnButton) {
+            this.musicOnButton = new GUI.Image('musicOnButton', '/assets/ui/music_on.png');
+            this.musicOnButton.width = '64px';
+            this.musicOnButton.height = '64px';
+            this.musicOnButton.onPointerDownObservable.add(evt => {
+                this.editor.setEnabled(!this.editor.isEnabled());
+                this.preventInteraction();
+                this.world.setMusicEnabled(true);
+                this.musicOnButton.isVisible = false;
+                this.musicOffButton.isVisible = true;
+            });
+            this.ui.addControl(this.musicOnButton);
+        }
+
+        if (!this.musicOffButton) {
+            this.musicOffButton = new GUI.Image('musicOffButton', '/assets/ui/music_off.png');
+            this.musicOffButton.isVisible = false;
+            this.musicOffButton.width = '64px';
+            this.musicOffButton.height = '64px';
+            this.musicOffButton.onPointerDownObservable.add(evt => {
+                this.editor.setEnabled(!this.editor.isEnabled());
+                this.preventInteraction();
+                this.world.setMusicEnabled(false);
+                this.musicOnButton.isVisible = true;
+                this.musicOffButton.isVisible = false;
+            });
+            this.ui.addControl(this.musicOffButton);
+        }
+
+        let toolsLeft = (this.ui.getSize().width / 2 - this.inventoryButton.widthInPixels / 1.5);
+        let toolsTop = (this.ui.getSize().height / 2 - this.inventoryButton.heightInPixels / 1.5);
+
+        this.inventoryButton.left = toolsLeft + 'px';
+        this.inventoryButton.top = toolsTop + 'px';
+
+        this.musicOnButton.left = toolsLeft + 'px';
+        this.musicOnButton.top = (toolsTop - this.inventoryButton.heightInPixels - 4) + 'px';
+        this.musicOffButton.left = toolsLeft + 'px';
+        this.musicOffButton.top = (toolsTop - this.inventoryButton.heightInPixels - 4) + 'px';
+    }
+
+    /**
      * Called when the game viewport is externally resized.
      */
     private resize(): void {
         this.ui.getContext().imageSmoothingEnabled = false;
 
-        this.inventoryButton.left = (this.ui.getSize().width / 2 - this.inventoryButton.widthInPixels / 1.5) + 'px';
-        this.inventoryButton.top = (this.ui.getSize().height / 2 - this.inventoryButton.heightInPixels / 1.5) + 'px';
+        this.setUpActionBar();
 
         let aspect = this._engine.getAspectRatio(this.camera, true);
 

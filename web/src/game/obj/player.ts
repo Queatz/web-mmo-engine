@@ -39,7 +39,7 @@ export class PlayerObject extends BaseObject {
     public update() {
         super.update();
         
-        this.world.runAfterUpdate(() => this.text.moveToVector3(this.pos.add(this.textOffset), this.world.game.scene));
+        this.world.runAfterUpdate(() => this.text && this.text.moveToVector3(this.pos.add(this.textOffset), this.world.game.scene));
 
         if (this.id !== this.world.getPlayer().id) {
             return;
@@ -80,7 +80,11 @@ export class PlayerObject extends BaseObject {
 
     public dispose() {
         super.dispose();
-        this.world.game.ui.removeControl(this.text);
-        this.text.dispose();
+
+        if (this.text) {
+            this.world.game.ui.removeControl(this.text);
+            this.text.dispose();
+            this.text = null;
+        }
     }
 }

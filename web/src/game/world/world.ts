@@ -110,23 +110,34 @@ export class World {
             this._map.objEvent(event);
         });
 
-        let rndMusic = [
-            'Theme1.ogg',
-            'Theme2.ogg',
-            'Theme3.ogg',
-            'Theme4.ogg',
-            'Theme5.ogg',
-            'Theme6.ogg',
-            'Theme7.ogg',
-            'Theme12.ogg',
-            'Theme13.ogg',
-            'Theme15.ogg',
-            'Theme16.ogg',
-            'Theme17.ogg',
-            'Theme21.ogg'
-        ];
+        this.setMusicEnabled(true);
+    }
 
-        this.setMusic('/assets/music/' + rndMusic[Math.floor(Math.random() * rndMusic.length)]);
+    /**
+     * Enable or disable music.
+     */
+    public setMusicEnabled(enabled: boolean) {
+        if (enabled) {
+            let rndMusic = [
+                'Theme1.ogg',
+                'Theme2.ogg',
+                'Theme3.ogg',
+                'Theme4.ogg',
+                'Theme5.ogg',
+                'Theme6.ogg',
+                'Theme7.ogg',
+                'Theme12.ogg',
+                'Theme13.ogg',
+                'Theme15.ogg',
+                'Theme16.ogg',
+                'Theme17.ogg',
+                'Theme21.ogg'
+            ];
+
+            this.setMusic('/assets/music/' + rndMusic[Math.floor(Math.random() * rndMusic.length)]);
+        } else {
+            this.setMusic(null);
+        }
     }
 
     /**
@@ -137,7 +148,11 @@ export class World {
             this._music.dispose();
         }
         
-        this._music = new BABYLON.Sound('music', music, this.game.scene, null, { loop: true, autoplay: true });
+        if (music) {
+            this._music = new BABYLON.Sound('music', music, this.game.scene, null, { loop: true, autoplay: true });
+        } else {
+            this._music = null;
+        }
     }
 
     /**
