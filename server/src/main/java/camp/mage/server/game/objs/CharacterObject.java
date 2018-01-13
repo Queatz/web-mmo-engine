@@ -27,7 +27,11 @@ public class CharacterObject extends BaseObject {
         // Get more hungry every 15 seconds
         long now = new Date().getTime();
         if (now > lastHungerDecrease + 15000) {
-            addHunger(-0.05f);
+            if (hunger > 0) {
+                addHunger(-0.05f);
+            } else {
+                addHealth(-0.05f);
+            }
             lastHungerDecrease = now;
         }
     }

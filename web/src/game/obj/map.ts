@@ -120,6 +120,7 @@ export class MapObject {
 
         if (event.remove) {
             event.remove.forEach(o => this.remove(o));
+            this.world.game.chompSound.play();
         }
 
         if (event.tiles) {

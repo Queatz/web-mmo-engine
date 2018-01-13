@@ -1,4 +1,5 @@
 import * as BABYLON from 'babylonjs';
+import * as GUI from 'babylonjs-gui';
 import { BaseObject } from './baseobject';
 import { World } from '../world/world';
 import { MoveClientEvent } from '../events/events';
@@ -11,19 +12,35 @@ export class PlayerObject extends BaseObject {
     private speed: number = 2;
     private lastPosSendTime: Date = new Date();
     private lastPosSend: BABYLON.Vector3 = new BABYLON.Vector3(0, 0, 0);
+    private text: GUI.TextBlock;
+    private textOffset = new BABYLON.Vector3(0, 0, -.25);
     
     constructor(world: World) {
         super(world);
     }
 
     public render() {
-        this.sprite = new BABYLON.Sprite('playerSprite', this.world.game.sprites);
+        this.sprite = new BABYLON.Sprite('playerSprite', this.world.game.spritesPlayer);
         this.sprite.size = .5;
         this.sprite.position = this.pos;
+
+        this.text = new GUI.TextBlock();
+        this.text.text = 'slime1';
+        this.text.color = 'white';
+        this.text.fontFamily = 'Ubuntu, sans';
+        this.text.fontStyle = 'bold';
+        this.text.fontSize = 22;
+        this.text.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        this.text.shadowOffsetX = 3;
+        this.text.shadowOffsetY = 3;
+        this.world.game.ui.addControl(this.text);
     }
 
     public update() {
         super.update();
+        
+        this.world.runAfterUpdate(() => this.text.moveToVector3(this.pos.add(this.textOffset), this.world.game.scene));
+
         if (this.id !== this.world.getPlayer().id) {
             return;
         }
@@ -46,6 +63,12 @@ export class PlayerObject extends BaseObject {
             this.pos.x += this.speed * this.world.delta();
         }
 
+        if (this.world.game.key('KeyX')) {
+            this.sprite.cellIndex = 1;
+        } else {
+            this.sprite.cellIndex = 0;
+        }
+
         if (new Date().getTime() - this.lastPosSendTime.getTime() > 250 && !this.pos.equals(this.lastPosSend)) {
             this.lastPosSend.copyFrom(this.pos);
             this.lastPosSendTime.setTime(new Date().getTime());
@@ -53,5 +76,11 @@ export class PlayerObject extends BaseObject {
             evt.pos = [this.pos.x, this.pos.z];
             this.world.send(evt);
         }
+    }
+
+    public dispose() {
+        super.dispose();
+        this.world.game.ui.removeControl(this.text);
+        this.text.dispose();
     }
 }

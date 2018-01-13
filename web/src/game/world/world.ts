@@ -35,6 +35,8 @@ export class World {
     private hungerBar: StatBar;
     private hungerBarBucket: StatBar;
 
+    private _afterUpdate = new Set<any>();
+
     constructor(public game: Game) {
 
         // XXX TODO remove this - it comes from server now
@@ -142,6 +144,9 @@ export class World {
      * Update world.  Call once per frame.
      */
     public update() {
+        this._afterUpdate.forEach(l => l());
+        this._afterUpdate.clear();
+
         let t = new Date().getTime() / 1000;
         this._delta = Math.min(1 / 15, t - this._lastFrameTime);
         this._lastFrameTime = t;
@@ -157,6 +162,13 @@ export class World {
         this.magicBarBucket.update();
         this.hungerBar.update();
         this.hungerBarBucket.update();
+    }
+
+    /**
+     * Run something after the update finishes, including moving the camera.
+     */
+    public runAfterUpdate(logic: any) {
+        this._afterUpdate.add(logic);
     }
 
     /**

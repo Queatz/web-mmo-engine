@@ -67,9 +67,15 @@ export class Game {
      * Sprite textures.
      */
     public sprites: BABYLON.SpriteManager;
+    public spritesPlayer: BABYLON.SpriteManager;
     public spritesNPCs: BABYLON.SpriteManager;
     public spritesItems: BABYLON.SpriteManager;
     public spritesEditor: BABYLON.SpriteManager;
+
+    /**
+     * Resources
+     */
+    public chompSound: BABYLON.Sound;
 
     /**
      * Event handing.
@@ -120,10 +126,13 @@ export class Game {
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
         this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesPlayer = new BABYLON.SpriteManager('spriteManager', '/assets/slime_eat.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesNPCs = new BABYLON.SpriteManager('spriteManager', '/assets/butterfly.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesItems = new BABYLON.SpriteManager('spriteManager', '/assets/items.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesEditor = new BABYLON.SpriteManager('spriteManager', '/assets/flower_spawn_area.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
+        this.chompSound = new BABYLON.Sound('chomp', '/assets/chomp.ogg', this.scene);
+
         // UI + Text
         
         this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, this.scene);

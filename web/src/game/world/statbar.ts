@@ -82,9 +82,8 @@ export class StatBar {
         this.mesh.position.z = (camera.position.z + camera.orthoTop) - this.mesh.scaling.z  - .1;
         this.mesh.position.addInPlace(this.offset);
 
-        let diff = Math.abs(this.healthAnimated - this.health);
-        if (diff) {
-            if (diff < 0.01) {
+        if (this.healthAnimated !== this.health) {
+            if (Math.abs(this.healthAnimated - this.health) < 0.01) {
                 this.healthAnimated = this.health;
             } else {
                 this.healthAnimated = this.healthAnimated * 0.9 + 0.1 * this.health;
@@ -99,7 +98,7 @@ export class StatBar {
     }
 
     public setHealth(health: number) {
-        this.health = health;
+        this.health = health || 0;
     }
 
     public updateMeshObject() {
