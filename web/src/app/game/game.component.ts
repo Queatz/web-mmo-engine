@@ -15,6 +15,10 @@ export class GameComponent implements OnInit, AfterViewInit {
   constructor(private elementRef: ElementRef, private worldService: WorldService) { }
 
   ngOnInit() {
+    
+  }
+
+  ngAfterViewInit() {
     this.game = new Game(this.elementRef.nativeElement.querySelector('#renderCanvas'), this.worldService);
   
     // Create the scene
@@ -24,9 +28,7 @@ export class GameComponent implements OnInit, AfterViewInit {
     this.game.doRender();
 
     this.worldService.game = this.game;
-  }
-
-  ngAfterViewInit() {
+    
     this.elementRef.nativeElement.querySelector('#renderCanvas').focus();
   }
 

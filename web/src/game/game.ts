@@ -218,7 +218,6 @@ export class Game {
         this._engine.runRenderLoop(() => {
             this.interactionPrevented = false;
             this.update();
-            this.scene.render();
 
             if (this.textTimer > 0) {
                 this.textTimer -= this.world.delta();
@@ -231,6 +230,8 @@ export class Game {
                     this.text.alpha = Math.min(1, this.textTimer);
                 }
             }
+
+            this.scene.render();
         });
 
         // the canvas/window resize event handler
@@ -333,7 +334,6 @@ export class Game {
             this.inventoryButton.width = '64px';
             this.inventoryButton.height = '64px';
             this.inventoryButton.onPointerDownObservable.add(evt => {
-                this.editor.setEnabled(!this.editor.isEnabled());
                 this.preventInteraction();
             });
             this.ui.addControl(this.inventoryButton);
@@ -344,7 +344,6 @@ export class Game {
             this.musicOnButton.width = '64px';
             this.musicOnButton.height = '64px';
             this.musicOnButton.onPointerDownObservable.add(evt => {
-                this.editor.setEnabled(!this.editor.isEnabled());
                 this.preventInteraction();
                 this.world.setMusicEnabled(true);
                 this.musicOnButton.isVisible = false;
@@ -359,7 +358,6 @@ export class Game {
             this.musicOffButton.width = '64px';
             this.musicOffButton.height = '64px';
             this.musicOffButton.onPointerDownObservable.add(evt => {
-                this.editor.setEnabled(!this.editor.isEnabled());
                 this.preventInteraction();
                 this.world.setMusicEnabled(false);
                 this.musicOnButton.isVisible = true;
@@ -384,9 +382,8 @@ export class Game {
      * Called when the game viewport is externally resized.
      */
     private resize(): void {
+        setTimeout(() => this.setUpActionBar(), 2000); // XXX TODO Figure out why this is needed to allow clicks
         this.ui.getContext().imageSmoothingEnabled = false;
-
-        this.setUpActionBar();
 
         let aspect = this._engine.getAspectRatio(this.camera, true);
 

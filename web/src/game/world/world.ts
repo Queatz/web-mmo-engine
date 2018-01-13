@@ -145,6 +145,8 @@ export class World {
      */
     public setMusic(music: string) {
         if (this._music) {
+            this._music.loop = false;
+            this._music.stop();
             this._music.dispose();
         }
         
