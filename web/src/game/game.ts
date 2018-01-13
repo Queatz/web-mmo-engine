@@ -50,6 +50,7 @@ export class Game {
     public camera: BABYLON.FreeCamera;
     public scene: BABYLON.Scene;
     public text: GUI.TextBlock;
+    public textTimer: number;
 
     /**
      * The game editor.
@@ -138,9 +139,14 @@ export class Game {
         this.text = new GUI.TextBlock();
         this.text.isVisible = false;
         this.text.text = 'Hello World';
-        this.text.color = 'cyan';
+        this.text.color = 'white';
+        this.text.fontFamily = 'Ubuntu, sans';
         this.text.fontSize = 48;
         this.text.top = 300;
+        this.text.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        this.text.shadowBlur = 1;
+        this.text.shadowOffsetX = 3;
+        this.text.shadowOffsetY = 3;
         this.ui.addControl(this.text);
 
         this.editor = new Editor(this);
@@ -174,7 +180,7 @@ export class Game {
 
         this.scene.onPointerUp = () => {
             this.pointerDown = false;
-        }
+        };
 
         this.scene.onKeyboardObservable.add(evt => {
             switch (evt.type) {
@@ -188,11 +194,18 @@ export class Game {
             }
         });
     }
+
+    public showHeading(str: string) {
+        this.text.text = str || '';
+        this.text.alpha = 1;
+        this.text.isVisible = true;
+        this.textTimer = 4;
+    }
     
     /**
      * Called on init.
      */
-    public doRender() : void {
+    public doRender(): void {
         this.resize();
 
         // run the render loop
@@ -200,6 +213,17 @@ export class Game {
             this.interactionPrevented = false;
             this.update();
             this.scene.render();
+
+            if (this.textTimer > 0) {
+                this.textTimer -= this.world.delta();
+                
+                if (this.textTimer <= 0) {
+                    this.textTimer = 0;
+                    this.text.isVisible = false;
+                } else {
+                    this.text.alpha = Math.min(1, this.textTimer);
+                }
+            }
         });
 
         // the canvas/window resize event handler

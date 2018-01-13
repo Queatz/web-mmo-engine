@@ -214,13 +214,14 @@ public class MapObject extends BaseObject {
 
     @Override
     public String freeze() {
-        return new Gson().toJson(new FrozenMap(isStartingMap, this.tiles.allAsList()));
+        return new Gson().toJson(new FrozenMap(name, isStartingMap, this.tiles.allAsList()));
     }
 
     @Override
     public void thaw(String data) {
         FrozenMap freeze = new Gson().fromJson(data, FrozenMap.class);
 
+        this.name = freeze.name;
         this.isStartingMap = freeze.isStartingMap;
 
         this.tiles.loadFromList(

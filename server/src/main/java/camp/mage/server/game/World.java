@@ -315,6 +315,7 @@ public class World {
         // Create an initial map
         if (startingMap == null) {
             startingMap = create(MapObject.class);
+            startingMap.setName("Grassy Beginnings");
             startingMap.isStartingMap = true;
             objs.add(startingMap);
         }

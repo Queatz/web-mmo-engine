@@ -64,6 +64,7 @@ export class World {
             }
 
             this._map = new MapObject(this);
+            this._map.name = event.map.name;
 
             event.map.tiles.forEach(t => {
                 this._map.setTile(t[0], t[1], t[2], t[3]);
@@ -87,6 +88,8 @@ export class World {
             });
 
             this._player = <PlayerObject>this._map.getObjById(event.you);
+
+            this.game.showHeading(this._map.name);
         });
         
         this.game.events.register('chat', (event: ChatEvent) => {

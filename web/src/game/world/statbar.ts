@@ -61,6 +61,7 @@ export class StatBar {
             0, -1, 0
         ];
         vertexData.applyToMesh(this.mesh, true);
+        this.updateMeshObject();
 
         let texture = new BABYLON.Texture(image, this.world.game.scene, false, true, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         let material = new BABYLON.StandardMaterial('statbar', this.world.game.scene);

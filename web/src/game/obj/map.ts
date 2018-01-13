@@ -11,6 +11,11 @@ import { MapEvent, ObjEvent } from '../events/events';
 export class MapObject {
 
     /**
+     * The map name
+     */
+    public name: string;
+
+    /**
      * The size of a single tile
      */
     private tileSize = .5;
