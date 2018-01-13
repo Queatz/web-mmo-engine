@@ -71,6 +71,7 @@ export class Game {
     public sprites: BABYLON.SpriteManager;
     public spritesPlayer: BABYLON.SpriteManager;
     public spritesNPCs: BABYLON.SpriteManager;
+    public spritesCreatures: BABYLON.SpriteManager;
     public spritesItems: BABYLON.SpriteManager;
     public spritesEditor: BABYLON.SpriteManager;
 
@@ -127,11 +128,12 @@ export class Game {
         this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
-        this.sprites = new BABYLON.SpriteManager('spriteManager', '/assets/slime.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesPlayer = new BABYLON.SpriteManager('spriteManager', '/assets/slime_eat.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesNPCs = new BABYLON.SpriteManager('spriteManager', '/assets/butterfly.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesItems = new BABYLON.SpriteManager('spriteManager', '/assets/items.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesEditor = new BABYLON.SpriteManager('spriteManager', '/assets/flower_spawn_area.png', 1000, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.sprites = new BABYLON.SpriteManager('spriteManager1', '/assets/slime.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesPlayer = new BABYLON.SpriteManager('spriteManager2', '/assets/slime_eat.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesNPCs = new BABYLON.SpriteManager('spriteManager3', '/assets/butterfly.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesCreatures = new BABYLON.SpriteManager('spriteManager4', '/assets/bunny.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesItems = new BABYLON.SpriteManager('spriteManager5', '/assets/items.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesEditor = new BABYLON.SpriteManager('spriteManager6', '/assets/flower_spawn_area.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
         this.chompSound = new BABYLON.Sound('chomp', '/assets/chomp.ogg', this.scene);
 

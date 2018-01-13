@@ -34,7 +34,7 @@ export class ServerService {
     }
 
     this.ws.send(JSON.stringify(events));
-    //console.log('send', events);
+    console.log('send', events);
     
     return true;
   }
@@ -59,7 +59,7 @@ export class ServerService {
 
   private onMessage(eventsStr: string) {
     this.world.event(JSON.parse(eventsStr));
-    //console.log('got', JSON.parse(eventsStr));
+    // console.log('got', JSON.parse(eventsStr));
   }
 
 }

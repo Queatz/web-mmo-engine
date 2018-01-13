@@ -27,7 +27,7 @@ public class GameServer extends ServerEndpointConfig.Configurator {
             if (client.getSession().isOpen()) {
                 client.getSession().getBasicRemote().sendText(message);
             }
-        } catch (IOException e) {
+        } catch (IllegalStateException | IOException e) {
             e.printStackTrace();
         }
     }

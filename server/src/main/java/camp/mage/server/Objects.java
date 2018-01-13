@@ -6,6 +6,7 @@ import java.util.Map;
 
 import camp.mage.server.game.World;
 import camp.mage.server.game.objs.BaseObject;
+import camp.mage.server.game.objs.BunnyObject;
 import camp.mage.server.game.objs.ButterflyObject;
 import camp.mage.server.game.objs.FlowerObject;
 import camp.mage.server.game.objs.FlowerSpawnAreaObject;
@@ -23,6 +24,7 @@ public class Objects {
         objTypes.put("map", MapObject.class);
         objTypes.put("player", Player.class);
         objTypes.put("butterfly", ButterflyObject.class);
+        objTypes.put("bunny", BunnyObject.class);
         objTypes.put("flower", FlowerObject.class);
         objTypes.put("flower-spawn-area", FlowerSpawnAreaObject.class);
     }

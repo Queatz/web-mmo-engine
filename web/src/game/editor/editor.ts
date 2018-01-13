@@ -4,6 +4,7 @@ import * as GUI from 'babylonjs-gui';
 import { Game } from '../game';
 import { MapTile } from '../obj/maptile';
 import { ButterflyObject } from '../obj/butterfly';
+import { BunnyObject } from '../obj/bunny';
 import { BaseObject } from '../obj/baseobject';
 import { PlayerObject } from '../obj/player';
 import { FlowerSpawnAreaObject } from '../obj/flowerSpawnArea';
@@ -290,6 +291,7 @@ export class Editor {
             case 'obj':
 
                 let imgAndTypes: any[] = [
+                    ['/assets/Bunny-front-final.png', BunnyObject],
                     ['/assets/butterfly_idle.png', ButterflyObject],
                     ['/assets/slime.png', PlayerObject],
                     ['/assets/flower_spawn_area.png', FlowerSpawnAreaObject]

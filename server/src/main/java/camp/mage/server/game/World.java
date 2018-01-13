@@ -125,7 +125,7 @@ public class World {
         this.manager.events.register("move", (Client client, MoveClientEvent event) -> events.add(() -> {
             Player player = clients.getOrDefault(client, null);
 
-            if (player == null) {
+            if (player == null || player.getMap() == null) {
                 return;
             }
 

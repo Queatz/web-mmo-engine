@@ -5,4 +5,5 @@ package camp.mage.server.game.objs.behaviors;
  */
 
 public interface Behavior {
+    void update();
 }
