@@ -28,4 +28,14 @@ public class DropObject extends BaseObject {
     public void thaw(String data) {
         this.itemType = data;
     }
+
+    @Override
+    public void update() {
+        super.update();
+
+        for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
+            world.leave(this);
+            break;
+        }
+    }
 }

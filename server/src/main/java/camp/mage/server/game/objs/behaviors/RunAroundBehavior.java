@@ -34,7 +34,7 @@ public class RunAroundBehavior implements Behavior {
                     if (dropType != null && Math.random() < dropChance) {
                         BaseObject drop = obj.getWorld().create(dropType);
                         obj.getWorld().join(drop);
-                        drop.getPos().set(obj.getPos());
+                        drop.getPos().set(obj.getPos().add(new MapPos((float) Math.random() - .5f, (float) Math.random() - .5f)));
                         drop.setMap(obj.getMap());
                     }
 

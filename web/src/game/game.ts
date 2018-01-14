@@ -92,7 +92,7 @@ export class Game {
         Config.init();
         
         this._canvas = canvasElement;
-        this._engine = new BABYLON.Engine(this._canvas, true);
+        this._engine = new BABYLON.Engine(this._canvas, false);
         this.events = new Events();
 
         this.identify();
@@ -347,9 +347,11 @@ export class Game {
             this.musicOnButton.height = '64px';
             this.musicOnButton.onPointerDownObservable.add(evt => {
                 this.preventInteraction();
-                this.world.setMusicEnabled(true);
+                this.world.setMusicEnabled(false);
                 this.musicOnButton.isVisible = false;
                 this.musicOffButton.isVisible = true;
+                this.musicOnButton.isHitTestVisible = false;
+                this.musicOffButton.isHitTestVisible = true;
             });
             this.ui.addControl(this.musicOnButton);
         }
@@ -361,9 +363,11 @@ export class Game {
             this.musicOffButton.height = '64px';
             this.musicOffButton.onPointerDownObservable.add(evt => {
                 this.preventInteraction();
-                this.world.setMusicEnabled(false);
+                this.world.setMusicEnabled(true);
                 this.musicOnButton.isVisible = true;
                 this.musicOffButton.isVisible = false;
+                this.musicOnButton.isHitTestVisible = true;
+                this.musicOffButton.isHitTestVisible = false;
             });
             this.ui.addControl(this.musicOffButton);
         }
