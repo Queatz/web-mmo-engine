@@ -2,7 +2,12 @@ import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
 import { BaseObject } from './baseobject';
 import { World } from '../world/world';
-import { MoveClientEvent } from '../events/events';
+import { MoveClientEvent, ActionClientEvent } from '../events/events';
+
+export enum PlayerState {
+    ATTACKING,
+    INTERACTING
+};
 
 /**
  * The main player object.
@@ -14,6 +19,8 @@ export class PlayerObject extends BaseObject {
     private lastPosSend: BABYLON.Vector3 = new BABYLON.Vector3(0, 0, 0);
     private text: GUI.TextBlock;
     private textOffset = new BABYLON.Vector3(0, 0, -.25);
+
+    private state: Set<PlayerState> = new Set<PlayerState>();
     
     constructor(world: World) {
         super(world);
@@ -42,6 +49,7 @@ export class PlayerObject extends BaseObject {
         this.world.runAfterUpdate(() => this.text && this.text.moveToVector3(this.pos.add(this.textOffset), this.world.game.scene));
 
         if (this.id !== this.world.getPlayer().id) {
+            this.updateCharacter();
             return;
         }
 
@@ -64,10 +72,46 @@ export class PlayerObject extends BaseObject {
         }
 
         if (this.world.game.key('KeyX')) {
-            this.sprite.cellIndex = 1;
+            if (!this.state.has(PlayerState.ATTACKING)) {
+                this.state.add(PlayerState.ATTACKING);
+
+                let evt = new ActionClientEvent();
+                evt.action = 'attack';
+                evt.pos = [this.pos.x, this.pos.z];
+                this.world.send(evt);
+            }
         } else {
-            this.sprite.cellIndex = 0;
+            if (this.state.has(PlayerState.ATTACKING)) {
+                this.state.delete(PlayerState.ATTACKING);
+
+                let evt = new ActionClientEvent();
+                evt.action = 'attack.stop';
+                evt.pos = [this.pos.x, this.pos.z];
+                this.world.send(evt);
+            }
         }
+
+        if (this.world.game.key('KeyZ')) {
+            if (!this.state.has(PlayerState.INTERACTING)) {
+                this.state.add(PlayerState.INTERACTING);
+
+                let evt = new ActionClientEvent();
+                evt.action = 'interact';
+                evt.pos = [this.pos.x, this.pos.z];
+                this.world.send(evt);
+            }
+        } else {
+            if (this.state.has(PlayerState.INTERACTING)) {
+                this.state.delete(PlayerState.INTERACTING);
+
+                let evt = new ActionClientEvent();
+                evt.action = 'interact.stop';
+                evt.pos = [this.pos.x, this.pos.z];
+                this.world.send(evt);
+            }
+        }
+
+        this.updateCharacter();
 
         if (new Date().getTime() - this.lastPosSendTime.getTime() > 250 && !this.pos.equals(this.lastPosSend)) {
             this.lastPosSend.copyFrom(this.pos);
@@ -75,6 +119,30 @@ export class PlayerObject extends BaseObject {
             let evt = new MoveClientEvent();
             evt.pos = [this.pos.x, this.pos.z];
             this.world.send(evt);
+        }
+    }
+
+    public updateCharacter() {
+        if(this.state.has(PlayerState.ATTACKING)) {
+            this.sprite.cellIndex = 1;            
+        } else {
+            this.sprite.cellIndex = 0;            
+        }
+    }
+
+    public event(event: any) {
+        if (event.state) {
+            this.state.clear();
+            event.state.forEach(s => {
+                switch (s) {
+                    case 'attack':
+                        this.state.add(PlayerState.ATTACKING);
+                        break;
+                    case 'interact':
+                        this.state.add(PlayerState.INTERACTING);
+                        break;
+                }
+            });
         }
     }
 

@@ -34,7 +34,7 @@ public class Client {
         if (session.isOpen()) {
             try {
                 session.close();
-            } catch (IOException e) {
+            } catch (IOException | IllegalStateException e) {
                 e.printStackTrace();
             }
         }

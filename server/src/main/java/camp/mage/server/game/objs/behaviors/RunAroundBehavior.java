@@ -30,7 +30,7 @@ public class RunAroundBehavior implements Behavior {
 
         if (running <= 0) {
             for (Player player : obj.getMap().getObjs().all(obj.getPos(), Player.class, 3f)) {
-                if (player.getPos().squareDistance(obj.getPos()) < .5f) {
+                if (player.getState().contains(Player.PlayerState.ATTACKING) && player.getPos().squareDistance(obj.getPos()) < .5f) {
                     if (dropType != null && Math.random() < dropChance) {
                         BaseObject drop = obj.getWorld().create(dropType);
                         obj.getWorld().join(drop);

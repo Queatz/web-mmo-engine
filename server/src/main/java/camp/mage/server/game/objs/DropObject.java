@@ -34,7 +34,9 @@ public class DropObject extends BaseObject {
         super.update();
 
         for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
-            world.leave(this);
+            if (player.getState().contains(Player.PlayerState.INTERACTING)) {
+                world.leave(this);
+            }
             break;
         }
     }

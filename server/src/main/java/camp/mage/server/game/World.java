@@ -27,6 +27,7 @@ import camp.mage.server.game.events.client.InventoryClientEvent;
 import camp.mage.server.game.events.client.MoveClientEvent;
 import camp.mage.server.game.events.client.RegisterClientEvent;
 import camp.mage.server.game.events.server.BasicErrorServerEvent;
+import camp.mage.server.game.events.server.ObjServerEvent;
 import camp.mage.server.game.events.server.StateServerEvent;
 import camp.mage.server.game.map.MapPos;
 import camp.mage.server.game.map.MapTile;
@@ -133,7 +134,32 @@ public class World {
         }));
 
         this.manager.events.register("action", (Client client, ActionClientEvent event) -> {
+            Player player = clients.getOrDefault(client, null);
 
+            if (player == null) {
+                return;
+            }
+
+            if ("attack".equals(event.action)) {
+                player.getState().add(Player.PlayerState.ATTACKING);
+            } else if ("interact".equals(event.action)) {
+                player.getState().add(Player.PlayerState.INTERACTING);
+            } else if ("attack.stop".equals(event.action)) {
+                player.getState().remove(Player.PlayerState.ATTACKING);
+            } else if ("interact.stop".equals(event.action)) {
+                player.getState().remove(Player.PlayerState.INTERACTING);
+            }
+
+            if (player.getMap() != null) {
+                ObjServerEvent objServerEvent = new ObjServerEvent(player.getId());
+                objServerEvent.setCustom(new Player.PlayerStateCustomEvent().setState(
+                        player.getState().stream().map(Player.PlayerState::event).collect(Collectors.toSet())
+                ));
+
+                player.getMap().getObjs().all(Player.class).stream()
+                        .filter(p -> !p.getId().equals(player.getId()))
+                        .forEach(p -> send(p, objServerEvent));
+            }
         });
 
         this.manager.events.register("inventory", (Client client, InventoryClientEvent event) -> {
