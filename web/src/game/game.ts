@@ -49,6 +49,7 @@ export class Game {
      * Inventory handing.
      */
     public inventory: Inventory;
+    private inventoryDialog: GUI.Rectangle;
     
     /**
      * Main game singletons.
@@ -335,6 +336,64 @@ export class Game {
     }
 
     /**
+     * Show inventory dialog.
+     */
+    private showInv(show: boolean = true) {
+        if (show && !this.inventoryDialog) {
+            let pad = 4;
+            let cell = 64 + pad;
+            let dlgWidth = cell * 8;
+            let dlgHeight = cell * 8 + 42/*button height + padding*/;
+
+            this.inventoryDialog = new GUI.Rectangle();
+            this.inventoryDialog.width = (dlgWidth + pad * 2) + 'px';
+            this.inventoryDialog.height = (dlgHeight + pad * 2) + 'px';
+            this.inventoryDialog.background = '#aaa';
+            this.inventoryDialog.shadowColor = 'black';
+            this.inventoryDialog.shadowBlur = 20;
+            this.inventoryDialog.thickness = 2;
+            this.inventoryDialog.cornerRadius = 5;
+            this.inventoryDialog.background = new BABYLON.Color4(1, .75, .5, 1).toHexString();
+            this.inventoryDialog.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
+
+            let close = GUI.Button.CreateSimpleButton('closeButton', 'Close');
+            close.top = (dlgHeight / 2 - 20) + 'px';
+            close.background = '#f0f0f0';
+            close.cornerRadius = 5;
+            close.height = '30px';
+            close.width = '200px';
+            close.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
+            close.background = '#fff';
+            close.thickness = 2;
+            close.fontFamily = 'sans';
+            close.onPointerUpObservable.add(() => {
+                this.preventInteraction();
+                this.showInv(false);
+            });
+
+            for (let x = 0; x < 8; x++) {
+                for (let y = 0; y < 8; y++) {
+                    let gridCell = new GUI.Image('invGrid' + x + 'x' + y, '/assets/ui/inventory_grid_bkg.png');
+                    gridCell.width = '64px';
+                    gridCell.height = '64px';
+                    gridCell.left = (-dlgWidth / 2 + cell / 2 + cell * x) + 'px';
+                    gridCell.top = (-dlgHeight / 2 + cell / 2 + cell * y) + 'px';
+
+                    this.inventoryDialog.addControl(gridCell);
+                }
+            }
+
+            this.inventoryDialog.addControl(close);
+        }
+
+        if (show && !this.inventoryDialog.parent) {
+            this.ui.addControl(this.inventoryDialog);
+        } else {
+            this.ui.removeControl(this.inventoryDialog);
+        }
+    }
+
+    /**
      * Setup and / or resize game UI.
      */
     private setUpActionBar() {
@@ -344,6 +403,7 @@ export class Game {
             this.inventoryButton.height = '64px';
             this.inventoryButton.onPointerDownObservable.add(evt => {
                 this.preventInteraction();
+                this.showInv(!this.inventoryDialog || !this.inventoryDialog.parent);
             });
             this.ui.addControl(this.inventoryButton);
         }

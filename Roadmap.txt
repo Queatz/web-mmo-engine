@@ -11,11 +11,7 @@ Persistence:
 Inventory
 =========
 
-Depends On: Drop type
-
 UI Dialog
-
-Push updates to client (InventoryServerEvent)
 
 Drop from UI Dialog (InventoryClientEvent)
 
