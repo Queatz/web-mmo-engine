@@ -80,6 +80,13 @@ export class BaseObject {
     }
 
     /**
+     * Load object state from data.
+     */
+    public data(data: any) {
+        
+    }
+
+    /**
      * Remove the object.
      */
     public dispose() {

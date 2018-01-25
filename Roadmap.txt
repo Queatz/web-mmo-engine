@@ -1,0 +1,43 @@
+
+Account
+=======
+
+Persistence:
+ - Name
+ - Inventory
+ - Username / Pass
+ - Player id + map + position + stats (survive restart)
+
+Inventory
+=========
+
+Depends On: Drop type
+
+UI Dialog
+
+Push updates to client (InventoryServerEvent)
+
+Drop from UI Dialog (InventoryClientEvent)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Resources
+=========
+
+Royalty-Free Music
+https://soundcloud.com/supergamemusic
+https://www.chanwalrus.com/royalty-free-archive

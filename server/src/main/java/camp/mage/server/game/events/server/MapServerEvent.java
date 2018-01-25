@@ -22,7 +22,7 @@ public class MapServerEvent {
             add = new ArrayList<>();
         }
 
-        add.add(new ObjDef(obj.getId(), obj.getType(), obj.getPos().asList()));
+        add.add(new ObjDef(obj.getId(), obj.getType(), obj.getPos().asList(), obj.getData()));
 
         return this;
     }

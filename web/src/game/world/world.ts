@@ -86,6 +86,9 @@ export class World {
                 obj.health = o.health;
                 obj.magic = o.magic;
                 obj.hunger = o.hunger;
+                if (o.data) {
+                    obj.data(o.data);
+                }
                 this._map.add(obj);
             });
 
@@ -99,7 +102,7 @@ export class World {
         });
         
         this.game.events.register('inventory', (event: InventoryEvent) => {
-            // to-do
+            console.log(event);
         });
 
         this.game.events.register('map', (event: MapEvent) => {

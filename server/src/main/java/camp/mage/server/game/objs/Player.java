@@ -5,6 +5,7 @@ import java.util.Set;
 
 import camp.mage.server.Client;
 import camp.mage.server.game.World;
+import camp.mage.server.game.accounts.Account;
 
 /**
  * Created by jacob on 12/6/17.
@@ -42,6 +43,7 @@ public class Player extends CharacterObject {
 
     private String name;
     private Client client;
+    private Account account;
     private Set<PlayerState> state;
 
     public Player(World world) {
@@ -74,5 +76,14 @@ public class Player extends CharacterObject {
 
     public Set<PlayerState> getState() {
         return state;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public Player setAccount(Account account) {
+        this.account = account;
+        return this;
     }
 }

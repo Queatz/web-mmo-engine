@@ -81,4 +81,8 @@ public class BaseObject {
     public void thaw(String data) {
 
     }
+
+    public Object getData() {
+        return null;
+    }
 }

@@ -123,8 +123,7 @@
 [
     'inventory',
     {
-        add: {<inventory_item>},
-        remove: {<inventory_item>}
+        item: {<inventory_item>}
     }
 ]
 

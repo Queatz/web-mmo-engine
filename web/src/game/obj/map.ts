@@ -114,6 +114,9 @@ export class MapObject {
                 obj.health = o.health;
                 obj.magic = o.magic;
                 obj.hunger = o.hunger;
+                if (o.data) {
+                    obj.data(o.data);
+                }
                 this.add(obj);
             });
         }

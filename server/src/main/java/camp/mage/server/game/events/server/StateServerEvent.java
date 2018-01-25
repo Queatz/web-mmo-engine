@@ -24,7 +24,7 @@ public class StateServerEvent {
                 map.getTilesAsList(),
                 map.getObjs().all().stream()
                         .map((BaseObject o) -> {
-                            ObjDef def = new ObjDef(o.getId(), o.getType(), o.getPos().asList());
+                            ObjDef def = new ObjDef(o.getId(), o.getType(), o.getPos().asList(), o.getData());
 
                             if (o instanceof CharacterObject) {
                                 def.health = ((CharacterObject) o).getHealth();

@@ -3,8 +3,8 @@ package camp.mage.server.game.events.server;
 import java.util.ArrayList;
 import java.util.List;
 
+import camp.mage.server.game.accounts.Inventory;
 import camp.mage.server.game.events.defs.InvDef;
-import camp.mage.server.game.objs.ItemObject;
 
 /**
  * Created by jacob on 12/31/17.
@@ -12,34 +12,24 @@ import camp.mage.server.game.objs.ItemObject;
 
 public class InventoryServerEvent {
 
-    public List<InvDef> add;
-    public List<InvDef> remove;
+    public List<InvDef> set;
 
-    public InventoryServerEvent add(ItemObject inventoryItem) {
-        if (add == null) {
-            add = new ArrayList<>();
+    public InventoryServerEvent set(String itemType, float amount) {
+        if (set == null) {
+            set = new ArrayList<>();
         }
 
-        add.add(new InvDef(inventoryItem.getType(), inventoryItem.getQty(), inventoryItem.getPos().asList()));
+        set.add(new InvDef(itemType, amount));
 
         return this;
     }
 
-    public InventoryServerEvent remove(ItemObject inventoryItem) {
-        if (remove == null) {
-            remove = new ArrayList<>();
-        }
+    public List<InvDef> getSet() {
+        return set;
+    }
 
-        remove.add(new InvDef(inventoryItem.getType(), inventoryItem.getQty(), inventoryItem.getPos().asList()));
-
+    public InventoryServerEvent inventory(Inventory inventory) {
+        inventory.all().forEach(this::set);
         return this;
-    }
-
-    public List<InvDef> getAdd() {
-        return add;
-    }
-
-    public List<InvDef> getRemove() {
-        return remove;
     }
 }

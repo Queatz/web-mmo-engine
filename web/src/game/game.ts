@@ -9,6 +9,7 @@ import { World } from './world/world';
 import { WorldService } from '../app/world.service';
 import Config from './config';
 import { IdentifyClientEvent } from './events/events';
+import { Inventory } from './world/inventory';
 
 /**
  * The base game.
@@ -43,6 +44,11 @@ export class Game {
      * Event handing.
      */
     public events: Events;
+    
+    /**
+     * Inventory handing.
+     */
+    public inventory: Inventory;
     
     /**
      * Main game singletons.
@@ -94,6 +100,7 @@ export class Game {
         this._canvas = canvasElement;
         this._engine = new BABYLON.Engine(this._canvas, false);
         this.events = new Events();
+        this.inventory = new Inventory();
 
         this.identify();
     }

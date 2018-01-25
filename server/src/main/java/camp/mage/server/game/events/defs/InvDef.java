@@ -9,14 +9,19 @@ import java.util.List;
 public class InvDef {
 
     public String type;
-    public Integer qty;
+    public Float qty;
     public List<Float> pos;
 
     public InvDef() {}
 
-    public InvDef(String type, Integer qty, List<Float> pos) {
+    public InvDef(String type, Float qty, List<Float> pos) {
         this.type = type;
         this.qty = qty;
         this.pos = pos;
+    }
+
+    public InvDef(String type, Float qty) {
+        this.type = type;
+        this.qty = qty;
     }
 }

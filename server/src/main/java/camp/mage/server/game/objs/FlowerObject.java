@@ -21,9 +21,12 @@ public class FlowerObject extends BaseObject {
         super.update();
 
         for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
-            player.addHealth(0.2f);
-            world.leave(this);
-            break;
+            if (player.getState().contains(Player.PlayerState.INTERACTING)) {
+                player.addHealth(0.2f);
+                player.getAccount().addInventory("flower", 1);
+                world.leave(this);
+                break;
+            }
         }
     }
 }

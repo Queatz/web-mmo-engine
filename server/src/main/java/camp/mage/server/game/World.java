@@ -17,6 +17,7 @@ import camp.mage.server.Manager;
 import camp.mage.server.Objects;
 import camp.mage.server.Persistence;
 import camp.mage.server.StorageEngine;
+import camp.mage.server.game.accounts.Account;
 import camp.mage.server.game.accounts.Accounts;
 import camp.mage.server.game.events.client.ActionClientEvent;
 import camp.mage.server.game.events.client.ChatClientEvent;
@@ -27,6 +28,7 @@ import camp.mage.server.game.events.client.InventoryClientEvent;
 import camp.mage.server.game.events.client.MoveClientEvent;
 import camp.mage.server.game.events.client.RegisterClientEvent;
 import camp.mage.server.game.events.server.BasicErrorServerEvent;
+import camp.mage.server.game.events.server.InventoryServerEvent;
 import camp.mage.server.game.events.server.ObjServerEvent;
 import camp.mage.server.game.events.server.StateServerEvent;
 import camp.mage.server.game.map.MapPos;
@@ -72,6 +74,7 @@ public class World {
                 if (player == null) {
                     player = new Player(this);
                     player.setId(rndId());
+                    player.setAccount(new Account().setPlayer(player));
 
                     accounts.setPlayerForToken(event.token, player);
                 } else {
@@ -275,6 +278,8 @@ public class World {
         posts.add(() -> manager.send(player.getClient(), new StateServerEvent()
                 .map(player.getMap())
                 .you(player)));
+
+        posts.add(() -> manager.send(player.getClient(), new InventoryServerEvent().inventory(player.getAccount().getInventory())));
     }
 
     private String rndId() {
@@ -331,7 +336,12 @@ public class World {
             }
 
             obj.setMap(map);
-            obj.thaw(frozenObj.data);
+
+            try {
+                obj.thaw(frozenObj.data);
+            } catch (Exception e) {
+                log("Could not thaw: " + obj.getId());
+            }
 
             if (startingMap == null && obj instanceof MapObject && ((MapObject) obj).isStartingMap) {
                 startingMap = (MapObject) obj;

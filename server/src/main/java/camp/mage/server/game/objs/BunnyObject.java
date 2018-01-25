@@ -18,7 +18,7 @@ public class BunnyObject extends CharacterObject {
         collides = true;
         run = new RunAroundBehavior(this)
                 .setDropChance(.2f)
-                .setDropType(DropObject.class);
+                .setDrop(() -> world.create(DropObject.class).setItemType("bunny-fur"));
     }
 
     @Override

@@ -58,8 +58,8 @@ export class ServerService {
   }
 
   private onMessage(eventsStr: string) {
-    this.world.event(JSON.parse(eventsStr));
-    // console.log('got', JSON.parse(eventsStr));
+    let event = JSON.parse(eventsStr);
+    this.world.event(event);
   }
 
 }

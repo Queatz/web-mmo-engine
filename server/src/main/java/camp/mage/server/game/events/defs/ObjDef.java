@@ -14,12 +14,14 @@ public class ObjDef {
     public Float health;
     public Float magic;
     public Float hunger;
+    public Object data;
 
     public ObjDef() {}
 
-    public ObjDef(String id, String type, List<Float> pos) {
+    public ObjDef(String id, String type, List<Float> pos, Object data) {
         this.id = id;
         this.type = type;
         this.pos = pos;
+        this.data = data;
     }
 }
