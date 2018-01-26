@@ -26,6 +26,10 @@ public class DropObject extends BaseObject {
     public void update() {
         super.update();
 
+        if (map == null) {
+            return;
+        }
+
         for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
             if (player.getState().contains(Player.PlayerState.INTERACTING)) {
                 player.getAccount().addInventory(itemType, 1);

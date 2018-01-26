@@ -30,4 +30,8 @@ public class Inventory {
     public float amount(String itemType) {
         return items.containsKey(itemType) ? items.get(itemType) : 0;
     }
+
+    public boolean available(String type, float qty) {
+        return items.containsKey(type) && items.get(type) >= qty;
+    }
 }

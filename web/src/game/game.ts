@@ -318,6 +318,10 @@ export class Game {
         this.editor.update();
         this.world.update();
 
+        if (this.keyPressed('KeyI')) {
+            this.showInv(!this.inventoryDialog || !this.inventoryDialog.parent);
+        }
+
         // Send any events to server
         if (this._eventsQueue.length > 0) {
             let success = this.worldService.send(this._eventsQueue);
@@ -349,15 +353,14 @@ export class Game {
             this.inventoryDialog = new GUI.Rectangle();
             this.inventoryDialog.width = (dlgWidth + pad * 2) + 'px';
             this.inventoryDialog.height = (dlgHeight + pad * 2) + 'px';
-            this.inventoryDialog.background = '#aaa';
             this.inventoryDialog.shadowColor = 'black';
             this.inventoryDialog.shadowBlur = 20;
             this.inventoryDialog.thickness = 2;
             this.inventoryDialog.cornerRadius = 5;
-            this.inventoryDialog.background = new BABYLON.Color4(1, .75, .5, 1).toHexString();
+            this.inventoryDialog.background = new BABYLON.Color4(1, .75, .5, .75).toHexString();
             this.inventoryDialog.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
 
-            let close = GUI.Button.CreateSimpleButton('closeButton', 'Close');
+            let close = GUI.Button.CreateSimpleButton('closeButton', 'Close Inventory');
             close.top = (dlgHeight / 2 - 20) + 'px';
             close.background = '#f0f0f0';
             close.cornerRadius = 5;
@@ -385,9 +388,16 @@ export class Game {
             }
 
             this.inventoryDialog.addControl(close);
+
+            this.inventory.onInventoryUpdatedObservable.add(() => {
+                if (this.inventoryDialog.parent) {
+                    this.refreshInventoryItemsOnGrid();
+                }
+            });
         }
 
         if (show && !this.inventoryDialog.parent) {
+            this.inventory.select(null);
             this.ui.addControl(this.inventoryDialog);
             this.refreshInventoryItemsOnGrid();
         } else {
@@ -410,18 +420,25 @@ export class Game {
         let x = 0, y = 0;
 
         this.inventory.all().forEach(inv => {
-            let img = new GUI.Image('invItemType', '/assets/carrot.png');
+            let img = new GUI.Image('invItemType', '/assets/items.png');
             let qty = new GUI.TextBlock('invItemQty', inv.qty.toString());
             let uiElement = new GUI.Rectangle();
             uiElement.thickness = 0;
             uiElement.width = '64px';
             uiElement.height = '64px';
+            img.cellHeight = 16;
+            img.cellWidth = 16;
+            img.cellId = this.inventory.spriteIndex(inv.type);
             img.width = '64px';
             img.height = '64px';
             qty.color = 'white';
             qty.fontFamily = 'Ubuntu, sans';
             qty.fontStyle = 'bold';
-            qty.fontSize = 14;
+            qty.fontSize = 16;
+            qty.shadowColor = 'rgba(0, 0, 0, 0.75)';
+            qty.shadowBlur = 1;
+            qty.shadowOffsetX = 1;
+            qty.shadowOffsetY = 1;
             qty.resizeToFit = true;
             qty.textHorizontalAlignment = GUI.TextBlock.HORIZONTAL_ALIGNMENT_RIGHT;
             qty.textVerticalAlignment = GUI.TextBlock.VERTICAL_ALIGNMENT_BOTTOM;
@@ -433,6 +450,10 @@ export class Game {
             uiElement.addControl(qty);
             uiElement.left = (-dlgWidth / 2 + cell / 2 + cell * x) + 'px';
             uiElement.top = (-dlgHeight / 2 + cell / 2 + cell * y) + 'px';
+            uiElement.onPointerDownObservable.add(() => {
+                this.showInv(false);
+                this.inventory.select(inv);
+            });
             this.inventoryUIElements.set(inv.type, uiElement);
             this.inventoryDialog.addControl(uiElement);
 
@@ -440,6 +461,7 @@ export class Game {
                 x += 1;
             } else {
                 y += 1;
+                x = 0;
             }
         });
     }

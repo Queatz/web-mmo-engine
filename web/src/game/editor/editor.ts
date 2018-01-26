@@ -238,7 +238,6 @@ export class Editor {
             this.dialog = new GUI.Rectangle();
             this.dialog.width = '500px';
             this.dialog.height = '550px';
-            this.dialog.background = '#aaa';
             this.dialog.shadowColor = 'black';
             this.dialog.shadowBlur = 20;
             this.dialog.thickness = 2;

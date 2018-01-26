@@ -2,7 +2,7 @@ import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
 import { BaseObject } from './baseobject';
 import { World } from '../world/world';
-import { MoveClientEvent, ActionClientEvent } from '../events/events';
+import { MoveClientEvent, ActionClientEvent, InventoryClientEvent, InventoryItemDef } from '../events/events';
 
 export enum PlayerState {
     ATTACKING,
@@ -107,6 +107,31 @@ export class PlayerObject extends BaseObject {
                 let evt = new ActionClientEvent();
                 evt.action = 'interact.stop';
                 evt.pos = [this.pos.x, this.pos.z];
+                this.world.send(evt);
+            }
+        }
+
+        
+        if (this.world.game.keyPressed('KeyC')) {
+            let sel = this.world.game.inventory.selection;
+            if (sel) {
+                let evt = new InventoryClientEvent();
+                evt.use = new InventoryItemDef();
+                evt.use.pos = [this.pos.x, this.pos.z];
+                evt.use.qty = 1;
+                evt.use.type = sel.type;
+                this.world.send(evt);
+            }
+        }
+
+        if (this.world.game.keyPressed('KeyV')) {
+            let sel = this.world.game.inventory.selection;
+            if (sel) {
+                let evt = new InventoryClientEvent();
+                evt.drop = new InventoryItemDef();
+                evt.drop.pos = [this.pos.x, this.pos.z];
+                evt.drop.qty = 1;
+                evt.drop.type = sel.type;
                 this.world.send(evt);
             }
         }

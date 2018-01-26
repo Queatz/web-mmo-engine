@@ -22,7 +22,6 @@ public class FlowerObject extends BaseObject {
 
         for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
             if (player.getState().contains(Player.PlayerState.INTERACTING)) {
-                player.addHealth(0.2f);
                 player.getAccount().addInventory("flower", 1);
                 world.leave(this);
                 break;

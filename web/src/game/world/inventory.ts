@@ -12,6 +12,14 @@ export class Inventory {
     private spriteIndexFromItemType = new Map<string, number>();
     private items: Map<string, InvItem> = new Map<string, InvItem>();
     public onInventoryUpdatedObservable: BABYLON.Observable<InvItem> = new BABYLON.Observable<InvItem>();
+    public selection: InvItem = null;
+
+    /**
+     * Select an inventory item to be used.
+     */
+    public select(inv: InvItem) {
+        this.selection = inv;
+    }
     
     constructor() {
         [

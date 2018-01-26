@@ -166,7 +166,19 @@ public class World {
         });
 
         this.manager.events.register("inventory", (Client client, InventoryClientEvent event) -> {
+            Player player = clients.getOrDefault(client, null);
 
+            if (player == null) {
+                return;
+            }
+
+            if (event.use != null) {
+                player.useInventory(event.use);
+            }
+
+            if (event.drop != null) {
+                player.dropInventory(event.drop);
+            }
         });
 
         this.manager.events.register("edit", (Client client, EditClientEvent event) -> events.add(() -> {
