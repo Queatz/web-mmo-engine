@@ -6,6 +6,7 @@ import { StateEvent, ChatEvent, InventoryEvent, MapEvent, ObjEvent } from "../ev
 import Config from "../config";
 import { BaseObject } from "../obj/baseobject";
 import { StatBar } from "./statbar";
+import { InvItem } from "./inventory";
 
 /**
  * The world object.
@@ -102,7 +103,9 @@ export class World {
         });
         
         this.game.events.register('inventory', (event: InventoryEvent) => {
-            console.log(event);
+            if (event.set) {
+                event.set.forEach(inv => this.game.inventory.set(new InvItem(inv.type, inv.qty)));
+            }
         });
 
         this.game.events.register('map', (event: MapEvent) => {

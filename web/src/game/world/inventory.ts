@@ -1,5 +1,17 @@
+export class InvItem {
+    type: string;
+    qty: number;
+
+    constructor(type: string, qty: number) {
+        this.type = type;
+        this.qty = qty;
+    }
+}
+
 export class Inventory {
-    public spriteIndexFromItemType = new Map<string, number>();
+    private spriteIndexFromItemType = new Map<string, number>();
+    private items: Map<string, InvItem> = new Map<string, InvItem>();
+    public onInventoryUpdatedObservable: BABYLON.Observable<InvItem> = new BABYLON.Observable<InvItem>();
     
     constructor() {
         [
@@ -12,5 +24,14 @@ export class Inventory {
 
     public spriteIndex(type: string) {
         return this.spriteIndexFromItemType.has(type) ? this.spriteIndexFromItemType.get(type) : 0;
+    }
+
+    public set(inv: InvItem) {
+        this.items.set(inv.type, inv);
+        this.onInventoryUpdatedObservable.notifyObservers(inv);
+    }
+
+    public all() {
+        return this.items;
     }
 }

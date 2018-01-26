@@ -84,8 +84,7 @@ export class ChatEvent {
 }
 
 export class InventoryEvent {
-    add: InventoryItemDef[];
-    remove: InventoryItemDef[];
+    set: InventoryItemDef[];
 }
 
 export class MapEvent {

@@ -50,6 +50,7 @@ export class Game {
      */
     public inventory: Inventory;
     private inventoryDialog: GUI.Rectangle;
+    private inventoryUIElements: Map<string, GUI.Control> = new Map<string, GUI.Image>();
     
     /**
      * Main game singletons.
@@ -95,7 +96,7 @@ export class Game {
     private _keysPressed: Set<string> = new Set();
     private interactionPrevented: boolean;
     
-    constructor(canvasElement : HTMLCanvasElement, private worldService: WorldService) {
+    constructor(canvasElement: HTMLCanvasElement, private worldService: WorldService) {
         Config.init();
         
         this._canvas = canvasElement;
@@ -388,9 +389,59 @@ export class Game {
 
         if (show && !this.inventoryDialog.parent) {
             this.ui.addControl(this.inventoryDialog);
+            this.refreshInventoryItemsOnGrid();
         } else {
             this.ui.removeControl(this.inventoryDialog);
         }
+    }
+
+    /**
+     * Display inventory items and quantities on the grid.
+     */
+    private refreshInventoryItemsOnGrid() {
+        this.inventoryUIElements.forEach(e => this.inventoryDialog.removeControl(e));
+        this.inventoryUIElements.clear();
+
+        let pad = 4;
+        let cell = 64 + pad;
+        let dlgWidth = cell * 8;
+        let dlgHeight = cell * 8 + 42/*button height + padding*/;
+
+        let x = 0, y = 0;
+
+        this.inventory.all().forEach(inv => {
+            let img = new GUI.Image('invItemType', '/assets/carrot.png');
+            let qty = new GUI.TextBlock('invItemQty', inv.qty.toString());
+            let uiElement = new GUI.Rectangle();
+            uiElement.thickness = 0;
+            uiElement.width = '64px';
+            uiElement.height = '64px';
+            img.width = '64px';
+            img.height = '64px';
+            qty.color = 'white';
+            qty.fontFamily = 'Ubuntu, sans';
+            qty.fontStyle = 'bold';
+            qty.fontSize = 14;
+            qty.resizeToFit = true;
+            qty.textHorizontalAlignment = GUI.TextBlock.HORIZONTAL_ALIGNMENT_RIGHT;
+            qty.textVerticalAlignment = GUI.TextBlock.VERTICAL_ALIGNMENT_BOTTOM;
+            qty.onAfterDrawObservable.add(t => {
+                t.top = (t.parent.heightInPixels / 2 - t.heightInPixels / 2 - 4) + 'px';
+                t.left = (t.parent.widthInPixels / 2 - t.widthInPixels / 2 - 4) + 'px';
+            });
+            uiElement.addControl(img);
+            uiElement.addControl(qty);
+            uiElement.left = (-dlgWidth / 2 + cell / 2 + cell * x) + 'px';
+            uiElement.top = (-dlgHeight / 2 + cell / 2 + cell * y) + 'px';
+            this.inventoryUIElements.set(inv.type, uiElement);
+            this.inventoryDialog.addControl(uiElement);
+
+            if (x < 8) {
+                x += 1;
+            } else {
+                y += 1;
+            }
+        });
     }
 
     /**
