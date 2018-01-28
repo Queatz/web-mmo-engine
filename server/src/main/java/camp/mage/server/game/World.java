@@ -74,6 +74,7 @@ public class World {
                 if (player == null) {
                     player = new Player(this);
                     player.setId(rndId());
+                    player.setName("slime" + new Random().nextInt(100));
                     player.setAccount(new Account().setPlayer(player));
 
                     accounts.setPlayerForToken(event.token, player);

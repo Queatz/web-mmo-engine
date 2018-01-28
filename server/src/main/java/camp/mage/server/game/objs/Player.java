@@ -121,4 +121,17 @@ public class Player extends CharacterObject {
         this.account = account;
         return this;
     }
+
+    @Override
+    public Object getData() {
+        return new ObjData(name);
+    }
+
+    private static class ObjData {
+        public String name;
+
+        public ObjData(String name) {
+            this.name = name;
+        }
+    }
 }

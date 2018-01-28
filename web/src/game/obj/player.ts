@@ -19,6 +19,7 @@ export class PlayerObject extends BaseObject {
     private lastPosSend: BABYLON.Vector3 = new BABYLON.Vector3(0, 0, 0);
     private text: GUI.TextBlock;
     private textOffset = new BABYLON.Vector3(0, 0, -.25);
+    private name: string = '';
 
     private state: Set<PlayerState> = new Set<PlayerState>();
     
@@ -32,7 +33,7 @@ export class PlayerObject extends BaseObject {
         this.sprite.position = this.pos;
 
         this.text = new GUI.TextBlock();
-        this.text.text = 'slime1';
+        this.text.text = this.name;
         this.text.color = 'white';
         this.text.fontFamily = 'Ubuntu, sans';
         this.text.fontStyle = 'bold';
@@ -41,6 +42,14 @@ export class PlayerObject extends BaseObject {
         this.text.shadowOffsetX = 3;
         this.text.shadowOffsetY = 3;
         this.world.game.ui.addControl(this.text);
+    }
+
+    public data(data: any) {
+        this.name = data.name || '';
+        
+        if (this.text) {
+            this.text.text = this.name;
+        }
     }
 
     public update() {
