@@ -13,6 +13,7 @@ import camp.mage.server.game.objs.FlowerObject;
 import camp.mage.server.game.objs.FlowerSpawnAreaObject;
 import camp.mage.server.game.objs.MapObject;
 import camp.mage.server.game.objs.Player;
+import camp.mage.server.game.objs.TeleportObject;
 
 /**
  * Created by jacob on 1/1/18.
@@ -29,6 +30,7 @@ public class Objects {
         objTypes.put("drop", DropObject.class);
         objTypes.put("flower", FlowerObject.class);
         objTypes.put("flower-spawn-area", FlowerSpawnAreaObject.class);
+        objTypes.put("teleport", TeleportObject.class);
     }
 
     public static BaseObject createFromType(World world, String type) {

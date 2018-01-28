@@ -7,6 +7,7 @@ import { ButterflyObject } from '../obj/butterfly';
 import { BunnyObject } from '../obj/bunny';
 import { BaseObject } from '../obj/baseobject';
 import { PlayerObject } from '../obj/player';
+import { TeleportObject } from '../obj/teleport';
 import { FlowerSpawnAreaObject } from '../obj/flowerSpawnArea';
 import Config from '../config';
 import { MapEvent, ObjDef, EditClientEvent } from '../events/events';
@@ -293,7 +294,8 @@ export class Editor {
                     ['/assets/Bunny-front-final.png', BunnyObject],
                     ['/assets/butterfly_idle.png', ButterflyObject],
                     ['/assets/slime.png', PlayerObject],
-                    ['/assets/flower_spawn_area.png', FlowerSpawnAreaObject]
+                    ['/assets/editor_objs.png', FlowerSpawnAreaObject, 0],
+                    ['/assets/editor_objs.png', TeleportObject, 1]
                 ];
 
                 for (let i = 0; i < imgAndTypes.length; i++) {
@@ -301,6 +303,12 @@ export class Editor {
                     obj.width = '64px';
                     obj.height = '64px';
                     obj.top = (-250 + 64 * (i + 1)) + 'px';
+
+                    if (imgAndTypes[i].length > 2) {
+                        obj.cellWidth = 16;
+                        obj.cellHeight = 16;
+                        obj.cellId = imgAndTypes[i][2];
+                    }
 
                     obj.onPointerDownObservable.add(() => {
                         this.editorPenMode = 'obj';

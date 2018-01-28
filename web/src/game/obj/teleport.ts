@@ -3,9 +3,9 @@ import { BaseObject } from './baseobject';
 import { World } from '../world/world';
 
 /**
- * Flower Spawn Area object.
+ * Teleport object.
  */
-export class FlowerSpawnAreaObject extends BaseObject {
+export class TeleportObject extends BaseObject {
 
     constructor(world: World) {
         super(world);
@@ -14,10 +14,10 @@ export class FlowerSpawnAreaObject extends BaseObject {
     }
 
     public render() {
-        this.sprite = new BABYLON.Sprite('flowerSpawnAreaSprite', this.world.game.spritesEditor);
+        this.sprite = new BABYLON.Sprite('teleportSprite', this.world.game.spritesEditor);
         this.sprite.size = .5;
         this.sprite.position = this.pos;
-        this.sprite.cellIndex = 0;
+        this.sprite.cellIndex = 1;
     }
 
     public update() {

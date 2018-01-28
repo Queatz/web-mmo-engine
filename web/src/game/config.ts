@@ -4,6 +4,7 @@ import { BunnyObject } from "./obj/bunny";
 import { FlowerSpawnAreaObject } from "./obj/flowerSpawnArea";
 import { FlowerObject } from "./obj/flower";
 import { DropObject } from "./obj/drop";
+import { TeleportObject } from "./obj/teleport";
 
 
 /**
@@ -25,7 +26,8 @@ export default class Config {
             ['bunny', BunnyObject],
             ['drop', DropObject],
             ['flower', FlowerObject],
-            ['flower-spawn-area', FlowerSpawnAreaObject]
+            ['flower-spawn-area', FlowerSpawnAreaObject],
+            ['teleport', TeleportObject]
         ]
         
         .forEach((t: any[]) => {
