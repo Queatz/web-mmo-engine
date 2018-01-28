@@ -40,10 +40,8 @@ export class World {
 
     constructor(public game: Game) {
 
-        // XXX TODO remove this - it comes from server now
-        this._map = new MapObject(this);
-        this._player = new PlayerObject(this);
-        this._map.add(this._player);
+        this._map = null;
+        this._player = null;
 
         this.healthBar = new StatBar(this, '/assets/health_bar.png');
         this.healthBarBucket = new StatBar(this, '/assets/empty_bar.png', true);
@@ -173,18 +171,24 @@ export class World {
         let t = new Date().getTime() / 1000;
         this._delta = Math.min(1 / 15, t - this._lastFrameTime);
         this._lastFrameTime = t;
-        this._map.update();
+
+        if (this._map) {
+            this._map.update();
+        }
+
         this.game.centerCameraOnPlayer();
 
-        this.healthBar.setHealth(this.getPlayer().health);
-        this.magicBar.setHealth(this.getPlayer().magic);
-        this.hungerBar.setHealth(this.getPlayer().hunger);
-        this.healthBar.update();
-        this.healthBarBucket.update();
-        this.magicBar.update();
-        this.magicBarBucket.update();
-        this.hungerBar.update();
-        this.hungerBarBucket.update();
+        if (this.getPlayer()) {
+            this.healthBar.setHealth(this.getPlayer().health);
+            this.magicBar.setHealth(this.getPlayer().magic);
+            this.hungerBar.setHealth(this.getPlayer().hunger);
+            this.healthBar.update();
+            this.healthBarBucket.update();
+            this.magicBar.update();
+            this.magicBarBucket.update();
+            this.hungerBar.update();
+            this.hungerBarBucket.update();
+        }
     }
 
     /**

@@ -23,6 +23,7 @@ export class Editor {
     private toolbar: GUI.Rectangle;
     private selectTileIcon: GUI.Image;
     private selectObjectIcon: GUI.Image;
+    private selectEditObjectIcon: GUI.Image;
     private selectMoveObjectIcon: GUI.Image;
     private selectDelObjectIcon: GUI.Image;
     private editorSelection: GUI.Image;
@@ -49,54 +50,78 @@ export class Editor {
         this.toolbar.shadowColor = 'black';
         this.toolbar.shadowBlur = 20;
 
+        let x = -128;
+
         this.selectTileIcon = new GUI.Image('editorSelectTileIcon', '/assets/grassy_tiles.png');
         this.selectTileIcon.width = '64px';
         this.selectTileIcon.height = '64px';
+        this.selectTileIcon.left = x + 'px';
         this.selectTileIcon.onPointerDownObservable.add(() => {
             this.showDialog();
             this.setDialogContent('tile');            
             this.game.preventInteraction();
         });
 
+        x += 64;
+
         this.selectObjectIcon = new GUI.Image('editorSelectObjectIcon', '/assets/slime.png');
         this.selectObjectIcon.width = '64px';
         this.selectObjectIcon.height = '64px';
-        this.selectObjectIcon.left = '64px';
+        this.selectObjectIcon.left = x + 'px';
         this.selectObjectIcon.onPointerDownObservable.add(() => {
             this.showDialog();
             this.setDialogContent('obj');
             this.game.preventInteraction();
         });
 
+        x += 64;        
+
+        this.selectEditObjectIcon = new GUI.Image('editorSelectEditObjectIcon', '/assets/edit_obj.png');
+        this.selectEditObjectIcon.width = '64px';
+        this.selectEditObjectIcon.height = '64px';
+        this.selectEditObjectIcon.left = x + 'px';
+        this.selectEditObjectIcon.onPointerDownObservable.add(() => {
+            this.editorPenMode = 'edit';
+            this.editorSelection.left = this.selectEditObjectIcon.leftInPixels;            
+            this.game.preventInteraction();
+        });
+
+        x += 64;        
+
         this.selectMoveObjectIcon = new GUI.Image('editorSelectMoveObjectIcon', '/assets/move_obj.png');
         this.selectMoveObjectIcon.width = '64px';
         this.selectMoveObjectIcon.height = '64px';
-        this.selectMoveObjectIcon.left = '128px';
+        this.selectMoveObjectIcon.left = x + 'px';
         this.selectMoveObjectIcon.onPointerDownObservable.add(() => {
             this.editorPenMode = 'move';
-            this.editorSelection.left = '128px';
+            this.editorSelection.left = this.selectMoveObjectIcon.left;
             this.game.preventInteraction();
         });
+
+        x += 64;        
 
         this.selectDelObjectIcon = new GUI.Image('editorSelectDelObjectIcon', '/assets/del_obj.png');
         this.selectDelObjectIcon.width = '64px';
         this.selectDelObjectIcon.height = '64px';
-        this.selectDelObjectIcon.left = '196px';
+        this.selectDelObjectIcon.left = x + 'px';
         this.selectDelObjectIcon.onPointerDownObservable.add(() => {
             this.editorPenMode = 'del';
-            this.editorSelection.left = '196px';
+            this.editorSelection.left = this.selectDelObjectIcon.left;
             this.game.preventInteraction();
         });
 
+        x += 64;
+        
         this.toolbar.addControl(this.selectTileIcon);
         this.toolbar.addControl(this.selectObjectIcon);
+        this.toolbar.addControl(this.selectEditObjectIcon);
         this.toolbar.addControl(this.selectMoveObjectIcon);
         this.toolbar.addControl(this.selectDelObjectIcon);
 
         this.editorSelection = new GUI.Image('editorSelectDelObjectIcon', '/assets/editor_selection.png');
         this.editorSelection.width = '64px';
         this.editorSelection.height = '64px';
-        this.editorSelection.left = '0px';
+        this.editorSelection.left = this.selectTileIcon.left;
         this.editorSelection.isHitTestVisible = false;
 
         this.toolbar.addControl(this.editorSelection);
@@ -229,6 +254,7 @@ export class Editor {
         this.editorPenMode = 'tile';
         this.currentTileSet = tile.image;
         this.currentTileIndex = tile.index;
+        this.editorSelection.left = this.selectTileIcon.left;
     }
 
     /**
@@ -312,7 +338,7 @@ export class Editor {
 
                     obj.onPointerDownObservable.add(() => {
                         this.editorPenMode = 'obj';
-                        this.editorSelection.left = '64px';
+                        this.editorSelection.left = this.selectObjectIcon.left;
                         this.currentObjClass = imgAndTypes[i][1];
                         this.showDialog(false);
                         this.game.preventInteraction();
@@ -344,7 +370,7 @@ export class Editor {
         this.tilesImage.onPointerDownObservable.add(evt => {
             this.currentTileIndex = this.getTileIndex(this.tilesImage.getLocalCoordinates(evt));
             this.editorPenMode = 'tile';
-            this.editorSelection.left = '0px';
+            this.editorSelection.left = this.selectTileIcon.left;
             this.showDialog(false);
             this.game.preventInteraction();
         });
