@@ -1,6 +1,6 @@
 # Quickstart
 
-## Prerequisites
+## 1. Prerequisites
 
 ### Tomcat
 
@@ -16,7 +16,7 @@ https://www.arangodb.com/download-major/
 
 ### NPM
 
-You'll also need NPM and the Angular client.
+You'll also need NPM.
 
 See here for installing NPM: https://docs.npmjs.com/cli/install
 
@@ -26,12 +26,12 @@ Easy install for the Angular client:
 
 `npm i -g @angular/cli`
 
-## Build the server
+## 2. Build the server
 
 Go to the ArangoDB web interface at http://localhost:8529 and login with the username/password
 that you setup when installing ArangoDB.
 
-Next, click on "Users" on the side navigation and created a new user with:
+Next, click on "Users" on the side navigation and create a new user with:
 
     Username: slime
     Password: slime
@@ -46,7 +46,7 @@ Deploy the generated WAR file from `server/build/libs/server.war` to Tomcat (i.e
 
 Tomcat manager is located at: http://localhost:8080/manager/html/
 
-## Run the client
+## 3. Run the client
 
     cd web
     npm i
