@@ -26,6 +26,8 @@ Easy install for the Angular client:
 
 `npm i -g @angular/cli`
 
+You might need to run this command as `sudo`.
+
 ## 2. Build the server
 
 Go to the ArangoDB web interface at http://localhost:8529 and login with the username/password
