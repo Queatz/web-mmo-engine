@@ -1,0 +1,51 @@
+# Quickstart
+
+## Prerequisites
+
+### Tomcat
+
+Make sure you have Tomcat installed and running.
+
+https://tomcat.apache.org/download-90.cgi
+
+### ArangoDB
+
+You need ArangoDB running, too.
+
+https://www.arangodb.com/download-major/
+
+### NPM
+
+You'll also need NPM and the Angular client.
+
+See here for installing NPM: https://docs.npmjs.com/cli/install
+
+### Angular client
+
+Easy install for the Angular client:
+
+`npm i -g @angular/cli`
+
+## Build the server
+
+In the cloned directory, run the following command:
+
+`./gradlew :server:war`
+
+Deploy the generated WAR file from `server/build/libs/server.war` to Tomcat (i.e. in the "WAR file to deploy" section of the Tomcat manager.)
+
+Tomcat manager is located at: http://localhost:8080/manager/html/
+
+## Run the client
+
+    cd web
+    npm i
+    ng serve -p 4444
+
+## Play the game
+
+Point your web browser to http://localhost:4444
+
+## Notes
+
+Edits to the source will be refresh the game automatically.
