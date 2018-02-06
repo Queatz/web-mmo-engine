@@ -28,7 +28,17 @@ Easy install for the Angular client:
 
 ## Build the server
 
-In the cloned directory, run the following command:
+Go to the ArangoDB web interface at http://localhost:8529 and login with the username/password
+that you setup when installing ArangoDB.
+
+Next, click on "Users" on the side navigation and created a new user with:
+
+    Username: slime
+    Password: slime
+
+This is the user the game server uses to save game data in the db.
+
+Next, in the root cloned directory, run the following command:
 
 `./gradlew :server:war`
 
