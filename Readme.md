@@ -40,6 +40,8 @@ Next, click on "Users" on the side navigation and create a new user with:
 
 This is the user the game server uses to save game data in the db.
 
+Ensure in the permissions tab that this user can edit the slime database.
+
 Next, in the root cloned directory, run the following command:
 
 `./gradlew :server:war`

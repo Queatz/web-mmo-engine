@@ -1,0 +1,13 @@
+# Setup Script
+
+    curl -O https://download.arangodb.com/arangodb33/Debian_9.0/Release.key
+    sudo apt-key add - < Release.key
+    echo 'deb https://download.arangodb.com/arangodb33/Debian_9.0/ /' | sudo tee /etc/apt/sources.list.d/arangodb.list
+    apt-get update
+    apt-get install arangodb3 -y
+
+
+Enter the `arangosh` command and enter the password you setup for ArangoDB and run:
+
+    require('@arangodb/users').save('slime', 'slime')
+    require('@arangodb/users').grantDatabase('slime', 'slime', 'rw')
