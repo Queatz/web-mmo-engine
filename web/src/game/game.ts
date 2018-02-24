@@ -53,6 +53,11 @@ export class Game {
     private inventoryUIElements: Map<string, GUI.Control> = new Map<string, GUI.Image>();
     
     /**
+     * Options
+     */
+    private optionsDialog: GUI.Rectangle;
+
+    /**
      * Main game singletons.
      */
     public camera: BABYLON.FreeCamera;
@@ -72,6 +77,7 @@ export class Game {
     public inventoryButton: GUI.Image;    
     public musicOnButton: GUI.Image;    
     public musicOffButton: GUI.Image;    
+    public optionsButton: GUI.Image;    
 
     /**
      * Sprite textures.
@@ -466,6 +472,47 @@ export class Game {
         });
     }
 
+    private showOptions(show: boolean) {
+        if (show && !this.optionsDialog) {
+            let pad = 4;
+            let cell = 64 + pad;
+            let dlgWidth = cell * 8;
+            let dlgHeight = cell * 8 + 42/*button height + padding*/;
+
+            this.optionsDialog = new GUI.Rectangle();
+            this.optionsDialog.width = (dlgWidth + pad * 2) + 'px';
+            this.optionsDialog.height = (dlgHeight + pad * 2) + 'px';
+            this.optionsDialog.shadowColor = 'black';
+            this.optionsDialog.shadowBlur = 20;
+            this.optionsDialog.thickness = 2;
+            this.optionsDialog.cornerRadius = 5;
+            this.optionsDialog.background = new BABYLON.Color4(1, .75, .5, .75).toHexString();
+            this.optionsDialog.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
+
+            let close = GUI.Button.CreateSimpleButton('closeButton', 'Close');
+            close.top = (dlgHeight / 2 - 20) + 'px';
+            close.background = '#f0f0f0';
+            close.cornerRadius = 5;
+            close.height = '30px';
+            close.width = '200px';
+            close.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
+            close.background = '#fff';
+            close.thickness = 2;
+            close.fontFamily = 'sans';
+            close.onPointerUpObservable.add(() => {
+                this.preventInteraction();
+                this.showOptions(false);
+            });
+            this.optionsDialog.addControl(close);
+        }
+
+        if (show && !this.optionsDialog.parent) {
+            this.ui.addControl(this.optionsDialog);
+        } else {
+            this.ui.removeControl(this.optionsDialog);
+        }
+    }
+
     /**
      * Setup and / or resize game UI.
      */
@@ -512,16 +559,32 @@ export class Game {
             this.ui.addControl(this.musicOffButton);
         }
 
+        if (!this.optionsButton) {
+            this.optionsButton = new GUI.Image('optionsButton', '/assets/ui/options.png');
+            this.optionsButton.width = '64px';
+            this.optionsButton.height = '64px';
+            this.optionsButton.onPointerDownObservable.add(evt => {
+                this.preventInteraction();
+                this.showOptions(true);
+            });
+            this.ui.addControl(this.optionsButton);
+        }
+
         let toolsLeft = (this.ui.getSize().width / 2 - this.inventoryButton.widthInPixels / 1.5);
         let toolsTop = (this.ui.getSize().height / 2 - this.inventoryButton.heightInPixels / 1.5);
 
         this.inventoryButton.left = toolsLeft + 'px';
         this.inventoryButton.top = toolsTop + 'px';
 
+        let h = this.inventoryButton.heightInPixels;
+
         this.musicOnButton.left = toolsLeft + 'px';
-        this.musicOnButton.top = (toolsTop - this.inventoryButton.heightInPixels - 4) + 'px';
+        this.musicOnButton.top = (toolsTop - h - 4) + 'px';
         this.musicOffButton.left = toolsLeft + 'px';
-        this.musicOffButton.top = (toolsTop - this.inventoryButton.heightInPixels - 4) + 'px';
+        this.musicOffButton.top = (toolsTop - h - 4) + 'px';
+        this.musicOnButton.top = (toolsTop - h - 4) + 'px';
+        this.optionsButton.left = toolsLeft + 'px';
+        this.optionsButton.top = (toolsTop - h * 2 - 4) + 'px';
     }
 
     /**
