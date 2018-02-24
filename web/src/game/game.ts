@@ -10,6 +10,7 @@ import { WorldService } from '../app/world.service';
 import Config from './config';
 import { IdentifyClientEvent } from './events/events';
 import { Inventory } from './world/inventory';
+import { GameDialog } from './ui/dialog';
 
 /**
  * The base game.
@@ -49,13 +50,13 @@ export class Game {
      * Inventory handing.
      */
     public inventory: Inventory;
-    private inventoryDialog: GUI.Rectangle;
+    private inventoryDialog: GameDialog;
     private inventoryUIElements: Map<string, GUI.Control> = new Map<string, GUI.Image>();
     
     /**
      * Options
      */
-    private optionsDialog: GUI.Rectangle;
+    private optionsDialog: GameDialog;
 
     /**
      * Main game singletons.
@@ -325,7 +326,7 @@ export class Game {
         this.world.update();
 
         if (this.keyPressed('KeyI')) {
-            this.showInv(!this.inventoryDialog || !this.inventoryDialog.parent);
+            this.showInv(!this.inventoryDialog || !this.inventoryDialog.isAttached());
         }
 
         // Send any events to server
@@ -350,36 +351,12 @@ export class Game {
      * Show inventory dialog.
      */
     private showInv(show: boolean = true) {
-        if (show && !this.inventoryDialog) {
-            let pad = 4;
-            let cell = 64 + pad;
+        if (!this.inventoryDialog) {
+            this.inventoryDialog = new GameDialog(this);
+
+            let cell = 64 + this.inventoryDialog.getPadding();
             let dlgWidth = cell * 8;
             let dlgHeight = cell * 8 + 42/*button height + padding*/;
-
-            this.inventoryDialog = new GUI.Rectangle();
-            this.inventoryDialog.width = (dlgWidth + pad * 2) + 'px';
-            this.inventoryDialog.height = (dlgHeight + pad * 2) + 'px';
-            this.inventoryDialog.shadowColor = 'black';
-            this.inventoryDialog.shadowBlur = 20;
-            this.inventoryDialog.thickness = 2;
-            this.inventoryDialog.cornerRadius = 5;
-            this.inventoryDialog.background = new BABYLON.Color4(1, .75, .5, .75).toHexString();
-            this.inventoryDialog.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
-
-            let close = GUI.Button.CreateSimpleButton('closeButton', 'Close Inventory');
-            close.top = (dlgHeight / 2 - 20) + 'px';
-            close.background = '#f0f0f0';
-            close.cornerRadius = 5;
-            close.height = '30px';
-            close.width = '200px';
-            close.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
-            close.background = '#fff';
-            close.thickness = 2;
-            close.fontFamily = 'sans';
-            close.onPointerUpObservable.add(() => {
-                this.preventInteraction();
-                this.showInv(false);
-            });
 
             for (let x = 0; x < 8; x++) {
                 for (let y = 0; y < 8; y++) {
@@ -389,25 +366,22 @@ export class Game {
                     gridCell.left = (-dlgWidth / 2 + cell / 2 + cell * x) + 'px';
                     gridCell.top = (-dlgHeight / 2 + cell / 2 + cell * y) + 'px';
 
-                    this.inventoryDialog.addControl(gridCell);
+                    this.inventoryDialog.getDialogElement().addControl(gridCell);
                 }
             }
 
-            this.inventoryDialog.addControl(close);
-
             this.inventory.onInventoryUpdatedObservable.add(() => {
-                if (this.inventoryDialog.parent) {
+                if (this.inventoryDialog.isAttached()) {
                     this.refreshInventoryItemsOnGrid();
                 }
             });
         }
 
-        if (show && !this.inventoryDialog.parent) {
+        this.inventoryDialog.show(show);
+
+        if (show) {
             this.inventory.select(null);
-            this.ui.addControl(this.inventoryDialog);
             this.refreshInventoryItemsOnGrid();
-        } else {
-            this.ui.removeControl(this.inventoryDialog);
         }
     }
 
@@ -415,7 +389,7 @@ export class Game {
      * Display inventory items and quantities on the grid.
      */
     private refreshInventoryItemsOnGrid() {
-        this.inventoryUIElements.forEach(e => this.inventoryDialog.removeControl(e));
+        this.inventoryUIElements.forEach(e => this.inventoryDialog.getDialogElement().removeControl(e));
         this.inventoryUIElements.clear();
 
         let pad = 4;
@@ -461,7 +435,7 @@ export class Game {
                 this.inventory.select(inv);
             });
             this.inventoryUIElements.set(inv.type, uiElement);
-            this.inventoryDialog.addControl(uiElement);
+            this.inventoryDialog.getDialogElement().addControl(uiElement);
 
             if (x < 8) {
                 x += 1;
@@ -473,44 +447,11 @@ export class Game {
     }
 
     private showOptions(show: boolean) {
-        if (show && !this.optionsDialog) {
-            let pad = 4;
-            let cell = 64 + pad;
-            let dlgWidth = cell * 8;
-            let dlgHeight = cell * 8 + 42/*button height + padding*/;
-
-            this.optionsDialog = new GUI.Rectangle();
-            this.optionsDialog.width = (dlgWidth + pad * 2) + 'px';
-            this.optionsDialog.height = (dlgHeight + pad * 2) + 'px';
-            this.optionsDialog.shadowColor = 'black';
-            this.optionsDialog.shadowBlur = 20;
-            this.optionsDialog.thickness = 2;
-            this.optionsDialog.cornerRadius = 5;
-            this.optionsDialog.background = new BABYLON.Color4(1, .75, .5, .75).toHexString();
-            this.optionsDialog.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
-
-            let close = GUI.Button.CreateSimpleButton('closeButton', 'Close');
-            close.top = (dlgHeight / 2 - 20) + 'px';
-            close.background = '#f0f0f0';
-            close.cornerRadius = 5;
-            close.height = '30px';
-            close.width = '200px';
-            close.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
-            close.background = '#fff';
-            close.thickness = 2;
-            close.fontFamily = 'sans';
-            close.onPointerUpObservable.add(() => {
-                this.preventInteraction();
-                this.showOptions(false);
-            });
-            this.optionsDialog.addControl(close);
+        if (!this.optionsDialog) {
+            this.optionsDialog = new GameDialog(this);
         }
 
-        if (show && !this.optionsDialog.parent) {
-            this.ui.addControl(this.optionsDialog);
-        } else {
-            this.ui.removeControl(this.optionsDialog);
-        }
+        this.optionsDialog.show(show);
     }
 
     /**
@@ -523,7 +464,7 @@ export class Game {
             this.inventoryButton.height = '64px';
             this.inventoryButton.onPointerDownObservable.add(evt => {
                 this.preventInteraction();
-                this.showInv(!this.inventoryDialog || !this.inventoryDialog.parent);
+                this.showInv(!this.inventoryDialog || !this.inventoryDialog.isAttached());
             });
             this.ui.addControl(this.inventoryButton);
         }

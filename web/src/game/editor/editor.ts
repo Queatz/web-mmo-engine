@@ -11,6 +11,7 @@ import { TeleportObject } from '../obj/teleport';
 import { FlowerSpawnAreaObject } from '../obj/flowerSpawnArea';
 import Config from '../config';
 import { MapEvent, ObjDef, EditClientEvent } from '../events/events';
+import { GameDialog } from '../ui/dialog';
 
 /**
  * Game Editor
@@ -19,7 +20,7 @@ import { MapEvent, ObjDef, EditClientEvent } from '../events/events';
  */
 export class Editor {
     
-    private dialog: GUI.Rectangle;
+    private dialog: GameDialog;
     private toolbar: GUI.Rectangle;
     private selectTileIcon: GUI.Image;
     private selectObjectIcon: GUI.Image;
@@ -28,7 +29,6 @@ export class Editor {
     private selectDelObjectIcon: GUI.Image;
     private editorSelection: GUI.Image;
     private tilesImage: GUI.Image;
-    private dialogVisible = false;
     private enabled = false;
     private imageXTileCount = 8;
     private currentTileIndex = 0;
@@ -139,8 +139,8 @@ export class Editor {
         } else {
             this.game.ui.removeControl(this.toolbar);
 
-            if (this.dialogVisible) {
-                this.game.ui.removeControl(this.dialog);
+            if (this.dialog.isAttached()) {
+                this.dialog.show(false);
             }
         }
     }
@@ -261,25 +261,11 @@ export class Editor {
      * Shows the editor dialog. Also call setDialogContent() after this.
      */
     private showDialog(show: boolean = true) {
-        if (show && !this.dialog) {
-            this.dialog = new GUI.Rectangle();
-            this.dialog.width = '500px';
-            this.dialog.height = '550px';
-            this.dialog.shadowColor = 'black';
-            this.dialog.shadowBlur = 20;
-            this.dialog.thickness = 2;
-            this.dialog.cornerRadius = 5;
-            this.dialog.background = new BABYLON.Color4(1, .75, .5, 1).toHexString();
-            this.dialog.color = new BABYLON.Color4(1, .5, .25, .75).toHexString();
+        if (!this.dialog) {
+            this.dialog = new GameDialog(this.game);
         }
 
-        if (show && !this.dialogVisible) {
-            this.dialogVisible = true;
-            this.game.ui.addControl(this.dialog);
-        } else {
-            this.dialogVisible = false;
-            this.game.ui.removeControl(this.dialog);
-        }
+        this.dialog.show(show);
     }
 
     /**
@@ -290,7 +276,7 @@ export class Editor {
      *      'obj'
      */
     private setDialogContent(content: string) {
-        this.dialog.children.length = 0;
+        this.dialog.getDialogElement().children.length = 0;
 
         switch (content) {
             case 'tile':
@@ -311,7 +297,7 @@ export class Editor {
                     this.game.preventInteraction();
                 });
         
-                this.dialog.addControl(tileSetSwitcher);
+                this.dialog.getDialogElement().addControl(tileSetSwitcher);
 
                 break;
             case 'obj':
@@ -344,7 +330,7 @@ export class Editor {
                         this.game.preventInteraction();
                     });
 
-                    this.dialog.addControl(obj);
+                    this.dialog.getDialogElement().addControl(obj);
                 }
 
                 break;
@@ -358,14 +344,14 @@ export class Editor {
         this.currentTileSet = image;
         
         if (this.tilesImage) {
-            this.dialog.removeControl(this.tilesImage);
+            this.dialog.getDialogElement().removeControl(this.tilesImage);
         }
 
         this.tilesImage = new GUI.Image('editorSelectTileIcon', this.currentTileSet);
         this.tilesImage.width = '500px';
         this.tilesImage.height = '500px';
         this.tilesImage.top = '-25px';
-        this.dialog.addControl(this.tilesImage);
+        this.dialog.getDialogElement().addControl(this.tilesImage);
         
         this.tilesImage.onPointerDownObservable.add(evt => {
             this.currentTileIndex = this.getTileIndex(this.tilesImage.getLocalCoordinates(evt));
