@@ -1,6 +1,7 @@
 import { PlayerObject } from "./obj/player";
 import { ButterflyObject } from "./obj/butterfly";
 import { BunnyObject } from "./obj/bunny";
+import { FoxObject } from "./obj/fox";
 import { FlowerSpawnAreaObject } from "./obj/flowerSpawnArea";
 import { FlowerObject } from "./obj/flower";
 import { DropObject } from "./obj/drop";
@@ -24,6 +25,7 @@ export default class Config {
             ['player', PlayerObject],
             ['butterfly', ButterflyObject],
             ['bunny', BunnyObject],
+            ['fox', FoxObject],
             ['drop', DropObject],
             ['flower', FlowerObject],
             ['flower-spawn-area', FlowerSpawnAreaObject],

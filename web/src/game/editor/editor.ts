@@ -5,6 +5,7 @@ import { Game } from '../game';
 import { MapTile } from '../obj/maptile';
 import { ButterflyObject } from '../obj/butterfly';
 import { BunnyObject } from '../obj/bunny';
+import { FoxObject } from '../obj/fox';
 import { BaseObject } from '../obj/baseobject';
 import { PlayerObject } from '../obj/player';
 import { TeleportObject } from '../obj/teleport';
@@ -308,6 +309,7 @@ export class Editor {
 
                 let imgAndTypes: any[] = [
                     ['/assets/Bunny-front-final.png', BunnyObject],
+                    ['/assets/foxy.png', FoxObject, 2],
                     ['/assets/butterfly_idle.png', ButterflyObject],
                     ['/assets/slime.png', PlayerObject],
                     ['/assets/editor_objs.png', FlowerSpawnAreaObject, 0],

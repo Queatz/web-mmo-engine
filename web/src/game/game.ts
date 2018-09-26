@@ -87,6 +87,7 @@ export class Game {
     public spritesPlayer: BABYLON.SpriteManager;
     public spritesNPCs: BABYLON.SpriteManager;
     public spritesCreatures: BABYLON.SpriteManager;
+    public spritesFox: BABYLON.SpriteManager;
     public spritesItems: BABYLON.SpriteManager;
     public spritesEditor: BABYLON.SpriteManager;
 
@@ -148,6 +149,7 @@ export class Game {
         this.spritesPlayer = new BABYLON.SpriteManager('spriteManager2', '/assets/slime_eat.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesNPCs = new BABYLON.SpriteManager('spriteManager3', '/assets/butterfly.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesCreatures = new BABYLON.SpriteManager('spriteManager4', '/assets/bunny.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesFox = new BABYLON.SpriteManager('spriteManager4', '/assets/foxy.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesItems = new BABYLON.SpriteManager('spriteManager5', '/assets/items.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesEditor = new BABYLON.SpriteManager('spriteManager6', '/assets/editor_objs.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
