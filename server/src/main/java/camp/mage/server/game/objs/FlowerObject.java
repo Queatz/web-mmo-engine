@@ -20,7 +20,7 @@ public class FlowerObject extends BaseObject {
     public void update() {
         super.update();
 
-        for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
+        if (map != null) for (Player player : map.getObjs().all(pos, Player.class, 0.5f)) {
             if (player.getState().contains(Player.PlayerState.INTERACTING)) {
                 player.getAccount().addInventory("flower", 1);
                 world.leave(this);

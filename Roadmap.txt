@@ -8,28 +8,6 @@ Persistence:
  - Username / Pass
  - Player id + map + position + stats (survive restart)
 
-Inventory
-=========
-
-UI Dialog
-
-Drop from UI Dialog (InventoryClientEvent)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Resources
 =========

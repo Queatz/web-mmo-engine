@@ -392,8 +392,7 @@ export class Game {
         this.inventoryUIElements.forEach(e => this.inventoryDialog.getDialogElement().removeControl(e));
         this.inventoryUIElements.clear();
 
-        let pad = 4;
-        let cell = 64 + pad;
+        let cell = 64 + this.inventoryDialog.getPadding();
         let dlgWidth = cell * 8;
         let dlgHeight = cell * 8 + 42/*button height + padding*/;
 
@@ -449,6 +448,13 @@ export class Game {
     private showOptions(show: boolean) {
         if (!this.optionsDialog) {
             this.optionsDialog = new GameDialog(this);
+
+            let info = new GUI.TextBlock();
+            info.color = 'black';
+            info.fontFamily = 'Ubuntu, sans';
+            info.isHitTestVisible = false;
+            info.text = 'Controls\n========\n\nArrows to move\nZ to Interact\nX to Attack\nC to Use Current Item\nV to Drop Current Item\n\nOpen Inventory to select Current Item';
+            this.optionsDialog.getDialogElement().addControl(info);
         }
 
         this.optionsDialog.show(show);
@@ -526,6 +532,10 @@ export class Game {
         this.musicOnButton.top = (toolsTop - h - 4) + 'px';
         this.optionsButton.left = toolsLeft + 'px';
         this.optionsButton.top = (toolsTop - h * 2 - 4) + 'px';
+
+        if (!this.optionsDialog) {
+            this.showOptions(true);
+        }
     }
 
     /**
