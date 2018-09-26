@@ -1,1 +1,1 @@
-ng serve -p 4444 --host 0.0.0.0
+ng serve --port 4444 --host 0.0.0.0
