@@ -16,7 +16,7 @@ export class ServerService {
   }
 
   public reconnect() {
-    this.ws = new WebSocket('ws://localhost:8080/server/ws');
+    this.ws = new WebSocket('ws://slimequest.com:8080/server/ws');
 
     this.ws.onmessage = message => this.onMessage(message.data);
     this.ws.onopen = () => this.onOpen();

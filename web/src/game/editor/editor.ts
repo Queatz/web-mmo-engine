@@ -139,7 +139,7 @@ export class Editor {
         } else {
             this.game.ui.removeControl(this.toolbar);
 
-            if (this.dialog.isAttached()) {
+            if (this.dialog && this.dialog.isAttached()) {
                 this.dialog.show(false);
             }
         }
@@ -276,6 +276,10 @@ export class Editor {
      *      'obj'
      */
     private setDialogContent(content: string) {
+        if (!this.dialog) {
+            return;
+        }
+
         this.dialog.getDialogElement().children.length = 0;
 
         switch (content) {
