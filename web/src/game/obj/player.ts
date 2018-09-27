@@ -1,5 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
+
 import { BaseObject } from './baseobject';
 import { World } from '../world/world';
 import { MoveClientEvent, ActionClientEvent, InventoryClientEvent, InventoryItemDef } from '../events/events';

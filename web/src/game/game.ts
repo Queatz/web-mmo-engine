@@ -550,15 +550,15 @@ export class Game {
         let aspect = this._engine.getAspectRatio(this.camera, true);
 
         if (aspect > 1) {
-            this.camera.orthoTop = this.zoom / aspect;
-            this.camera.orthoBottom = -this.zoom / aspect;
-            this.camera.orthoLeft = -this.zoom;
-            this.camera.orthoRight = this.zoom;
+            this.camera.orthoTop = -this.zoom / aspect;
+            this.camera.orthoBottom = this.zoom / aspect;
+            this.camera.orthoLeft = this.zoom;
+            this.camera.orthoRight = -this.zoom;
         } else {
-            this.camera.orthoTop = this.zoom;
-            this.camera.orthoBottom = -this.zoom;
-            this.camera.orthoLeft = -this.zoom * aspect;
-            this.camera.orthoRight = this.zoom * aspect;
+            this.camera.orthoTop = -this.zoom;
+            this.camera.orthoBottom = this.zoom;
+            this.camera.orthoLeft = this.zoom * aspect;
+            this.camera.orthoRight = -this.zoom * aspect;
         }
     }
 }

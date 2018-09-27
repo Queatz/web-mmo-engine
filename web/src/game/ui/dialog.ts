@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs';
+import * as GUI from 'babylonjs-gui';
 import { World } from '../world/world';
 import { Game } from '../game';
-import { GUI } from 'babylonjs';
 
 /**
  * A basic dialog with    isAttached(): any {

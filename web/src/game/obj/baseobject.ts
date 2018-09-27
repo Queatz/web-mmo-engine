@@ -49,6 +49,9 @@ export class BaseObject {
             return;
         }
 
+        this.sprite.invertV = -1;
+        this.sprite.invertU = -1;
+
         if (this.targetPos) {
             let diff = this.targetPos.subtract(this.pos);
 

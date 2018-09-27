@@ -78,8 +78,8 @@ export class StatBar {
 
     public update() {
         let camera = this.world.game.camera;
-        this.mesh.position.x = (camera.position.x + camera.orthoLeft) + this.mesh.scaling.x + .1;
-        this.mesh.position.z = (camera.position.z + camera.orthoTop) - this.mesh.scaling.z  - .1;
+        this.mesh.position.x = (camera.position.x - camera.orthoLeft) + this.mesh.scaling.x + .1;
+        this.mesh.position.z = (camera.position.z - camera.orthoTop) - this.mesh.scaling.z  - .1;
         this.mesh.position.addInPlace(this.offset);
 
         if (this.healthAnimated !== this.health) {
