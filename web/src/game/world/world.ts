@@ -107,11 +107,15 @@ export class World {
         });
 
         this.game.events.register('map', (event: MapEvent) => {
-            this._map.mapEvent(event);
+            if (this._map) {
+                this._map.mapEvent(event);
+            }
         });
 
         this.game.events.register('obj', (event: ObjEvent) => {
-            this._map.objEvent(event);
+            if (this._map) {
+                this._map.objEvent(event);
+            }
         });
 
         this.setMusicEnabled(true);

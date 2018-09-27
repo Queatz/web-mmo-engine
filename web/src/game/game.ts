@@ -145,13 +145,13 @@ export class Game {
         this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
-        this.sprites = new BABYLON.SpriteManager('spriteManager1', '/assets/slime.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesPlayer = new BABYLON.SpriteManager('spriteManager2', '/assets/slime_eat.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesNPCs = new BABYLON.SpriteManager('spriteManager3', '/assets/butterfly.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesCreatures = new BABYLON.SpriteManager('spriteManager4', '/assets/bunny.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesFox = new BABYLON.SpriteManager('spriteManager4', '/assets/foxy.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesItems = new BABYLON.SpriteManager('spriteManager5', '/assets/items.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        this.spritesEditor = new BABYLON.SpriteManager('spriteManager6', '/assets/editor_objs.png', 100, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.sprites = new BABYLON.SpriteManager('spriteManager1', '/assets/slime.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesPlayer = new BABYLON.SpriteManager('spriteManager2', '/assets/slime_eat.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesNPCs = new BABYLON.SpriteManager('spriteManager3', '/assets/butterfly.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesCreatures = new BABYLON.SpriteManager('spriteManager4', '/assets/bunny.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesFox = new BABYLON.SpriteManager('spriteManager4', '/assets/foxy.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesItems = new BABYLON.SpriteManager('spriteManager5', '/assets/items.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        this.spritesEditor = new BABYLON.SpriteManager('spriteManager6', '/assets/editor_objs.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         
         this.chompSound = new BABYLON.Sound('chomp', '/assets/chomp.ogg', this.scene);
 
