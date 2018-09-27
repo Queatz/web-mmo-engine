@@ -191,14 +191,17 @@ public class World {
 
             if (event.addObj != null) {
                 BaseObject obj = create(event.addObj.type);
-                obj.getPos().x = event.addObj.pos.get(0);
-                obj.getPos().y = event.addObj.pos.get(1);
 
-                // Add to map
-                obj.setMap(player.getMap());
+                if (obj != null) {
+                    obj.getPos().x = event.addObj.pos.get(0);
+                    obj.getPos().y = event.addObj.pos.get(1);
 
-                // Add to world
-                objs.add(obj);
+                    // Add to map
+                    obj.setMap(player.getMap());
+
+                    // Add to world
+                    objs.add(obj);
+                }
             }
 
             if (event.removeObj != null) {
@@ -301,6 +304,11 @@ public class World {
 
     public BaseObject create(String type) {
         BaseObject obj = Objects.createFromType(this, type);
+
+        if (obj == null) {
+            return null;
+        }
+
         obj.setId(rndId());
         obj.created = true;
         return obj;
