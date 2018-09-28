@@ -65,20 +65,33 @@ export class PlayerObject extends BaseObject {
 
         this.collides = true;
 
-        if (this.world.game.key('ArrowDown')) {
-            this.pos.z -= this.speed * this.world.delta();
-        }
+        let drag = this.world.game.getDragDelta().clone();
 
-        if (this.world.game.key('ArrowUp')) {
-            this.pos.z += this.speed * this.world.delta();
-        }
+        if (drag.length() > 0) {
+            drag.divideInPlace(new BABYLON.Vector2(100, 100));
 
-        if (this.world.game.key('ArrowLeft')) {
-            this.pos.x -= this.speed * this.world.delta();
-        }
+            if (drag.length() > this.speed) {
+                drag.normalize().multiplyInPlace(new BABYLON.Vector2(this.speed, this.speed));
+            }
+            
+            this.pos.x += drag.x * this.world.delta();
+            this.pos.z -= drag.y * this.world.delta();
+        } else {
+            if (this.world.game.key('ArrowDown')) {
+                this.pos.z -= this.speed * this.world.delta();
+            }
 
-        if (this.world.game.key('ArrowRight')) {
-            this.pos.x += this.speed * this.world.delta();
+            if (this.world.game.key('ArrowUp')) {
+                this.pos.z += this.speed * this.world.delta();
+            }
+
+            if (this.world.game.key('ArrowLeft')) {
+                this.pos.x -= this.speed * this.world.delta();
+            }
+
+            if (this.world.game.key('ArrowRight')) {
+                this.pos.x += this.speed * this.world.delta();
+            }
         }
 
         if (this.world.game.key('KeyX')) {

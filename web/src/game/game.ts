@@ -100,6 +100,8 @@ export class Game {
      * Event handing.
      */
     private pointerDown: boolean;
+    private pointerDownPos: BABYLON.Vector2 = new BABYLON.Vector2();
+    private pointerPos: BABYLON.Vector2 = new BABYLON.Vector2();
     private _keysDown: Set<string> = new Set();
     private _keysPressed: Set<string> = new Set();
     private interactionPrevented: boolean;
@@ -184,6 +186,8 @@ export class Game {
                     }
         
                     this.pointerDown = true;
+                    this.pointerDownPos.set(info.event.clientX, info.event.clientY);
+                    this.pointerPos.copyFrom(this.pointerDownPos);
                     
                     if (this._keysDown.has('ControlLeft') || this._keysDown.has('ControlRight')) {
                         this.editor.use(this.world.getMap().pickTile(info.event.clientX, info.event.clientY));
@@ -199,6 +203,7 @@ export class Game {
                         return;
                     }
         
+                    this.pointerPos.set(info.event.clientX, info.event.clientY);
                     if (!this.pointerDown) {
                         return;
                     }
@@ -307,6 +312,14 @@ export class Game {
      */
     public keyPressed(key: string) {
         return this._keysPressed.has(key);
+    }
+
+    public getDragDelta() {
+        if (!this.pointerDown) {
+            return new BABYLON.Vector2(0, 0);
+        }
+
+        return this.pointerPos.subtract(this.pointerDownPos);
     }
 
     /**

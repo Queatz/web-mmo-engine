@@ -11,6 +11,7 @@ import camp.mage.server.game.objs.ButterflyObject;
 import camp.mage.server.game.objs.DropObject;
 import camp.mage.server.game.objs.FlowerObject;
 import camp.mage.server.game.objs.FlowerSpawnAreaObject;
+import camp.mage.server.game.objs.FoxObject;
 import camp.mage.server.game.objs.MapObject;
 import camp.mage.server.game.objs.Player;
 import camp.mage.server.game.objs.TeleportObject;
@@ -27,6 +28,7 @@ public class Objects {
         objTypes.put("player", Player.class);
         objTypes.put("butterfly", ButterflyObject.class);
         objTypes.put("bunny", BunnyObject.class);
+        objTypes.put("fox", FoxObject.class);
         objTypes.put("drop", DropObject.class);
         objTypes.put("flower", FlowerObject.class);
         objTypes.put("flower-spawn-area", FlowerSpawnAreaObject.class);

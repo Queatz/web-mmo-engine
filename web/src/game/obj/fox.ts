@@ -16,7 +16,7 @@ export class FoxObject extends BaseObject {
     public render() {
         this.velocity = new BABYLON.Vector3(0, 0, 0);
         
-        this.sprite = new BABYLON.Sprite('foxSprite', this.world.game.spritesCreatures);
+        this.sprite = new BABYLON.Sprite('foxSprite', this.world.game.spritesFox);
         this.sprite.size = .5;
         this.sprite.position = this.pos;
 
