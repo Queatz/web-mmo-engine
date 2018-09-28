@@ -56,7 +56,7 @@ export class GameDialog {
             this.actionButton.background = '#fff';
             this.actionButton.thickness = 2;
             this.actionButton.fontFamily = 'sans';
-            this.actionButton.onPointerUpObservable.add(() => {
+            this.actionButton.onPointerClickObservable.add(() => {
                 this.game.preventInteraction();
                 this.show(false);
             });

@@ -392,6 +392,8 @@ export class Game {
             });
         }
 
+        this.scaleDialogToFit(this.inventoryDialog);
+
         this.inventoryDialog.show(show);
 
         if (show) {
@@ -472,7 +474,26 @@ export class Game {
             this.optionsDialog.getDialogElement().addControl(info);
         }
 
+        this.scaleDialogToFit(this.optionsDialog);
+
         this.optionsDialog.show(show);
+    }
+
+    private scaleDialogToFit(dialog: GameDialog) {
+        let scale: number;
+
+        if (dialog.getDialogElement().widthInPixels > this.ui.getSize().width ||
+            dialog.getDialogElement().heightInPixels > this.ui.getSize().height) {
+            scale = Math.min(
+                this.ui.getSize().width / dialog.getDialogElement().widthInPixels,
+                this.ui.getSize().height / dialog.getDialogElement().heightInPixels
+            );
+        } else {
+            scale = 1;
+        }
+
+        dialog.getDialogElement().scaleX = scale;
+        dialog.getDialogElement().scaleY = scale;
     }
 
     /**
