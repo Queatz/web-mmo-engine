@@ -20,8 +20,8 @@ export class BaseObject {
     public hunger: number;
 
     constructor(protected world: World) {
-        this.previousPos = new BABYLON.Vector3(0, 1, 0);
-        this.pos = new BABYLON.Vector3(0, 1, 0);
+        this.previousPos = new BABYLON.Vector3(0, 0, 0);
+        this.pos = new BABYLON.Vector3(0, .25, 0);
     }
 
     /**
@@ -48,9 +48,6 @@ export class BaseObject {
         if (!this.sprite) {
             return;
         }
-
-        this.sprite.invertV = -1;
-        this.sprite.invertU = -1;
 
         if (this.targetPos) {
             let diff = this.targetPos.subtract(this.pos);

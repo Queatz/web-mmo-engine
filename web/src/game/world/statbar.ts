@@ -7,7 +7,6 @@ export class StatBar {
     private barWidth = 1;
 
     private mesh: BABYLON.Mesh;
-    private material: BABYLON.Material;
     private health = 1;
     private healthAnimated = 1;
     private offset = new BABYLON.Vector3(0, 0, 0);

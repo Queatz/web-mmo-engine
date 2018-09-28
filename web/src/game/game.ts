@@ -1,8 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
 
-import { MapObject } from './obj/map';
-import { PlayerObject } from './obj/player';
 import { Editor } from './editor/editor';
 import { Events } from './events';
 import { World } from './world/world';
@@ -30,6 +28,11 @@ export class Game {
      * The default global game zoom level.
      */
     private zoom = 4;
+
+    /**
+     * The default camera distance.
+     */
+    private cameraDistance = 5;
 
     /**
      * The game world.
@@ -143,8 +146,9 @@ export class Game {
         this.scene = new BABYLON.Scene(this._engine);
         this.scene.ambientColor = new BABYLON.Color3(1, 1, 1);
  
-        this.camera = new BABYLON.FreeCamera('camera', new BABYLON.Vector3(0, 10, 0), this.scene);
-        this.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+        this.camera = new BABYLON.FreeCamera('camera', new BABYLON.Vector3(0, this.cameraDistance, -this.cameraDistance), this.scene);
+        this.camera.mode = BABYLON.Camera.PERSPECTIVE_CAMERA;
+        this.camera.fov = Math.PI / this.zoom;
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
         this.sprites = new BABYLON.SpriteManager('spriteManager1', '/assets/slime.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
@@ -328,7 +332,7 @@ export class Game {
     public centerCameraOnPlayer() {
         if (this.world.getPlayer()) {
             this.camera.position.x = this.world.getPlayer().pos.x;
-            this.camera.position.z = this.world.getPlayer().pos.z;
+            this.camera.position.z = this.world.getPlayer().pos.z - this.cameraDistance;
         }
     }
     
@@ -584,11 +588,13 @@ export class Game {
         let aspect = this._engine.getAspectRatio(this.camera, true);
 
         if (aspect > 1) {
+            this.camera.fovMode = BABYLON.Camera.FOVMODE_HORIZONTAL_FIXED;
             this.camera.orthoTop = -this.zoom / aspect;
             this.camera.orthoBottom = this.zoom / aspect;
             this.camera.orthoLeft = this.zoom;
             this.camera.orthoRight = -this.zoom;
         } else {
+            this.camera.fovMode = BABYLON.Camera.FOVMODE_VERTICAL_FIXED;
             this.camera.orthoTop = -this.zoom;
             this.camera.orthoBottom = this.zoom;
             this.camera.orthoLeft = this.zoom * aspect;
