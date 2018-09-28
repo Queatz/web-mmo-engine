@@ -70,6 +70,13 @@ export class Game {
     public textTimer: number;
 
     /**
+     * UI
+     */
+
+    public uiCamera: BABYLON.FreeCamera;
+    public uiScene: BABYLON.Scene;
+
+    /**
      * The game editor.
      */
     public editor: Editor;
@@ -151,6 +158,15 @@ export class Game {
         this.camera.fov = Math.PI / this.zoom;
         this.camera.setTarget(BABYLON.Vector3.Zero());
 
+        this.uiScene = new BABYLON.Scene(this._engine);
+        this.uiScene.autoClear = false;
+        this.uiScene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+        this.uiScene.ambientColor = new BABYLON.Color3(1, 1, 1);
+
+        this.uiCamera = new BABYLON.FreeCamera('uicamera', new BABYLON.Vector3(0, this.cameraDistance, 0), this.uiScene);
+        this.uiCamera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+        this.uiCamera.setTarget(BABYLON.Vector3.Zero());
+
         this.sprites = new BABYLON.SpriteManager('spriteManager1', '/assets/slime.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesPlayer = new BABYLON.SpriteManager('spriteManager2', '/assets/slime_eat.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
         this.spritesNPCs = new BABYLON.SpriteManager('spriteManager3', '/assets/butterfly.png', 999, 16, this.scene, 0, BABYLON.Texture.NEAREST_SAMPLINGMODE);
@@ -163,7 +179,7 @@ export class Game {
 
         // UI + Text
         
-        this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, this.scene);
+        this.ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI('UI', true, this.uiScene);
 
         this.text = new GUI.TextBlock();
         this.text.isVisible = false;
@@ -261,6 +277,7 @@ export class Game {
             }
 
             this.scene.render();
+            this.uiScene.render();
         });
 
         // the canvas/window resize event handler
@@ -582,6 +599,7 @@ export class Game {
      * Called when the game viewport is externally resized.
      */
     private resize(): void {
+        setTimeout(() => this.setUpActionBar(), 500); // XXX TODO Figure out why this is needed to allow clicks
         setTimeout(() => this.setUpActionBar(), 2000); // XXX TODO Figure out why this is needed to allow clicks
         this.ui.getContext().imageSmoothingEnabled = false;
 
@@ -589,16 +607,16 @@ export class Game {
 
         if (aspect > 1) {
             this.camera.fovMode = BABYLON.Camera.FOVMODE_HORIZONTAL_FIXED;
-            this.camera.orthoTop = -this.zoom / aspect;
-            this.camera.orthoBottom = this.zoom / aspect;
-            this.camera.orthoLeft = this.zoom;
-            this.camera.orthoRight = -this.zoom;
+            this.uiCamera.orthoTop = -this.zoom / aspect;
+            this.uiCamera.orthoBottom = this.zoom / aspect;
+            this.uiCamera.orthoLeft = this.zoom;
+            this.uiCamera.orthoRight = -this.zoom;
         } else {
             this.camera.fovMode = BABYLON.Camera.FOVMODE_VERTICAL_FIXED;
-            this.camera.orthoTop = -this.zoom;
-            this.camera.orthoBottom = this.zoom;
-            this.camera.orthoLeft = this.zoom * aspect;
-            this.camera.orthoRight = -this.zoom * aspect;
+            this.uiCamera.orthoTop = -this.zoom;
+            this.uiCamera.orthoBottom = this.zoom;
+            this.uiCamera.orthoLeft = this.zoom * aspect;
+            this.uiCamera.orthoRight = -this.zoom * aspect;
         }
     }
 }

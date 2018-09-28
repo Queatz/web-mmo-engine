@@ -12,7 +12,7 @@ export class StatBar {
     private offset = new BABYLON.Vector3(0, 0, 0);
 
     constructor(private world: World, image: string, isBehind: boolean = false) {
-        this.mesh = new BABYLON.Mesh('statbar', this.world.game.scene);
+        this.mesh = new BABYLON.Mesh('statbar', this.world.game.uiScene);
 
         let s = 2 / 16;
 
@@ -62,8 +62,8 @@ export class StatBar {
         vertexData.applyToMesh(this.mesh, true);
         this.updateMeshObject();
 
-        let texture = new BABYLON.Texture(image, this.world.game.scene, false, true, BABYLON.Texture.NEAREST_SAMPLINGMODE);
-        let material = new BABYLON.StandardMaterial('statbar', this.world.game.scene);
+        let texture = new BABYLON.Texture(image, this.world.game.uiScene, false, true, BABYLON.Texture.NEAREST_SAMPLINGMODE);
+        let material = new BABYLON.StandardMaterial('statbar', this.world.game.uiScene);
         material.ambientColor = new BABYLON.Color3(1, 1, 1);
         material.ambientTexture = texture;
         material.opacityTexture = texture;
@@ -76,9 +76,9 @@ export class StatBar {
     }
 
     public update() {
-        let camera = this.world.game.camera;
-        this.mesh.position.x = (camera.position.x - camera.orthoLeft) + this.mesh.scaling.x + .1;
-        this.mesh.position.z = (camera.position.z - camera.orthoTop) - this.mesh.scaling.z  - .1;
+        let camera = this.world.game.uiCamera;
+        this.mesh.position.x = -camera.orthoLeft + this.mesh.scaling.x + .1;
+        this.mesh.position.z = -camera.orthoTop - this.mesh.scaling.z - .1;
         this.mesh.position.addInPlace(this.offset);
 
         if (this.healthAnimated !== this.health) {
