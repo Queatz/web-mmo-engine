@@ -590,8 +590,9 @@ export class Game {
         this.optionsButton.left = toolsLeft + 'px';
         this.optionsButton.top = (toolsTop - h * 2 - 4) + 'px';
 
-        if (!this.optionsDialog) {
+        if (!localStorage.getItem('hasSeenOptions')) {
             this.showOptions(true);
+            localStorage.setItem('hasSeenOptions', 'true');
         }
     }
 
