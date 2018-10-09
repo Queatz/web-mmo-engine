@@ -3,8 +3,9 @@ apply plugin: 'war'
 
 dependencies {
     compile 'javax.servlet:servlet-api:2.5'
-    compile 'com.google.code.gson:gson:2.8.2'
-    compile 'com.arangodb:arangodb-java-driver:4.3.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.arangodb:arangodb-java-driver:4.4.0'
+    implementation 'org.jetbrains:annotations:16.0.2'
     compile group: 'javax.websocket', name: 'javax.websocket-api', version: '1.1'
 }
 
@@ -13,7 +14,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 task deploy(type: Exec) {
     workingDir './'
-    commandLine './deploy.sh'
+    commandLine './deploy-localhost.sh'
 }
 
 task buildAndDeploy(type: GradleBuild) {

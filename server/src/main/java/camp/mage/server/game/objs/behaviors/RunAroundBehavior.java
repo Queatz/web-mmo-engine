@@ -30,6 +30,10 @@ public class RunAroundBehavior implements Behavior {
 
     @Override
     public void update() {
+        if (obj.getMap() == null) {
+            return;
+        }
+
         if (Math.random() < 0.005) {
             velocity.x = (float) (.1f * (Math.random() - .5f));
             velocity.y = (float) (.1f * (Math.random() - .5f));

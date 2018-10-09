@@ -1,5 +1,7 @@
 package camp.mage.server.game.objs;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Date;
 
 import camp.mage.server.game.World;
@@ -52,11 +54,12 @@ public class BaseObject {
         return world;
     }
 
+    @Nullable
     public MapObject getMap() {
         return map;
     }
 
-    public BaseObject setMap(MapObject map) {
+    public BaseObject setMap(@Nullable MapObject map) {
         if (this.map != null) {
             this.map.remove(id);
         }

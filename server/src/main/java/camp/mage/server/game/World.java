@@ -221,10 +221,12 @@ public class World {
             }
 
             if (event.tile != null) {
-                player.getMap().setTileAt(
-                        new TilePos(event.tile),
-                        new MapTile(event.tile.get(2), event.tile.get(3))
-                );
+                if (player.getMap() != null) {
+                    player.getMap().setTileAt(
+                            new TilePos(event.tile),
+                            new MapTile(event.tile.get(2), event.tile.get(3))
+                    );
+                }
             }
         }));
     }
