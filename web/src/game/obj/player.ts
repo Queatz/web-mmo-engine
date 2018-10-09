@@ -67,7 +67,7 @@ export class PlayerObject extends BaseObject {
 
         let drag = this.world.game.getDragDelta().clone();
 
-        if (drag.length() > 0) {
+        if (!this.world.game.editor.isEnabled() && drag.length() > 0) {
             drag.divideInPlace(new BABYLON.Vector2(100, 100));
 
             if (drag.length() > this.speed) {

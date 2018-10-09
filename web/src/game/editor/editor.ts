@@ -11,7 +11,7 @@ import { PlayerObject } from '../obj/player';
 import { TeleportObject } from '../obj/teleport';
 import { FlowerSpawnAreaObject } from '../obj/flowerSpawnArea';
 import Config from '../config';
-import { MapEvent, ObjDef, EditClientEvent } from '../events/events';
+import { ObjDef, EditClientEvent } from '../events/events';
 import { GameDialog } from '../ui/dialog';
 
 /**
@@ -50,6 +50,11 @@ export class Editor {
         this.toolbar.color = new BABYLON.Color4(1, .5, .25, .5).toHexString();
         this.toolbar.shadowColor = 'black';
         this.toolbar.shadowBlur = 20;
+        this.toolbar.isHitTestVisible = true;
+        this.toolbar.isPointerBlocker = true;
+        this.toolbar.onPointerDownObservable.add(() => {          
+            this.game.preventInteraction();
+        });
 
         let x = -128;
 
@@ -57,6 +62,8 @@ export class Editor {
         this.selectTileIcon.width = '64px';
         this.selectTileIcon.height = '64px';
         this.selectTileIcon.left = x + 'px';
+        this.toolbar.isHitTestVisible = true;
+        this.toolbar.isPointerBlocker = true;
         this.selectTileIcon.onPointerDownObservable.add(() => {
             this.showDialog();
             this.setDialogContent('tile');            

@@ -10,7 +10,7 @@ import { IdentifyClientEvent } from './events/events';
 import { Inventory } from './world/inventory';
 import { GameDialog } from './ui/dialog';
 
-/**
+/** 
  * The base game.
  * 
  * Class structure is like:

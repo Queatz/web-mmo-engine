@@ -21,8 +21,8 @@
     "@angular/platform-browser": "^6.1.9",
     "@angular/platform-browser-dynamic": "^6.1.9",
     "@angular/router": "^6.1.9",
-    "babylonjs": "^3.3.0-rc.5",
-    "babylonjs-gui": "^3.3.0-rc.5",
+    "babylonjs": "^3.3.0",
+    "babylonjs-gui": "^3.3.0",
     "core-js": "^2.5.7",
     "rxjs": "^6.3.3",
     "zone.js": "^0.8.26"
