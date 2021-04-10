@@ -1,7 +1,7 @@
+import * as BABYLON from 'babylonjs';
 import { MapObject } from "../obj/map";
 import { PlayerObject } from "../obj/player";
 import { Game } from "../game";
-import { WorldService } from "../../app/world.service";
 import { StateEvent, ChatEvent, InventoryEvent, MapEvent, ObjEvent } from "../events/events";
 import Config from "../config";
 import { BaseObject } from "../obj/baseobject";

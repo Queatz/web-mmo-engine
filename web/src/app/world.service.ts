@@ -26,8 +26,10 @@ export class WorldService {
    * 
    * @param event The event to send.
    */
-  public send(events: any[]) {
+  public send(events: any[]): boolean {
     this.server.send(events);
+
+    return true;
   }
 
 }

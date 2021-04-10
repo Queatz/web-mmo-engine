@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/WebGame.iml" filepath="$PROJECT_DIR$/WebGame.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/server/server.iml" filepath="$PROJECT_DIR$/server/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/web-mmo-engine.iml" filepath="$PROJECT_DIR$/.idea/modules/web-mmo-engine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/web-mmo-engine.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/web-mmo-engine.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/server/web-mmo-engine.server.iml" filepath="$PROJECT_DIR$/.idea/modules/server/web-mmo-engine.server.iml" />
     </modules>
   </component>
 </project>

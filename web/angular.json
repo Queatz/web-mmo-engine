@@ -130,6 +130,7 @@
     }
   },
   "cli": {
+    "analytics": false,
     "warnings": {
       "typescriptMismatch": false
     }
